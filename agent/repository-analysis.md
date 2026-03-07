@@ -46,7 +46,6 @@
 
 - `zod`를 소스에서 직접 import하지만 `package.json`에는 직접 의존성으로 선언되어 있지 않습니다.
 - `npm run build` 실행 시 `openapi.json`, `openapi.yaml`에 큰 diff가 생겨 체크인된 산출물과 소스 간 드리프트가 확인됐습니다.
-- `npm audit` 기준 `@modelcontextprotocol/sdk` 경유 `express-rate-limit` high 취약점이 1건 있습니다.
 - 레포는 Node 20을 요구하지만 현재 워크스페이스는 Node 23이라 로컬 실행 시 engine warning이 발생했습니다.
 - `workers-mcp`는 직접 사용 흔적을 찾지 못해 정리 후보입니다.
 
