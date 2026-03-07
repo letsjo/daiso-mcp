@@ -2,6 +2,9 @@
 
 이 문서는 새 서비스를 추가할 때 복사해서 사용할 최소 절차와 파일 골격을 정리합니다.
 
+자동 스캐폴드 도입 여부에 대한 판단은
+[docs/service-scaffold-review.md](/Users/hyunohjo/conductor/workspaces/daiso-mcp/casablanca/docs/service-scaffold-review.md)를 따릅니다.
+
 ## 1. 디렉터리 생성
 
 ```text

@@ -41,6 +41,7 @@
 - `new-service-template.md`
 - `movie-seatmap-investigation.md`
 - `service-matrix.md`
+- `service-scaffold-review.md`
 - `scraping-playbook.md`
 - `service-priority.md`
 - `smoke-test-strategy.md`
