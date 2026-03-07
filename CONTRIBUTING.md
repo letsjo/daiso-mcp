@@ -4,7 +4,7 @@
 
 ## 사전 준비
 
-- Node.js: `20.x` (`.nvmrc` 참고)
+- Node.js: `20.19.0` (`.nvmrc`, `.node-version`, `package.json#volta` 참고)
 - npm: Node 20에 포함된 버전 사용 권장
 
 ```bash
@@ -14,6 +14,8 @@ cp .env.example .env
 ```
 
 `.env`에는 필요한 경우 `ZYTE_API_KEY`를 설정하세요.
+
+Node 버전이 어긋나면 의존성 설치 단계에서 engine warning이 발생할 수 있으므로, 작업 시작 전에 `nvm use` 또는 Volta 사용 여부를 먼저 확인하세요.
 
 ## 개발 명령어
 
