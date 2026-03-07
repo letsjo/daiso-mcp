@@ -3,6 +3,7 @@
 작성일: 2026-03-02 (KST)
 실측 도구: Playwright MCP
 대상:
+
 - `https://cu.bgfretail.com/store/list.do?category=store`
 - `https://www.pocketcu.co.kr/` (리다이렉트 확인)
 

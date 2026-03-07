@@ -3,6 +3,7 @@
 작성일: 2026-03-03 (KST)  
 실측 도구: Playwright MCP, curl  
 대상:
+
 - `https://www.megabox.co.kr/booking`
 - `https://www.megabox.co.kr/on/oh/ohb/SimpleBooking/simpleBookingPage.do`
 - `https://www.megabox.co.kr/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do`
@@ -36,11 +37,11 @@
    -> `POST /on/oh/ohb/SimpleBooking/selectBrchBokdUnablePopup.do`  
    -> `POST /on/oh/ohb/SimpleBooking/selectBokdList.do`
 
-3. 좌석 페이지 로딩  
+3. 좌석 페이지 로딩
    - 좌석 iframe: `/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do`
    - 좌석 조회: `POST /on/oh/ohz/PcntSeatChoi/selectSeatList.do`
 
-4. 좌석 선택 후 다음 단계  
+4. 좌석 선택 후 다음 단계
    - 좌석 페이지에서 `options` 생성 후 `parent.fn_goNextPagePcntSeatChoi(options)` 호출
    - parent에서 `POST /on/oh/ohb/BokdMain/selectOccupSeat.do` 호출
 
@@ -105,12 +106,15 @@
 
 ### B. 좌석 선점 체크 리플레이
 
-1) 실패 케이스
+1. 실패 케이스
+
 - payload: `{"playSchdlNo":"2603041372011"}`
 - 결과: HTTP 500, `"좌석 정보가 없습니다."`
 
-2) 성공 케이스
+2. 성공 케이스
+
 - payload 예시:
+
 ```json
 {
   "playSchdlNo": "2603041372011",
@@ -122,6 +126,7 @@
   "tkeYn": "N"
 }
 ```
+
 - 결과: HTTP 200, `resultMap.occupSeatAt = "N"`
 
 ---

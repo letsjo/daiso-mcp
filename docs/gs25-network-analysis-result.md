@@ -3,6 +3,7 @@
 작성일: 2026-03-03 (KST)  
 실측 도구: Playwright MCP, curl  
 대상:
+
 - `https://gs25.gsretail.com/gscvs/ko/store-services/locations`
 - `https://gs25.gsretail.com/gscvs/ko/store-services/woodongs`
 - `https://gs25.gsretail.com/gscvs/ko/store-services/myrefrigerator`

@@ -2,6 +2,7 @@
 
 작성일: 2026-03-04 (KST)
 대상:
+
 - `https://www.cgv.co.kr`
 - `https://api.cgv.co.kr`
 - `https://oidc.cgv.co.kr`
@@ -18,13 +19,16 @@
 ## 스크래핑 플레이북 기준 판정
 
 1. Playwright MCP로 브라우저 동작 재현
+
 - 결과: 차단 재현(실패)
 
 2. 브라우저 요청 체인 분석
+
 - 기존 `m.cgv.co.kr/WebAPP/ReservationV5/*` 경로는 현재 실효성 없음
 - 신 프론트 번들에서 `api.cgv.co.kr` 티켓 API 확인
 
 3. 비브라우저 재현 시도
+
 - 직접 호출은 403
 - Zyte 프록시 경유 시 성공
 
@@ -52,6 +56,7 @@
 - `X-SIGNATURE: <base64-hmac-sha256>`
 
 서명 규칙:
+
 - 메시지: `{timestamp}|{pathname}|{bodyText}`
 - 알고리즘: `HMAC-SHA256`
 - 키: 프론트 번들에 하드코딩된 secret 사용
@@ -86,12 +91,15 @@
 ## 구현 전략 (우선순위)
 
 1. 브라우저 기반 성공 경로 확보
+
 - Playwright는 차단되므로 Zyte 프록시를 브라우저 대체 경로로 사용
 
 2. 비브라우저 직접 호출 우선
+
 - 직접 호출 시도 후 403이면 fallback
 
 3. 불가피 시 Zyte 프록시 fallback
+
 - 동일 헤더/서명 규칙으로 `api.cgv.co.kr` 호출
 
 ## 후속 TODO

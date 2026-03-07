@@ -9,10 +9,12 @@ Playwright를 사용하여 실제 브라우저에서 다이소 페이지를 열�
 ## Playwright MCP 설정 완료
 
 ### 파일 생성
+
 - `.mcp.json` - Playwright MCP 서버 설정
 - `.claude/settings.local.json` - `enableAllProjectMcpServers: true` 추가
 
 ### 활성화 방법
+
 Claude Code 세션을 종료하고 다시 시작하면 Playwright 도구를 사용할 수 있습니다.
 
 ---
@@ -44,6 +46,7 @@ Playwright로 다이소 매장 검색 페이지 열기:
 ### 3단계: 매장 검색 실행
 
 **시나리오 A: 이름으로 검색**
+
 ```
 1. 검색창에 "강남" 입력
 2. 검색 버튼 클릭
@@ -56,6 +59,7 @@ Playwright로 다이소 매장 검색 페이지 열기:
 ```
 
 **시나리오 B: 지역 선택**
+
 ```
 1. 시/도 드롭다운에서 "서울특별시" 선택
 2. 네트워크 요청 캡처:
@@ -70,6 +74,7 @@ Playwright로 다이소 매장 검색 페이지 열기:
 ### 4단계: 요청 정보 분석
 
 **확인 사항:**
+
 1. ✅ 쿠키 필요 여부
    - 어떤 쿠키가 설정되는가?
    - PHPSESSID, JSESSIONID 등?
@@ -92,6 +97,7 @@ Playwright로 다이소 매장 검색 페이지 열기:
 ### 5단계: 리플레이 테스트
 
 **캡처한 정보로 curl 재현:**
+
 ```bash
 curl "https://www.daiso.co.kr/cs/ajax/shop_search" \
   -X POST \
@@ -102,6 +108,7 @@ curl "https://www.daiso.co.kr/cs/ajax/shop_search" \
 ```
 
 **성공 판단:**
+
 - ✅ JSON/HTML 응답 받음
 - ✅ 매장 데이터 포함
 - ❌ 로그인 페이지로 리다이렉트
@@ -112,9 +119,10 @@ curl "https://www.daiso.co.kr/cs/ajax/shop_search" \
 ## Playwright 명령 예시
 
 ### 기본 페이지 열기
+
 ```typescript
 // 브라우저 실행 및 페이지 열기
-await playwright.navigate("https://www.daiso.co.kr/cs/shop");
+await playwright.navigate('https://www.daiso.co.kr/cs/shop');
 
 // 스크린샷 촬영
 await playwright.screenshot();
@@ -126,6 +134,7 @@ await playwright.execute(`
 ```
 
 ### 네트워크 요청 캡처
+
 ```typescript
 // 네트워크 리스너 설정 (JavaScript로)
 await playwright.execute(`
@@ -154,6 +163,7 @@ await playwright.execute(`
 ```
 
 ### 폼 입력 및 제출
+
 ```typescript
 // 검색어 입력
 await playwright.fill('input[name="name_address"]', '강남');
@@ -179,33 +189,39 @@ await playwright.execute(`
 ### 시나리오 1: 세션 쿠키 필수 ❌
 
 **발견 사항:**
+
 - PHPSESSID 등의 쿠키가 필수
 - 쿠키 없이는 HTML 페이지 반환
 - 리플레이 세션 어려움
 
 **대응:**
+
 - 세션 자동 생성 로직 필요
 - Puppeteer/Playwright 필수
 
 ### 시나리오 2: 쿠키 불필요, 헤더만 필요 ✅
 
 **발견 사항:**
+
 - X-Requested-With, Referer만 필요
 - JSON 응답 정상 수신
 - 리플레이 세션 가능!
 
 **대응:**
+
 - HTTP 클라이언트로 구현 가능
 - Cloudflare Workers에서 작동
 
 ### 시나리오 3: CSRF 토큰 필요 ⚠️
 
 **발견 사항:**
+
 - 페이지에서 토큰 추출 필요
 - 토큰 갱신 로직 필요
 - 부분적 리플레이 가능
 
 **대응:**
+
 - 먼저 페이지 방문 → 토큰 추출
 - 토큰 포함하여 API 호출
 
@@ -214,18 +230,21 @@ await playwright.execute(`
 ## 다음 단계
 
 1. **세션 재시작**
+
    ```bash
    # Claude Code 종료 후 재시작
    # Playwright MCP 도구 활성화 확인
    ```
 
 2. **Playwright로 페이지 열기**
+
    ```
    다이소 매장 검색 페이지 방문
    네트워크 캡처 활성화
    ```
 
 3. **검색 실행 및 분석**
+
    ```
    매장 검색 수행
    네트워크 요청 분석
@@ -233,6 +252,7 @@ await playwright.execute(`
    ```
 
 4. **리플레이 테스트**
+
    ```
    curl로 요청 재현
    성공 여부 확인

@@ -3,6 +3,7 @@
 작성일: 2026-03-03 (KST)  
 실측 도구: `curl`, 정적 JS 분석  
 대상:
+
 - `https://emart24.co.kr/store`
 - `https://emart24.co.kr/libs/FindStore.js`
 - `https://emart24.co.kr/api1/area`
@@ -75,6 +76,7 @@
 - 지도 경계: `top`, `bottom`, `left`, `right`
 
 실측 참고:
+
 - `top/bottom/left/right`만 전달한 샘플 요청은 `{"error":1,"count":0}` 반환.
 - 따라서 초기에 MCP 구현은 `search/area/service` 중심으로 시작하고,
   경계 파라미터는 브라우저 동작과 동일한 조건에서 추가 검증이 필요합니다.
@@ -92,10 +94,12 @@
   - `GET /api1/goods?category_seq=1&page=1` -> `error:0`, `count:2862`
 
 응답 필드 예시:
+
 - `CODE`, `TITLE`, `CATEGORY`, `KIND`, `PRICE_REAL`, `PRICE_ORIGIN`,
   `POST_START`, `POST_FINISH`, `BASE_CATEGORY_SEQ`, `CATEGORY_SEQ`
 
 관측되지 않은 필드:
+
 - 매장코드 연계 재고(`storeCode`, `inventoryQty`, `remainQty` 등)
 
 ### 앱 전용 기능 정황
@@ -106,6 +110,7 @@
   - Android package `kr.co.emart24.everse`
 
 판정:
+
 - 매장 단위 재고는 웹 공개 API에서 확인되지 않음
 - 재고는 앱 채널(인증/디바이스 컨텍스트) 기능일 가능성이 높음
 
@@ -133,6 +138,7 @@
 3. 3단계: 앱 트래픽 실측 후 `emart24_check_inventory` 구현 여부 재판정
 
 주의:
+
 - 2단계 도구를 "재고"로 표기하면 오해 소지가 있으므로
   명확히 "상품 목록/행사 정보"로 구분하는 것이 안전합니다.
 
