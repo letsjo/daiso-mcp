@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "data": {
+    "intStrCont": 2,
+    "msStrVOList": [
+      {
+        "strCd": "S001",
+        "strNm": "Daiso Gangnam",
+        "strAddr": "Seoul Gangnam-gu",
+        "strTno": "02-1111-2222",
+        "opngTime": "10:00",
+        "clsngTime": "22:00",
+        "strLttd": 37.5001,
+        "strLitd": 127.0001,
+        "km": "0.3",
+        "qty": "5",
+        "parkYn": "Y",
+        "usimYn": "Y",
+        "pkupYn": "Y",
+        "taxfYn": "N",
+        "elvtYn": "Y",
+        "entrRampYn": "Y",
+        "nocashYn": "N"
+      },
+      {
+        "strCd": "S002",
+        "strNm": "Daiso Seocho",
+        "strAddr": "Seoul Seocho-gu",
+        "strTno": "02-3333-4444",
+        "opngTime": "09:00",
+        "clsngTime": "21:00",
+        "strLttd": 37.4901,
+        "strLitd": 127.0201,
+        "km": "1.1",
+        "qty": "0",
+        "parkYn": "N",
+        "usimYn": "N",
+        "pkupYn": "N",
+        "taxfYn": "Y",
+        "elvtYn": "N",
+        "entrRampYn": "N",
+        "nocashYn": "Y"
+      }
+    ]
+  }
+}

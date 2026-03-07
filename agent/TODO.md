@@ -42,7 +42,7 @@
 ### 테스트 / 운영
 
 - [x] `[P1]` GitHub Actions에 수동 실행 가능한 smoke test 워크플로우 추가하기
-- [ ] `[P1]` 다이소/메가박스/CGV/올리브영 대표 응답을 fixture로 저장하고 계약 테스트(contract test) 추가하기
+- [x] `[P1]` 다이소/메가박스/CGV/올리브영 대표 응답을 fixture로 저장하고 계약 테스트(contract test) 추가하기
 - [ ] `[P2]` `npm run check`에 `check:openapi`를 포함할지 결정하고, 포함 시 로컬 개발 흐름 영향도 검토하기
 - [ ] `[P2]` `@modelcontextprotocol/sdk`가 `express-rate-limit` 상향을 포함하면 override 제거하기
 
