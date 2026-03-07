@@ -6,6 +6,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import type { ProductSearchResponse, ProductDoc } from '../types.js';
 import { DAISOMALL_API, getImageUrl } from '../api.js';
 import { fetchDaisoJson } from '../client.js';
@@ -94,25 +95,21 @@ async function getPriceInfo(args: GetPriceInfoArgs): Promise<McpToolResponse> {
     soldOut: product.SOLD_OUT_YN === 'Y',
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 /**
  * 도구 등록 정보 생성
  */
 export function createGetPriceInfoTool(): ToolRegistration {
-  return {
+  return createTool<GetPriceInfoArgs>({
     name: 'daiso_get_price_info',
-    metadata: {
-      title: '가격 정보',
-      description: '제품의 가격 정보를 조회합니다. 제품 ID 또는 제품명으로 조회할 수 있습니다.',
-      inputSchema: {
-        productId: z.string().optional().describe('제품 ID'),
-        productName: z.string().optional().describe('제품명 (productId가 없을 경우 사용)'),
-      },
+    title: '가격 정보',
+    description: '제품의 가격 정보를 조회합니다. 제품 ID 또는 제품명으로 조회할 수 있습니다.',
+    inputSchema: {
+      productId: z.string().optional().describe('제품 ID'),
+      productName: z.string().optional().describe('제품명 (productId가 없을 경우 사용)'),
     },
-    handler: getPriceInfo as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: getPriceInfo,
+  });
 }

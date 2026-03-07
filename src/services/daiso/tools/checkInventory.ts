@@ -6,6 +6,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import type { StoreInventory, StoreInventoryResponse, OnlineStockResponse } from '../types.js';
 import { DAISOMALL_API } from '../api.js';
 import { fetchDaisoJson } from '../client.js';
@@ -134,30 +135,26 @@ async function checkInventory(args: CheckInventoryArgs): Promise<McpToolResponse
     },
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 /**
  * 도구 등록 정보 생성
  */
 export function createCheckInventoryTool(): ToolRegistration {
-  return {
+  return createTool<CheckInventoryArgs>({
     name: 'daiso_check_inventory',
-    metadata: {
-      title: '재고 확인',
-      description:
-        '특정 제품의 매장별 재고를 확인합니다. 매장명/주소 검색 또는 위치 기반으로 조회합니다.',
-      inputSchema: {
-        productId: z.string().describe('제품 ID (daiso_search_products로 조회한 상품의 id)'),
-        storeQuery: z.string().optional().describe('매장 검색어 (매장명 또는 주소, 예: 안산 중앙역)'),
-        latitude: z.number().optional().default(37.5665).describe('위도 (기본값: 서울 시청 37.5665)'),
-        longitude: z.number().optional().default(126.978).describe('경도 (기본값: 서울 시청 126.978)'),
-        page: z.number().optional().default(1).describe('페이지 번호 (기본값: 1)'),
-        pageSize: z.number().optional().default(30).describe('페이지당 결과 수 (기본값: 30)'),
-      },
+    title: '재고 확인',
+    description:
+      '특정 제품의 매장별 재고를 확인합니다. 매장명/주소 검색 또는 위치 기반으로 조회합니다.',
+    inputSchema: {
+      productId: z.string().describe('제품 ID (daiso_search_products로 조회한 상품의 id)'),
+      storeQuery: z.string().optional().describe('매장 검색어 (매장명 또는 주소, 예: 안산 중앙역)'),
+      latitude: z.number().optional().default(37.5665).describe('위도 (기본값: 서울 시청 37.5665)'),
+      longitude: z.number().optional().default(126.978).describe('경도 (기본값: 서울 시청 126.978)'),
+      page: z.number().optional().default(1).describe('페이지 번호 (기본값: 1)'),
+      pageSize: z.number().optional().default(30).describe('페이지당 결과 수 (기본값: 30)'),
     },
-    handler: checkInventory as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: checkInventory,
+  });
 }

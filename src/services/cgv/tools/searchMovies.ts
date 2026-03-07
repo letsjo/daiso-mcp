@@ -4,6 +4,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchCgvMovies, toYyyymmdd } from '../client.js';
 
 interface SearchMoviesArgs {
@@ -31,23 +32,19 @@ async function searchMovies(args: SearchMoviesArgs, apiKey?: string): Promise<Mc
     movies,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 export function createSearchMoviesTool(apiKey?: string): ToolRegistration {
-  return {
+  return createTool<SearchMoviesArgs>({
     name: 'cgv_search_movies',
-    metadata: {
-      title: 'CGV 영화 검색',
-      description: 'CGV 상영 영화 목록을 조회합니다.',
-      inputSchema: {
-        playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
-        theaterCode: z.string().optional().describe('CGV 극장 코드 (예: 0056)'),
-        timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
-      },
+    title: 'CGV 영화 검색',
+    description: 'CGV 상영 영화 목록을 조회합니다.',
+    inputSchema: {
+      playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
+      theaterCode: z.string().optional().describe('CGV 극장 코드 (예: 0056)'),
+      timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },
-    handler: ((args) => searchMovies(args as SearchMoviesArgs, apiKey)) as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: (args) => searchMovies(args, apiKey),
+  });
 }

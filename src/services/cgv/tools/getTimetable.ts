@@ -4,6 +4,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchCgvTimetable, toYyyymmdd } from '../client.js';
 import { filterAndSortTimetable } from '../timetable.js';
 
@@ -45,25 +46,21 @@ async function getTimetable(args: GetTimetableArgs, apiKey?: string): Promise<Mc
     timetable: filtered,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 export function createGetTimetableTool(apiKey?: string): ToolRegistration {
-  return {
+  return createTool<GetTimetableArgs>({
     name: 'cgv_get_timetable',
-    metadata: {
-      title: 'CGV 시간표 조회',
-      description: '날짜/극장/영화 조건으로 CGV 상영 시간표를 조회합니다.',
-      inputSchema: {
-        playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
-        theaterCode: z.string().optional().describe('CGV 극장 코드 (예: 0056)'),
-        movieCode: z.string().optional().describe('CGV 영화 코드'),
-        limit: z.number().optional().default(50).describe('최대 결과 수 (기본값: 50)'),
-        timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
-      },
+    title: 'CGV 시간표 조회',
+    description: '날짜/극장/영화 조건으로 CGV 상영 시간표를 조회합니다.',
+    inputSchema: {
+      playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
+      theaterCode: z.string().optional().describe('CGV 극장 코드 (예: 0056)'),
+      movieCode: z.string().optional().describe('CGV 영화 코드'),
+      limit: z.number().optional().default(50).describe('최대 결과 수 (기본값: 50)'),
+      timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },
-    handler: ((args) => getTimetable(args as GetTimetableArgs, apiKey)) as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: (args) => getTimetable(args, apiKey),
+  });
 }

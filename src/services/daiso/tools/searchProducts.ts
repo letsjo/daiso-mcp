@@ -6,6 +6,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import type { Product, ProductSearchResponse } from '../types.js';
 import { DAISOMALL_API, getImageUrl } from '../api.js';
 import { fetchDaisoJson } from '../client.js';
@@ -75,26 +76,22 @@ async function searchProducts(args: SearchProductsArgs): Promise<McpToolResponse
     products,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 /**
  * 도구 등록 정보 생성
  */
 export function createSearchProductsTool(): ToolRegistration {
-  return {
+  return createTool<SearchProductsArgs>({
     name: 'daiso_search_products',
-    metadata: {
-      title: '제품 검색',
-      description: '다이소 제품을 검색합니다. 키워드로 제품을 검색할 수 있습니다.',
-      inputSchema: {
-        query: z.string().describe('검색할 제품명 또는 키워드'),
-        page: z.number().optional().default(1).describe('페이지 번호 (기본값: 1)'),
-        pageSize: z.number().optional().default(30).describe('페이지당 결과 수 (기본값: 30)'),
-      },
+    title: '제품 검색',
+    description: '다이소 제품을 검색합니다. 키워드로 제품을 검색할 수 있습니다.',
+    inputSchema: {
+      query: z.string().describe('검색할 제품명 또는 키워드'),
+      page: z.number().optional().default(1).describe('페이지 번호 (기본값: 1)'),
+      pageSize: z.number().optional().default(30).describe('페이지당 결과 수 (기본값: 30)'),
     },
-    handler: searchProducts as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: searchProducts,
+  });
 }

@@ -4,6 +4,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchMegaboxBookingList, toYyyymmdd } from '../client.js';
 
 interface GetRemainingSeatsArgs {
@@ -56,26 +57,22 @@ async function getRemainingSeats(args: GetRemainingSeatsArgs): Promise<McpToolRe
     seats: filteredShowtimes,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 export function createGetRemainingSeatsTool(): ToolRegistration {
-  return {
+  return createTool<GetRemainingSeatsArgs>({
     name: 'megabox_get_remaining_seats',
-    metadata: {
-      title: '메가박스 잔여 좌석 조회',
-      description: '영화/지점/날짜 조건으로 상영 회차별 남은 좌석 수를 조회합니다.',
-      inputSchema: {
-        playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
-        theaterId: z.string().optional().describe('메가박스 지점 번호 (예: 1372)'),
-        movieId: z.string().optional().describe('메가박스 영화 번호 (예: 25104500)'),
-        areaCode: z.string().optional().default('11').describe('지역 코드 (기본값: 11, 서울)'),
-        limit: z.number().optional().default(50).describe('반환할 최대 회차 수 (기본값: 50)'),
-        timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
-      },
+    title: '메가박스 잔여 좌석 조회',
+    description: '영화/지점/날짜 조건으로 상영 회차별 남은 좌석 수를 조회합니다.',
+    inputSchema: {
+      playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
+      theaterId: z.string().optional().describe('메가박스 지점 번호 (예: 1372)'),
+      movieId: z.string().optional().describe('메가박스 영화 번호 (예: 25104500)'),
+      areaCode: z.string().optional().default('11').describe('지역 코드 (기본값: 11, 서울)'),
+      limit: z.number().optional().default(50).describe('반환할 최대 회차 수 (기본값: 50)'),
+      timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },
-    handler: getRemainingSeats as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: getRemainingSeats,
+  });
 }
