@@ -44,6 +44,7 @@ npm run smoke:test -- https://mcp.aka.page
 
 `npm run build`는 `dist/` 생성뿐 아니라 `openapi.json`, `openapi.yaml`도 함께 재생성합니다.
 `npm run check`는 빠른 로컬 회귀용으로 유지하고, OpenAPI 드리프트까지 확인할 때만 `npm run check:full`을 사용합니다.
+`npm run format:check`는 루트 문서뿐 아니라 `docs/`, `agent/` 아래 Markdown 문서도 함께 검사합니다.
 
 ## 문서 위치
 

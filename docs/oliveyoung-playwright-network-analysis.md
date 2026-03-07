@@ -15,6 +15,7 @@
 ## 2. 시나리오 A: 매장 검색
 
 ### 2.1 페이지 진입
+
 - URL: `https://www.oliveyoung.co.kr/store/store/getStoreInfoMain.do`
 - 확인된 API 후보:
   - `https://www.oliveyoung.co.kr/oystore/api/storeFinder/filter-menu-pc`
@@ -22,12 +23,24 @@
   - `https://www.oliveyoung.co.kr/oystore/api/stock/catagory-menu`
 
 ### 2.2 실제 호출(핵심)
+
 - URL: `https://www.oliveyoung.co.kr/oystore/api/storeFinder/find-store`
 - Method: `POST`
 - Request Body 예시:
+
 ```json
-{"lat":37.56409158001314,"lon":126.98517710459745,"pageIdx":1,"searchWords":"명동","pogKeys":"","serviceKeys":"","mapLat":37.56409158001314,"mapLon":126.98517710459745}
+{
+  "lat": 37.56409158001314,
+  "lon": 126.98517710459745,
+  "pageIdx": 1,
+  "searchWords": "명동",
+  "pogKeys": "",
+  "serviceKeys": "",
+  "mapLat": 37.56409158001314,
+  "mapLon": 126.98517710459745
+}
 ```
+
 - Request Header(브라우저 캡처):
   - `Content-Type: application/json`
   - `Accept: application/json`
@@ -35,6 +48,7 @@
 - Response: JSON (`status: SUCCESS`, `data.totalCount`, `data.storeList[]`)
 
 ### 2.3 반복 측정(3회)
+
 - `searchWords=명동` -> `200`, `SUCCESS`, `totalCount=9`
 - `searchWords=종로` -> `200`, `SUCCESS`, `totalCount=15`
 - `searchWords=강남` -> `200`, `SUCCESS`, `totalCount=48`
@@ -42,12 +56,15 @@
 ## 3. 시나리오 B/C: 상품 검색 + 재고(매장 맥락)
 
 ### 3.1 호출 엔드포인트
+
 - URL: `https://www.oliveyoung.co.kr/oystore/api/stock/product-search-v3`
 - Method: `POST`
 - Request Body 예시:
+
 ```json
-{"includeSoldOut":false,"keyword":"선크림","page":1,"sort":"01","size":20}
+{ "includeSoldOut": false, "keyword": "선크림", "page": 1, "sort": "01", "size": 20 }
 ```
+
 - Request Header(브라우저 캡처):
   - `Content-Type: application/json`
   - `Accept: application/json`
@@ -56,6 +73,7 @@
   - 주의: 필드명이 `searchList`가 아니라 `serachList`로 내려옴
 
 ### 3.2 반복 측정(3회)
+
 - 호출 1 (`keyword=선크림`) -> `200`, `SUCCESS`, `totalCount=429`
 - 호출 2 (`keyword=립밤`) -> `200`, `SUCCESS`, `totalCount=181`
 - 호출 3 (`keyword=샴푸`) -> `200`, `SUCCESS`이나 직전 결과(립밤)와 동일 데이터 반환 관찰
@@ -63,11 +81,14 @@
 ## 4. 리플레이 검증
 
 ### 4.1 1차 검증(curl/직접 HTTP 재현 대체)
+
 Playwright MCP `POST` 도구로 브라우저 외부 직접 재현 성공:
+
 - `find-store` -> `200 SUCCESS`
 - `product-search-v3` -> `200 SUCCESS`
 
 ### 4.2 2차 최소화 검증
+
 - 동일 Body + 헤더 제거 후 재시도: 성공
 - 결론: `Referer/Origin/Cookie` 없이도 재현 성공 (현 시점)
 - 단, `POST + JSON Body`는 사실상 필수
@@ -75,6 +96,7 @@ Playwright MCP `POST` 도구로 브라우저 외부 직접 재현 성공:
   - 필드 누락 Body 시 `400/500` 오류
 
 ### 4.3 3차 안정성 관찰
+
 - 매장 검색 API는 3회 모두 정상/일관
 - 재고 API는 3회 성공이나, 특정 케이스에서 질의어 대비 결과 불일치(캐시/레이스 가능성) 관찰
 
