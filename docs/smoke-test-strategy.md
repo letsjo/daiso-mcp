@@ -56,6 +56,14 @@ bash examples/api-test.sh https://mcp.aka.page
 INCLUDE_OPTIONAL=1 bash examples/api-test.sh https://mcp.aka.page
 ```
 
+### GitHub Actions 수동 실행
+
+1. GitHub Actions에서 `Smoke Test` 워크플로우를 선택합니다.
+2. `target_url`에 점검할 배포 URL을 입력합니다.
+3. 외부 차단/시크릿 영향이 큰 점검까지 포함하려면 `include_optional`을 `true`로 설정합니다.
+
+기본값은 `https://mcp.aka.page`이며, 선택 점검은 배포 대상이 관련 시크릿과 우회 설정을 이미 갖춘 경우에만 권장합니다.
+
 ## 실패 시 분류 기준
 
 1. `/health`, `/`가 실패하면 워커 라우팅 또는 배포 상태를 먼저 확인합니다.
@@ -67,4 +75,4 @@ INCLUDE_OPTIONAL=1 bash examples/api-test.sh https://mcp.aka.page
 
 - 릴리스 직전에는 기본 점검을 한 번 실행합니다.
 - 외부 서비스 구조 변경이 의심되면 선택 점검까지 확장합니다.
-- 장기적으로는 이 절차를 GitHub Actions 수동 워크플로우로 옮기는 것을 검토합니다.
+- 배포 이후 빠른 확인이 필요하면 GitHub Actions `Smoke Test` 워크플로우를 사용합니다.
