@@ -39,6 +39,7 @@
 
 - `gpts-instruction.md`
 - `new-service-template.md`
+- `movie-seatmap-investigation.md`
 - `service-matrix.md`
 - `scraping-playbook.md`
 - `service-priority.md`
