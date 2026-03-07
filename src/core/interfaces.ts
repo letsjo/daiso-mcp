@@ -35,20 +35,6 @@ export interface ServiceProvider {
    * 예: daiso_search_products, cu_find_stores
    */
   getTools(): ToolRegistration[];
-
-  /**
-   * 서비스 초기화 (선택사항)
-   * 서버 시작 시 한 번 호출됩니다.
-   * 캐시 워밍, 연결 설정 등에 사용할 수 있습니다.
-   */
-  initialize?(): Promise<void>;
-
-  /**
-   * 서비스 종료 (선택사항)
-   * 서버 종료 시 호출됩니다.
-   * 연결 해제, 리소스 정리 등에 사용할 수 있습니다.
-   */
-  cleanup?(): Promise<void>;
 }
 
 /**
