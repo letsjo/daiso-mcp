@@ -9,7 +9,7 @@
 ## P1
 
 - [x] `ServiceRegistry.initializeAll`, `cleanupAll`을 실제 런타임에 연결하거나 인터페이스에서 제거할지 결정하기
-- [ ] `@modelcontextprotocol/sdk` 업데이트 가능 여부를 확인하고 `npm audit` high 취약점 해소 방향 정리하기
+- [x] `@modelcontextprotocol/sdk` 업데이트 가능 여부를 확인하고 `npm audit` high 취약점 해소 방향 정리하기
 - [ ] 로컬 개발 환경을 Node 20으로 고정하도록 문서 또는 도구 설정을 강화하기
 - [ ] 외부 서비스 API 변경을 빠르게 감지할 최소 스모크 테스트 전략 정리하기
 

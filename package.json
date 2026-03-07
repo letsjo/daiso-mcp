@@ -60,5 +60,8 @@
     "hono": "^4.12.5",
     "workers-mcp": "^0.0.13",
     "zod": "^4.3.6"
+  },
+  "overrides": {
+    "express-rate-limit": "8.3.0"
   }
 }
