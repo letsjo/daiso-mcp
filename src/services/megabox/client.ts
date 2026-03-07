@@ -11,7 +11,7 @@ import type {
   MegaboxTheaterInfo,
 } from './types.js';
 import { formatTime, toNumber, toYyyymmdd } from '../../utils/format.js';
-import { createTimeoutController } from '../../utils/http.js';
+import { fetchWithTimeout, rethrowAsTimeout, throwIfResponseNotOk } from '../../utils/http.js';
 
 interface FetchBookingListParams {
   playDate: string;
@@ -42,23 +42,22 @@ export async function fetchMegaboxBookingList(
     form.set('brchNo1', params.theaterId);
   }
 
-  const { controller, timeoutId } = createTimeoutController(timeout);
-
   try {
-    const response = await fetch(`${MEGABOX_API.BASE_URL}${MEGABOX_API.SELECT_BOOKING_LIST_PATH}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        Accept: 'application/json, text/javascript, */*; q=0.01',
-        'X-Requested-With': 'XMLHttpRequest',
+    const response = await fetchWithTimeout(
+      `${MEGABOX_API.BASE_URL}${MEGABOX_API.SELECT_BOOKING_LIST_PATH}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Accept: 'application/json, text/javascript, */*; q=0.01',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: form.toString(),
+        timeout,
       },
-      body: form.toString(),
-      signal: controller.signal,
-    });
+    );
 
-    if (!response.ok) {
-      throw new Error(`메가박스 상영 목록 조회 실패: ${response.status}`);
-    }
+    throwIfResponseNotOk(response, '메가박스 상영 목록 조회 실패');
 
     const body = (await response.json()) as MegaboxBookingListResponse;
 
@@ -98,12 +97,8 @@ export async function fetchMegaboxBookingList(
       showtimes,
     };
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('메가박스 상영 목록 조회 시간 초과');
-    }
+    rethrowAsTimeout(error, '메가박스 상영 목록 조회 시간 초과');
     throw error;
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 
@@ -139,23 +134,22 @@ export async function fetchMegaboxTheaterInfo(
     brchNo: theaterId,
   });
 
-  const { controller, timeoutId } = createTimeoutController(timeout);
-
   try {
-    const response = await fetch(`${MEGABOX_API.BASE_URL}${MEGABOX_API.THEATER_INFO_PATH}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        Accept: 'text/html, */*; q=0.01',
-        'X-Requested-With': 'XMLHttpRequest',
+    const response = await fetchWithTimeout(
+      `${MEGABOX_API.BASE_URL}${MEGABOX_API.THEATER_INFO_PATH}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Accept: 'text/html, */*; q=0.01',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: form.toString(),
+        timeout,
       },
-      body: form.toString(),
-      signal: controller.signal,
-    });
+    );
 
-    if (!response.ok) {
-      throw new Error(`메가박스 지점 정보 조회 실패: ${response.status}`);
-    }
+    throwIfResponseNotOk(response, '메가박스 지점 정보 조회 실패');
 
     const html = await response.text();
     const coordinates = parseCoordinates(html);
@@ -168,12 +162,8 @@ export async function fetchMegaboxTheaterInfo(
       longitude: coordinates.longitude,
     };
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('메가박스 지점 정보 조회 시간 초과');
-    }
+    rethrowAsTimeout(error, '메가박스 지점 정보 조회 시간 초과');
     throw error;
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 

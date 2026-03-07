@@ -4,7 +4,7 @@
  * 서명 헤더 생성, 직접 호출, Zyte fallback을 담당합니다.
  */
 
-import { createTimeoutController } from '../../utils/http.js';
+import { fetchWithTimeout, parseJsonResponse, rethrowAsTimeout } from '../../utils/http.js';
 import { decodeZyteHttpBody, requestByZyte } from '../../utils/zyte.js';
 import { CGV_API } from './api.js';
 
@@ -28,7 +28,11 @@ function toBase64(bytes: Uint8Array): string {
   throw new Error('Base64 인코딩을 지원하지 않는 런타임입니다.');
 }
 
-async function createSignature(pathname: string, bodyText: string, timestamp: string): Promise<string> {
+async function createSignature(
+  pathname: string,
+  bodyText: string,
+  timestamp: string,
+): Promise<string> {
   const payload = `${timestamp}|${pathname}|${bodyText}`;
   const encoder = new TextEncoder();
 
@@ -42,16 +46,6 @@ async function createSignature(pathname: string, bodyText: string, timestamp: st
 
   const signed = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
   return toBase64(new Uint8Array(signed));
-}
-
-async function parseJsonResponse<TResponse>(response: Response): Promise<TResponse> {
-  const text = await response.text();
-
-  try {
-    return JSON.parse(text) as TResponse;
-  } catch {
-    throw new Error(text.slice(0, 120) || 'CGV API 응답 파싱 실패');
-  }
 }
 
 async function requestByZyteCgv<TResponse>(
@@ -87,10 +81,9 @@ export async function requestCgv<TResponse>(
   const url = `${CGV_API.BASE_URL}${path}?${searchParams.toString()}`;
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const signature = await createSignature(path, '', timestamp);
-  const { controller, timeoutId } = createTimeoutController(timeout);
 
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -98,11 +91,11 @@ export async function requestCgv<TResponse>(
         'X-TIMESTAMP': timestamp,
         'X-SIGNATURE': signature,
       },
-      signal: controller.signal,
+      timeout,
     });
 
     if (response.ok) {
-      return await parseJsonResponse<TResponse>(response);
+      return await parseJsonResponse<TResponse>(response, 'CGV API 응답 파싱 실패');
     }
 
     if (response.status === 403 && zyteApiKey) {
@@ -111,12 +104,7 @@ export async function requestCgv<TResponse>(
 
     throw new Error(`CGV API 호출 실패: ${response.status}`);
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('CGV API 요청 시간 초과');
-    }
-
+    rethrowAsTimeout(error, 'CGV API 요청 시간 초과');
     throw error;
-  } finally {
-    clearTimeout(timeoutId);
   }
 }

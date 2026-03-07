@@ -5,11 +5,8 @@
  */
 
 import { OLIVEYOUNG_API } from './api.js';
-import type {
-  OliveyoungApiResponse,
-  OliveyoungProduct,
-  OliveyoungStore,
-} from './types.js';
+import type { OliveyoungApiResponse, OliveyoungProduct, OliveyoungStore } from './types.js';
+import { rethrowAsTimeout } from '../../utils/http.js';
 import { decodeBase64, requestByZyte } from '../../utils/zyte.js';
 
 interface RequestOptions {
@@ -35,7 +32,7 @@ interface SearchProductsParams {
 async function zyteExtract(
   targetPath: string,
   requestBody: Record<string, unknown>,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<OliveyoungApiResponse> {
   const { timeout = 15000, apiKey } = options;
 
@@ -66,16 +63,14 @@ async function zyteExtract(
 
     return parsedBody;
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('올리브영 API 요청 시간 초과');
-    }
+    rethrowAsTimeout(error, '올리브영 API 요청 시간 초과');
     throw error;
   }
 }
 
 export async function fetchOliveyoungStores(
   params: FindStoresParams,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<{ totalCount: number; stores: OliveyoungStore[] }> {
   const payload = {
     lat: params.latitude,
@@ -108,7 +103,7 @@ export async function fetchOliveyoungStores(
 
 export async function fetchOliveyoungProducts(
   params: SearchProductsParams,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<{ totalCount: number; nextPage: boolean; products: OliveyoungProduct[] }> {
   const payload = {
     includeSoldOut: params.includeSoldOut,
