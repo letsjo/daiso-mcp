@@ -31,6 +31,9 @@ jobs:
       - name: Prettier check
         run: npm run format:check
 
+      - name: Code file length check
+        run: npm run check:file-lengths
+
       - name: ESLint
         run: npm run lint
 
