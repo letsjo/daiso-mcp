@@ -1,0 +1,55 @@
+name: Smoke Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: '점검할 배포 URL'
+        required: true
+        default: 'https://mcp.aka.page'
+        type: string
+      include_optional:
+        description: 'CGV/올리브영 선택 점검 포함 여부'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    name: Manual Smoke Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check required commands
+        run: |
+          command -v curl
+          command -v jq
+
+      - name: Run smoke test script
+        env:
+          TARGET_URL: ${{ inputs.target_url }}
+          INCLUDE_OPTIONAL_INPUT: ${{ inputs.include_optional }}
+        run: |
+          include_optional=0
+          if [ "$INCLUDE_OPTIONAL_INPUT" = "true" ]; then
+            include_optional=1
+          fi
+
+          INCLUDE_OPTIONAL="$include_optional" bash examples/api-test.sh "$TARGET_URL"
+
+      - name: Write summary
+        env:
+          TARGET_URL: ${{ inputs.target_url }}
+          INCLUDE_OPTIONAL_INPUT: ${{ inputs.include_optional }}
+        run: |
+          {
+            echo "## Smoke Test"
+            echo ""
+            echo "- target_url: $TARGET_URL"
+            echo "- include_optional: $INCLUDE_OPTIONAL_INPUT"
+          } >> "$GITHUB_STEP_SUMMARY"
