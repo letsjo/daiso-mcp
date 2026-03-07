@@ -39,6 +39,7 @@
 
 - `gpts-instruction.md`
 - `new-service-template.md`
+- `service-matrix.md`
 - `scraping-playbook.md`
 - `service-priority.md`
 - `smoke-test-strategy.md`
