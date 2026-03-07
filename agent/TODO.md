@@ -3,8 +3,8 @@
 ## P0
 
 - [x] `package.json`에 `zod`를 직접 의존성으로 추가하고 전이 의존성 의존을 제거하기
-- [ ] `openapi.json`, `openapi.yaml` 드리프트 원인을 정리하고 현재 코드 기준으로 산출물 동기화하기
-- [ ] OpenAPI 산출물 드리프트를 CI에서 자동 검출하도록 검사 단계 추가하기
+- [x] `openapi.json`, `openapi.yaml` 드리프트 원인을 정리하고 현재 코드 기준으로 산출물 동기화하기
+- [x] OpenAPI 산출물 드리프트를 CI에서 자동 검출하도록 검사 단계 추가하기
 
 ## P1
 
