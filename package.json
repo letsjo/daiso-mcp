@@ -1,7 +1,7 @@
 {
   "name": "daiso-mcp",
   "version": "1.0.0",
-  "description": "Daiso MCP Server for mobile access via Cloudflare Workers",
+  "description": "Multi-service MCP server for Daiso, Olive Young, Megabox, and CGV",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
