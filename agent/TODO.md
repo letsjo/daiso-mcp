@@ -37,7 +37,7 @@
 
 - [x] `[P1]` `src/pages/prompt.ts`, `src/pages/openapiSpecComponents.ts`를 더 잘게 분리해서 450줄 제한 버퍼 확보하기
 - [x] `[P1]` 서비스별 MCP 도구 정의에서 반복되는 `inputSchema`, JSON 응답 포맷, 핸들러 래핑을 공통 빌더로 추출하기
-- [ ] `[P2]` 각 서비스 클라이언트에 흩어진 timeout, HTTP 에러, 응답 파싱 패턴을 공통 유틸로 정리하기
+- [x] `[P2]` 각 서비스 클라이언트에 흩어진 timeout, HTTP 에러, 응답 파싱 패턴을 공통 유틸로 정리하기
 
 ### 테스트 / 운영
 

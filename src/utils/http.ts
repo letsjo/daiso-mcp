@@ -6,9 +6,10 @@ export interface FetchOptions extends RequestInit {
   timeout?: number;
 }
 
-export function createTimeoutController(
-  timeout: number,
-): { controller: AbortController; timeoutId: ReturnType<typeof setTimeout> } {
+export function createTimeoutController(timeout: number): {
+  controller: AbortController;
+  timeoutId: ReturnType<typeof setTimeout>;
+} {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
   return { controller, timeoutId };
@@ -46,4 +47,29 @@ export async function fetchText(url: string, options: FetchOptions = {}): Promis
   }
 
   return response.text();
+}
+
+export function throwIfResponseNotOk(response: Response, message: string): void {
+  if (!response.ok) {
+    throw new Error(`${message}: ${response.status}`);
+  }
+}
+
+export async function parseJsonResponse<T>(
+  response: Response,
+  fallbackMessage: string = 'API 응답 파싱 실패',
+): Promise<T> {
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(text.slice(0, 120) || fallbackMessage);
+  }
+}
+
+export function rethrowAsTimeout(error: unknown, message: string): void {
+  if (error instanceof Error && error.name === 'AbortError') {
+    throw new Error(message);
+  }
 }
