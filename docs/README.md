@@ -38,6 +38,7 @@
 ## 공통 운영 문서
 
 - `gpts-instruction.md`
+- `new-service-template.md`
 - `scraping-playbook.md`
 - `smoke-test-strategy.md`
 
