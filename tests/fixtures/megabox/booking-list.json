@@ -1,0 +1,29 @@
+{
+  "areaBrchList": [
+    {
+      "brchNo": "1372",
+      "brchNm": "Gangnam"
+    }
+  ],
+  "movieList": [
+    {
+      "movieNo": "M1",
+      "movieNm": "Movie A",
+      "movieStatCdNm": "Now Showing"
+    }
+  ],
+  "movieFormList": [
+    {
+      "playSchdlNo": "S1",
+      "movieNo": "M1",
+      "movieNm": "Movie A",
+      "brchNo": "1372",
+      "brchNm": "Gangnam",
+      "playDe": "20260304",
+      "playStartTime": "0930",
+      "playEndTime": "1120",
+      "restSeatCnt": "12",
+      "totSeatCnt": "100"
+    }
+  ]
+}

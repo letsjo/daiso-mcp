@@ -1,0 +1,18 @@
+{
+  "statusCode": 0,
+  "statusMessage": "OK",
+  "data": [
+    {
+      "siteNo": "0056",
+      "siteNm": "CGV Gangnam",
+      "scnYmd": "20260304",
+      "scnSseq": "2",
+      "movNo": "30000985",
+      "movNm": "Movie A",
+      "scnsrtTm": "1230",
+      "scnendTm": "1443",
+      "stcnt": "123",
+      "frtmpSeatCnt": "99"
+    }
+  ]
+}

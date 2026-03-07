@@ -1,0 +1,33 @@
+{
+  "resultSet": {
+    "result": [
+      {
+        "totalSize": 2,
+        "resultDocuments": [
+          {
+            "PD_NO": "1001",
+            "PDNM": "Storage Box",
+            "EXH_PD_NM": "",
+            "PD_PRC": "5000",
+            "ATCH_FILE_URL": "/images/storage-box.jpg",
+            "BRND_NM": "DAISO",
+            "SOLD_OUT_YN": "N",
+            "NEW_PD_YN": "Y",
+            "PKUP_OR_PSBL_YN": "Y"
+          },
+          {
+            "PD_NO": "1002",
+            "PDNM": "",
+            "EXH_PD_NM": "Display Basket",
+            "PD_PRC": "1500",
+            "ATCH_FILE_URL": "",
+            "BRND_NM": "",
+            "SOLD_OUT_YN": "Y",
+            "NEW_PD_YN": "N",
+            "PKUP_OR_PSBL_YN": "N"
+          }
+        ]
+      }
+    ]
+  }
+}

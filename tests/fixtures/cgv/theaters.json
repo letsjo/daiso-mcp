@@ -1,0 +1,20 @@
+{
+  "statusCode": 0,
+  "statusMessage": "OK",
+  "data": [
+    {
+      "regnGrpCd": "01",
+      "regnGrpNm": "Seoul",
+      "siteList": [
+        {
+          "siteNo": "0056",
+          "siteNm": "Gangnam"
+        },
+        {
+          "siteNo": "0001",
+          "siteNm": "Gangbyeon"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "statusCode": 0,
+  "statusMessage": "OK",
+  "data": [
+    {
+      "movNo": "30000985",
+      "movNm": "Movie A",
+      "cratgClsNm": "All"
+    },
+    {
+      "movNo": "30000986",
+      "movNm": "Movie B",
+      "cratgClsNm": null
+    }
+  ]
+}
