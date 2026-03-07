@@ -2,31 +2,42 @@
 
 이 폴더는 외부 서비스 연동을 위한 네트워크 분석 기록, 검증 스크립트, 운영 메모를 보관합니다.
 
-## 네트워크 분석 결과
+## 서비스별 인덱스
 
-- `cgv-network-analysis-result.md`
-- `cu-network-analysis-result.md`
+### 다이소
+
 - `daiso-network-analysis-result.md`
-- `emart24-network-analysis-result.md`
-- `gs25-network-analysis-result.md`
-- `megabox-network-analysis-result.md`
-- `oliveyoung-network-analysis-result.md`
-
-## 브라우저/리플레이 기반 조사 자료
-
 - `daiso-playwright-network-analysis.md`
 - `daiso-replay-session-test.html`
 - `daiso-test-replay.js`
+
+### 올리브영
+
+- `oliveyoung-network-analysis-result.md`
+- `oliveyoung-lightpanda-validation.md`
 - `oliveyoung-playwright-mcp-onboarding.md`
 - `oliveyoung-playwright-network-analysis.md`
 - `oliveyoung-replay-session-test.js`
 - `oliveyoung-zyte-bandwidth-test.js`
 - `oliveyoung-zyte-replay-test.js`
 
-## 검증 및 참고 문서
+### 메가박스
+
+- `megabox-network-analysis-result.md`
+
+### CGV
+
+- `cgv-network-analysis-result.md`
+
+### 탐색 후보 서비스
+
+- `cu-network-analysis-result.md`
+- `emart24-network-analysis-result.md`
+- `gs25-network-analysis-result.md`
+
+## 공통 운영 문서
 
 - `gpts-instruction.md`
-- `oliveyoung-lightpanda-validation.md`
 - `scraping-playbook.md`
 - `smoke-test-strategy.md`
 
