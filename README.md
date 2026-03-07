@@ -9,6 +9,8 @@
 
 다이소(제품/매장/재고), 올리브영(매장/재고), 메가박스(지점/영화/시간표/좌석), CGV(극장/영화/시간표) 조회 기능을 AI에 연결합니다.
 
+프로젝트 이름은 `daiso-mcp`를 유지하지만, 현재 구현 범위는 멀티서비스 MCP 서버입니다.
+
 <br>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
