@@ -40,6 +40,7 @@
 - `gpts-instruction.md`
 - `new-service-template.md`
 - `scraping-playbook.md`
+- `service-priority.md`
 - `smoke-test-strategy.md`
 
 ## 사용 메모
