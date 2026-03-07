@@ -44,6 +44,7 @@ npm run smoke:test -- https://mcp.aka.page
 ## 문서 위치
 
 - `README.md`: 외부 사용자를 위한 사용법, 기능, API 안내
+- `CHANGELOG.md`: 릴리스 단위 변경사항 기록
 - `docs/README.md`: 서비스별 리서치 및 네트워크 분석 문서 인덱스
 - `agent/README.md`: 작업 메모, 레포 분석, TODO 정리
 

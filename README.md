@@ -608,6 +608,7 @@ npm run deploy
 
 문서 인덱스:
 
+- 변경 이력: [CHANGELOG.md](./CHANGELOG.md)
 - 공개 사용 문서: [README.md](./README.md)
 - 리서치/네트워크 분석 문서: [docs/README.md](./docs/README.md)
 - 작업 메모/레포 분석/TODO: [agent/README.md](./agent/README.md)
