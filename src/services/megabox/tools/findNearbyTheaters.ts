@@ -4,6 +4,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchMegaboxBookingList, fetchMegaboxTheaterInfo, toYyyymmdd } from '../client.js';
 
 interface FindNearbyTheatersArgs {
@@ -81,26 +82,22 @@ async function findNearbyTheaters(args: FindNearbyTheatersArgs): Promise<McpTool
     theaters: merged,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 export function createFindNearbyTheatersTool(): ToolRegistration {
-  return {
+  return createTool<FindNearbyTheatersArgs>({
     name: 'megabox_find_nearby_theaters',
-    metadata: {
-      title: '메가박스 주변 지점 탐색',
-      description: '사용자 좌표 기준으로 메가박스 지점을 거리순으로 조회합니다.',
-      inputSchema: {
-        latitude: z.number().optional().default(37.5665).describe('위도 (기본값: 서울 시청 37.5665)'),
-        longitude: z.number().optional().default(126.978).describe('경도 (기본값: 서울 시청 126.978)'),
-        playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
-        areaCode: z.string().optional().default('11').describe('지역 코드 (기본값: 11, 서울)'),
-        limit: z.number().optional().default(10).describe('반환할 최대 지점 수 (기본값: 10)'),
-        timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
-      },
+    title: '메가박스 주변 지점 탐색',
+    description: '사용자 좌표 기준으로 메가박스 지점을 거리순으로 조회합니다.',
+    inputSchema: {
+      latitude: z.number().optional().default(37.5665).describe('위도 (기본값: 서울 시청 37.5665)'),
+      longitude: z.number().optional().default(126.978).describe('경도 (기본값: 서울 시청 126.978)'),
+      playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
+      areaCode: z.string().optional().default('11').describe('지역 코드 (기본값: 11, 서울)'),
+      limit: z.number().optional().default(10).describe('반환할 최대 지점 수 (기본값: 10)'),
+      timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },
-    handler: findNearbyTheaters as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: findNearbyTheaters,
+  });
 }

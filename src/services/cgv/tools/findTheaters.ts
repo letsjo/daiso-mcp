@@ -4,6 +4,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchCgvTheaters, toYyyymmdd } from '../client.js';
 
 interface FindTheatersArgs {
@@ -34,24 +35,20 @@ async function findTheaters(args: FindTheatersArgs, apiKey?: string): Promise<Mc
     theaters: sliced,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 export function createFindTheatersTool(apiKey?: string): ToolRegistration {
-  return {
+  return createTool<FindTheatersArgs>({
     name: 'cgv_find_theaters',
-    metadata: {
-      title: 'CGV 극장 검색',
-      description: '지역 코드 기준으로 CGV 극장 목록을 조회합니다.',
-      inputSchema: {
-        playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
-        regionCode: z.string().optional().describe('지역 코드 (예: 01 서울)'),
-        limit: z.number().optional().default(30).describe('최대 결과 수 (기본값: 30)'),
-        timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
-      },
+    title: 'CGV 극장 검색',
+    description: '지역 코드 기준으로 CGV 극장 목록을 조회합니다.',
+    inputSchema: {
+      playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
+      regionCode: z.string().optional().describe('지역 코드 (예: 01 서울)'),
+      limit: z.number().optional().default(30).describe('최대 결과 수 (기본값: 30)'),
+      timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },
-    handler: ((args) => findTheaters(args as FindTheatersArgs, apiKey)) as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: (args) => findTheaters(args, apiKey),
+  });
 }

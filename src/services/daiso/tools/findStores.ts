@@ -6,6 +6,7 @@
 
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
+import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import type { Store, StoreOptions } from '../types.js';
 import { DAISO_WEB_API, formatTime } from '../api.js';
 import { fetchDaisoHtml, fetchDaisoJson } from '../client.js';
@@ -157,29 +158,25 @@ async function findStores(args: FindStoresArgs): Promise<McpToolResponse> {
     stores: limitedStores,
   };
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-  };
+  return createJsonTextResponse(result);
 }
 
 /**
  * 도구 등록 정보 생성
  */
 export function createFindStoresTool(): ToolRegistration {
-  return {
+  return createTool<FindStoresArgs>({
     name: 'daiso_find_stores',
-    metadata: {
-      title: '매장 검색',
-      description:
-        '다이소 매장을 검색합니다. 키워드(매장명, 주소) 또는 지역(시도/구군/동)으로 검색할 수 있습니다.',
-      inputSchema: {
-        keyword: z.string().optional().describe('검색할 매장명 또는 주소 키워드 (예: 강남, 홍대)'),
-        sido: z.string().optional().describe('시/도 (예: 서울, 경기, 부산)'),
-        gugun: z.string().optional().describe('구/군 (예: 강남구, 마포구)'),
-        dong: z.string().optional().describe('동 (예: 역삼동, 합정동)'),
-        limit: z.number().optional().default(50).describe('반환할 최대 매장 수 (기본값: 50)'),
-      },
+    title: '매장 검색',
+    description:
+      '다이소 매장을 검색합니다. 키워드(매장명, 주소) 또는 지역(시도/구군/동)으로 검색할 수 있습니다.',
+    inputSchema: {
+      keyword: z.string().optional().describe('검색할 매장명 또는 주소 키워드 (예: 강남, 홍대)'),
+      sido: z.string().optional().describe('시/도 (예: 서울, 경기, 부산)'),
+      gugun: z.string().optional().describe('구/군 (예: 강남구, 마포구)'),
+      dong: z.string().optional().describe('동 (예: 역삼동, 합정동)'),
+      limit: z.number().optional().default(50).describe('반환할 최대 매장 수 (기본값: 50)'),
     },
-    handler: findStores as (args: unknown) => Promise<McpToolResponse>,
-  };
+    handler: findStores,
+  });
 }
