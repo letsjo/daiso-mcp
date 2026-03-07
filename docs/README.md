@@ -43,6 +43,7 @@
 - `scraping-playbook.md`
 - `service-priority.md`
 - `smoke-test-strategy.md`
+- `troubleshooting.md`
 
 ## 사용 메모
 
