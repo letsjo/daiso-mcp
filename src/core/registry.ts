@@ -18,7 +18,7 @@ import type { ServiceInfo, ToolRegistration } from './types.js';
  * const registry = new ServiceRegistry();
  * registry.register(createDaisoService);
  * registry.register(createCuService);
- * await registry.applyToServer(mcpServer);
+ * registry.applyToServer(mcpServer);
  * ```
  */
 export class ServiceRegistry {
@@ -47,28 +47,6 @@ export class ServiceRegistry {
     for (const factory of factories) {
       this.register(factory);
     }
-  }
-
-  /**
-   * 모든 서비스 초기화
-   */
-  async initializeAll(): Promise<void> {
-    const initPromises = Array.from(this.services.values())
-      .filter((service) => service.initialize)
-      .map((service) => service.initialize!());
-
-    await Promise.all(initPromises);
-  }
-
-  /**
-   * 모든 서비스 정리
-   */
-  async cleanupAll(): Promise<void> {
-    const cleanupPromises = Array.from(this.services.values())
-      .filter((service) => service.cleanup)
-      .map((service) => service.cleanup!());
-
-    await Promise.all(cleanupPromises);
   }
 
   /**

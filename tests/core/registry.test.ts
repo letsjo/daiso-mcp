@@ -19,24 +19,6 @@ function createMockService(id: string, tools: ToolRegistration[] = []): ServiceP
   };
 }
 
-// initialize/cleanup이 있는 mock 서비스
-function createMockServiceWithLifecycle(
-  id: string,
-  initialize?: () => Promise<void>,
-  cleanup?: () => Promise<void>
-): ServiceProvider {
-  return {
-    metadata: {
-      id,
-      name: `${id} Service`,
-      version: '1.0.0',
-    },
-    getTools: () => [],
-    initialize,
-    cleanup,
-  };
-}
-
 // mock 도구 생성
 function createMockTool(name: string): ToolRegistration {
   return {
@@ -88,51 +70,6 @@ describe('ServiceRegistry', () => {
       registry.registerAll(factories);
 
       expect(registry.size).toBe(3);
-    });
-  });
-
-  describe('initializeAll', () => {
-    it('모든 서비스의 initialize 메서드를 호출한다', async () => {
-      const init1 = vi.fn().mockResolvedValue(undefined);
-      const init2 = vi.fn().mockResolvedValue(undefined);
-
-      registry.register(() => createMockServiceWithLifecycle('svc1', init1));
-      registry.register(() => createMockServiceWithLifecycle('svc2', init2));
-
-      await registry.initializeAll();
-
-      expect(init1).toHaveBeenCalledTimes(1);
-      expect(init2).toHaveBeenCalledTimes(1);
-    });
-
-    it('initialize가 없는 서비스는 건너뛴다', async () => {
-      registry.register(() => createMockService('no-init'));
-      registry.register(() => createMockServiceWithLifecycle('with-init', vi.fn().mockResolvedValue(undefined)));
-
-      // 에러 없이 완료되어야 함
-      await expect(registry.initializeAll()).resolves.not.toThrow();
-    });
-  });
-
-  describe('cleanupAll', () => {
-    it('모든 서비스의 cleanup 메서드를 호출한다', async () => {
-      const cleanup1 = vi.fn().mockResolvedValue(undefined);
-      const cleanup2 = vi.fn().mockResolvedValue(undefined);
-
-      registry.register(() => createMockServiceWithLifecycle('svc1', undefined, cleanup1));
-      registry.register(() => createMockServiceWithLifecycle('svc2', undefined, cleanup2));
-
-      await registry.cleanupAll();
-
-      expect(cleanup1).toHaveBeenCalledTimes(1);
-      expect(cleanup2).toHaveBeenCalledTimes(1);
-    });
-
-    it('cleanup이 없는 서비스는 건너뛴다', async () => {
-      registry.register(() => createMockService('no-cleanup'));
-      registry.register(() => createMockServiceWithLifecycle('with-cleanup', undefined, vi.fn().mockResolvedValue(undefined)));
-
-      await expect(registry.cleanupAll()).resolves.not.toThrow();
     });
   });
 
