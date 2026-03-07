@@ -80,6 +80,7 @@ export function createTemplateService(): ServiceProvider {
 ## 7. 마무리 점검
 
 - [ ] `npm run check`
+- [ ] OpenAPI 경로/스키마를 건드렸다면 `npm run check:full`
 - [ ] `npm run build`
 - [ ] OpenAPI 산출물 diff 확인
 - [ ] 커밋 메시지 컨벤션 확인

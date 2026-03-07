@@ -32,6 +32,9 @@ npm test
 # 전체 검증
 npm run check
 
+# OpenAPI 드리프트까지 포함한 전체 검증
+npm run check:full
+
 # OpenAPI 산출물 재생성
 npm run build
 
@@ -40,6 +43,7 @@ npm run smoke:test -- https://mcp.aka.page
 ```
 
 `npm run build`는 `dist/` 생성뿐 아니라 `openapi.json`, `openapi.yaml`도 함께 재생성합니다.
+`npm run check`는 빠른 로컬 회귀용으로 유지하고, OpenAPI 드리프트까지 확인할 때만 `npm run check:full`을 사용합니다.
 
 ## 문서 위치
 
@@ -54,6 +58,7 @@ npm run smoke:test -- https://mcp.aka.page
 - PR 본문은 `.github/PULL_REQUEST_TEMPLATE.md`를 따라 작성하세요.
 - 병합 전 CI(Format/Lint/Typecheck/Test/Build)가 모두 통과해야 합니다.
 - API 라우트, 도구 스키마, OpenAPI 페이지를 변경했다면 `npm run build` 결과도 함께 확인하세요.
+- OpenAPI 산출물까지 로컬에서 확실히 검증하려면 `npm run check:full`을 사용하세요.
 
 ## 커밋 메시지 규칙
 
