@@ -604,6 +604,12 @@ npm run deploy
 
 기여 가이드는 [CONTRIBUTING.md](./CONTRIBUTING.md)에서 확인할 수 있습니다.
 
+문서 인덱스:
+
+- 공개 사용 문서: [README.md](./README.md)
+- 리서치/네트워크 분석 문서: [docs/README.md](./docs/README.md)
+- 작업 메모/레포 분석/TODO: [agent/README.md](./agent/README.md)
+
 <br>
 
 ---
@@ -629,6 +635,13 @@ npm run deploy
 
 ```
 daiso-mcp/
+├── agent/                    # 작업 메모 및 분석 문서
+│   ├── README.md             # agent 문서 인덱스
+│   ├── repository-analysis.md # 레포 분석
+│   └── TODO.md               # 후속 작업 목록
+├── docs/                     # 리서치 및 네트워크 분석 문서
+│   ├── README.md             # docs 인덱스
+│   └── *.md / *.js / *.html  # 서비스별 분석 산출물
 ├── src/
 │   ├── index.ts              # MCP 서버 진입점
 │   ├── core/                 # 핵심 모듈
@@ -646,7 +659,9 @@ daiso-mcp/
 │   │   ├── cgvHandlers.ts    # CGV API 핸들러
 │   │   └── routes/           # 서비스별 API 라우트
 │   ├── pages/                # 정적 페이지
-│   │   └── prompt.ts         # 에이전트용 프롬프트 페이지
+│   │   ├── prompt.ts         # 에이전트용 프롬프트 페이지
+│   │   ├── openapi*.ts       # OpenAPI 응답/스펙 생성
+│   │   └── privacy.ts        # 개인정보 처리방침 페이지
 │   └── utils/                # 유틸리티
 ├── wrangler.toml             # Cloudflare Workers 설정
 └── package.json
