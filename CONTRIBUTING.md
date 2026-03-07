@@ -34,6 +34,9 @@ npm run check
 
 # OpenAPI 산출물 재생성
 npm run build
+
+# 배포 서버 스모크 테스트
+npm run smoke:test -- https://mcp.aka.page
 ```
 
 `npm run build`는 `dist/` 생성뿐 아니라 `openapi.json`, `openapi.yaml`도 함께 재생성합니다.
@@ -88,6 +91,7 @@ ci: PR 검증 워크플로우 추가
 - 새 기능에는 테스트를 함께 추가하세요.
 - 정상 케이스와 에러/엣지 케이스를 함께 검증하세요.
 - 외부 API 의존 로직은 가능한 한 mock 기반으로 테스트하세요.
+- 외부 연동 변경이 의심되면 `examples/api-test.sh` 또는 `npm run smoke:test -- <URL>`로 기본 스모크 테스트를 먼저 실행하세요.
 
 ## 보안 주의사항
 

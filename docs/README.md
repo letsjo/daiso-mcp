@@ -28,9 +28,11 @@
 - `gpts-instruction.md`
 - `oliveyoung-lightpanda-validation.md`
 - `scraping-playbook.md`
+- `smoke-test-strategy.md`
 
 ## 사용 메모
 
 - 새 서비스 분석 문서는 가능하면 `{서비스명}-` 접두사로 추가합니다.
 - 네트워크 분석 문서와 실행 스크립트가 함께 있으면 같은 서비스끼리 이름을 맞춰 둡니다.
 - 작업 메모와 TODO는 `docs/`가 아니라 `agent/`에 정리합니다.
+- 실서비스 점검 절차는 `smoke-test-strategy.md`와 `examples/api-test.sh`를 함께 봅니다.
