@@ -51,7 +51,7 @@
 - [x] `[P1]` 차기 구현 서비스 우선순위 결정하기: `CU`, `GS25`, `Emart24`
 - [x] `[P1]` 서비스별 지원 기능 매트릭스 문서 추가하기
 - [x] `[P2]` 여러 서비스를 한 번에 조회하는 통합 검색 도구 또는 통합 REST 엔드포인트 설계 검토하기
-- [ ] `[P2]` 영화 서비스에서 좌석맵/상영관 상세 같은 추가 정보 제공 가능성 조사하기
+- [x] `[P2]` 영화 서비스에서 좌석맵/상영관 상세 같은 추가 정보 제공 가능성 조사하기
 
 ### 문서 / DX
 
@@ -64,3 +64,4 @@
 - 최근 검증 완료 항목: `npm test`, `npm audit --omit=dev`, `npm run check:openapi`, `npm run format:check`
 - 실서비스 기본 점검 스크립트: `examples/api-test.sh`
 - 신규 서비스 추가 시작점: `docs/new-service-template.md`
+- 2026-03-08 확인: `@modelcontextprotocol/sdk` 최신 `1.27.1`은 여전히 `express-rate-limit ^8.2.1` 의존이라 override 제거 불가
