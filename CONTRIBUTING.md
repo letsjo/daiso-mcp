@@ -29,13 +29,25 @@ npm test
 
 # 전체 검증
 npm run check
+
+# OpenAPI 산출물 재생성
+npm run build
 ```
+
+`npm run build`는 `dist/` 생성뿐 아니라 `openapi.json`, `openapi.yaml`도 함께 재생성합니다.
+
+## 문서 위치
+
+- `README.md`: 외부 사용자를 위한 사용법, 기능, API 안내
+- `docs/README.md`: 서비스별 리서치 및 네트워크 분석 문서 인덱스
+- `agent/README.md`: 작업 메모, 레포 분석, TODO 정리
 
 ## 브랜치 및 PR 규칙
 
 - 기능/수정 단위로 브랜치를 분리하세요.
 - PR 본문은 `.github/PULL_REQUEST_TEMPLATE.md`를 따라 작성하세요.
 - 병합 전 CI(Format/Lint/Typecheck/Test/Build)가 모두 통과해야 합니다.
+- API 라우트, 도구 스키마, OpenAPI 페이지를 변경했다면 `npm run build` 결과도 함께 확인하세요.
 
 ## 커밋 메시지 규칙
 
