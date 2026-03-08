@@ -2,12 +2,18 @@
  * 통합 검색 GET API 핸들러
  */
 
-import type { UnifiedSearchEntityType, UnifiedSearchServiceId } from '../unified-search/interfaces.js';
+import {
+  DEFAULT_LIMIT_PER_SERVICE,
+  DEFAULT_TIMEOUT_MS,
+  LIMIT_PER_SERVICE_ERROR_MESSAGE,
+  MAX_LIMIT_PER_SERVICE,
+  MAX_TIMEOUT_MS,
+  SUPPORTED_UNIFIED_SEARCH_SERVICES,
+  SUPPORTED_UNIFIED_SEARCH_TYPES,
+  TIMEOUT_MS_ERROR_MESSAGE,
+} from '../unified-search/constants.js';
 import { createUnifiedSearchAggregator } from '../unified-search/createAggregator.js';
 import { type ApiContext, errorResponse } from './response.js';
-
-const ALLOWED_SERVICES: UnifiedSearchServiceId[] = ['daiso', 'oliveyoung', 'megabox', 'cgv'];
-const ALLOWED_TYPES: UnifiedSearchEntityType[] = ['product', 'store', 'movie', 'theater'];
 
 function parseCsvValues<T extends string>(
   rawValue: string | undefined,
@@ -30,14 +36,18 @@ function parseCsvValues<T extends string>(
   };
 }
 
-function parsePositiveInteger(rawValue: string | undefined, defaultValue: number): number | null {
+function parseBoundedInteger(
+  rawValue: string | undefined,
+  defaultValue: number,
+  maxValue: number,
+): number | null {
   if (!rawValue) {
     return defaultValue;
   }
 
   const parsed = Number.parseInt(rawValue, 10);
 
-  if (!Number.isFinite(parsed) || parsed < 1) {
+  if (!Number.isFinite(parsed) || parsed < 1 || parsed > maxValue) {
     return null;
   }
 
@@ -60,7 +70,7 @@ export async function handleUnifiedSearch(c: ApiContext) {
     return errorResponse(c, 'MISSING_QUERY', '검색어(q)를 입력해주세요.');
   }
 
-  const services = parseCsvValues(c.req.query('services'), ALLOWED_SERVICES);
+  const services = parseCsvValues(c.req.query('services'), SUPPORTED_UNIFIED_SEARCH_SERVICES);
   if (services.invalidValues.length > 0) {
     return errorResponse(
       c,
@@ -69,7 +79,7 @@ export async function handleUnifiedSearch(c: ApiContext) {
     );
   }
 
-  const types = parseCsvValues(c.req.query('types'), ALLOWED_TYPES);
+  const types = parseCsvValues(c.req.query('types'), SUPPORTED_UNIFIED_SEARCH_TYPES);
   if (types.invalidValues.length > 0) {
     return errorResponse(
       c,
@@ -78,14 +88,22 @@ export async function handleUnifiedSearch(c: ApiContext) {
     );
   }
 
-  const limitPerService = parsePositiveInteger(c.req.query('limitPerService'), 5);
+  const limitPerService = parseBoundedInteger(
+    c.req.query('limitPerService'),
+    DEFAULT_LIMIT_PER_SERVICE,
+    MAX_LIMIT_PER_SERVICE,
+  );
   if (limitPerService === null) {
-    return errorResponse(c, 'INVALID_LIMIT', 'limitPerService는 1 이상의 정수여야 합니다.');
+    return errorResponse(c, 'INVALID_LIMIT', LIMIT_PER_SERVICE_ERROR_MESSAGE);
   }
 
-  const timeoutMs = parsePositiveInteger(c.req.query('timeoutMs'), 15000);
+  const timeoutMs = parseBoundedInteger(
+    c.req.query('timeoutMs'),
+    DEFAULT_TIMEOUT_MS,
+    MAX_TIMEOUT_MS,
+  );
   if (timeoutMs === null) {
-    return errorResponse(c, 'INVALID_TIMEOUT', 'timeoutMs는 1 이상의 정수여야 합니다.');
+    return errorResponse(c, 'INVALID_TIMEOUT', TIMEOUT_MS_ERROR_MESSAGE);
   }
 
   const latitude = parseCoordinate(c.req.query('lat'));
