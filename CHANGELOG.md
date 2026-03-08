@@ -10,6 +10,7 @@
 - 서비스별 대표 응답 fixture와 계약 테스트 추가
 - 차기 서비스 우선순위 문서와 서비스 지원 매트릭스 문서 추가
 - 통합 검색 aggregator를 연결한 `GET /api/search` REST 엔드포인트 추가
+- 통합 검색 aggregator를 재사용하는 `multi_search` MCP 도구 추가
 
 ### Changed
 
@@ -18,6 +19,7 @@
 - 프롬프트/OpenAPI 페이지 정의를 모듈로 분리해 파일 크기 버퍼 확보
 - Node 20 고정, 스모크 테스트 전략, 멀티서비스 문서 체계를 정리
 - 통합 검색 OpenAPI 스펙과 서비스별 adapter 테스트를 추가해 계약 범위를 확장
+- 프롬프트 페이지를 멀티서비스/통합 검색 기준으로 갱신
 
 ### Removed
 

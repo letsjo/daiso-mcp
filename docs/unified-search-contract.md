@@ -12,6 +12,9 @@
 
 - 인터페이스: `src/unified-search/interfaces.ts`
 - aggregator 초안: `src/unified-search/aggregator.ts`
+- aggregator 팩토리: `src/unified-search/createAggregator.ts`
+- REST 연결: `src/api/searchHandler.ts`
+- MCP 도구 연결: `src/services/multi/tools/multiSearch.ts`
 
 ## 응답 구조
 
@@ -100,16 +103,15 @@ interface UnifiedSearchAdapter {
 - adapter 실패는 `UPSTREAM_ERROR`, `TIMEOUT`, `BAD_RESPONSE`로 정규화합니다.
 - adapter가 특정 타입을 지원하지 않으면 호출하지 않고 빈 그룹만 남깁니다.
 
-## 현재 초안에서 아직 하지 않은 것
+## 현재 상태
 
-- 실제 서비스 adapter 구현
-- `GET /api/search` 라우트 연결
-- MCP `multi_search` 도구 연결
-- OpenAPI / prompt 노출
+- Daiso / Oliveyoung / Megabox / CGV용 adapter 구현 완료
+- `GET /api/search` REST 엔드포인트 연결 완료
+- MCP `multi_search` 도구 연결 완료
+- OpenAPI / prompt 노출 완료
 
-## 다음 구현 순서 권장안
+## 다음 후속 작업
 
-1. Daiso / Oliveyoung / Megabox / CGV용 adapter 추가
-2. `GET /api/search` REST 엔드포인트 연결
-3. 부분 실패 계약 테스트 추가
-4. 이후 MCP `multi_search` 도구 연결
+1. `/api/search` 결과 수 제한, 정렬, 페이지네이션 메타데이터 확장 여부 검토
+2. `multi_search`와 GET 응답 간 표현 차이를 더 줄일지 검토
+3. 신규 소매 서비스 추가 전 공통 검색/매장 타입 재사용 범위 정리
