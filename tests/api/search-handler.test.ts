@@ -5,6 +5,7 @@ import {
   LIMIT_PER_SERVICE_ERROR_MESSAGE,
   TIMEOUT_MS_ERROR_MESSAGE,
 } from '../../src/unified-search/constants.js';
+import { encodeUnifiedSearchCursor } from '../../src/unified-search/cursor.js';
 import * as cursorValidatorModule from '../../src/unified-search/cursorValidator.js';
 
 const mockFetch = vi.fn();
@@ -125,9 +126,71 @@ describe('handleUnifiedSearch', () => {
     );
   });
 
-  it('cursor가 들어오면 현재는 CURSOR_NOT_IMPLEMENTED를 반환한다', async () => {
+  it('daiso product cursor가 들어오면 다음 페이지를 조회한다', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify(
+          createMockProductResponse([{ PD_NO: 'P6', PDNM: '정리함 6', PD_PRC: '1000' }], 11),
+        ),
+      ),
+    );
+
     const ctx = createMockContext({
       cursor: 'eyJ2IjoxLCJzZXJ2aWNlIjoiZGFpc28iLCJidWNrZXQiOiJwcm9kdWN0cyIsInF1ZXJ5Ijoi7KCV66as7ZWoIiwibGltaXRQZXJTZXJ2aWNlIjo1LCJwYWdlIjoyfQ',
+    });
+    await handleUnifiedSearch(ctx);
+
+    const payload = getJsonPayload(ctx) as {
+      success: boolean;
+      data: {
+        query: string;
+        results: {
+          daiso: {
+            products: Array<{ id: string }>;
+          };
+        };
+      };
+      meta: {
+        requestedServices: string[];
+        requestedTypes: string[];
+        services: {
+          daiso: {
+            products: {
+              nextCursor?: string;
+            };
+          };
+        };
+      };
+    };
+
+    expect(payload.success).toBe(true);
+    expect(payload.data.query).toBe('정리함');
+    expect(payload.data.results.daiso.products[0].id).toBe('P6');
+    expect(payload.meta.requestedServices).toEqual(['daiso']);
+    expect(payload.meta.requestedTypes).toEqual(['product']);
+    expect(payload.meta.services.daiso.products.nextCursor).toBe(
+      encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'daiso',
+        bucket: 'products',
+        query: '정리함',
+        limitPerService: 5,
+        page: 3,
+      }),
+    );
+    expect(mockFetch.mock.calls[0][0]).toContain('pageNum=2');
+  });
+
+  it('미구현 oliveyoung cursor는 CURSOR_NOT_IMPLEMENTED를 반환한다', async () => {
+    const ctx = createMockContext({
+      cursor: encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'oliveyoung',
+        bucket: 'products',
+        query: '선크림',
+        limitPerService: 5,
+        page: 2,
+      }),
     });
     await handleUnifiedSearch(ctx);
 

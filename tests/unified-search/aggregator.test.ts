@@ -164,6 +164,52 @@ describe('UnifiedSearchAggregator', () => {
     });
   });
 
+  it('continuation과 nextCursor를 그대로 유지한다', async () => {
+    const daiso = createAdapter({
+      service: 'daiso',
+      supportedTypes: ['product'],
+      search: vi.fn().mockResolvedValue({
+        products: [{ id: 'p6', type: 'product', title: '정리함 6', service: 'daiso' }],
+        meta: {
+          products: {
+            returnedCount: 1,
+            truncated: true,
+            sortApplied: 'service-default',
+            nextCursor: 'opaque-next-cursor',
+          },
+        },
+      }),
+    });
+    const aggregator = new UnifiedSearchAggregator([daiso]);
+
+    const continuation = {
+      v: 1 as const,
+      service: 'daiso' as const,
+      bucket: 'products' as const,
+      query: '정리함',
+      limitPerService: 5,
+      page: 2,
+    };
+    const result = await aggregator.search({
+      query: '정리함',
+      services: ['daiso'],
+      types: ['product'],
+      continuation,
+    });
+
+    expect(getFirstCallQuery(daiso)).toMatchObject({
+      continuation,
+    });
+    expect(result.meta.services.daiso).toEqual({
+      products: {
+        returnedCount: 1,
+        truncated: true,
+        sortApplied: 'service-default',
+        nextCursor: 'opaque-next-cursor',
+      },
+    });
+  });
+
   it('지원하지 않는 타입만 요청되면 어댑터 호출 없이 빈 그룹을 반환한다', async () => {
     const cgv = createAdapter({
       service: 'cgv',

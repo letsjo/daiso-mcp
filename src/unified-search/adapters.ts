@@ -7,6 +7,11 @@ import { fetchProducts } from '../services/daiso/tools/searchProducts.js';
 import { fetchOliveyoungProducts, fetchOliveyoungStores } from '../services/oliveyoung/client.js';
 import { fetchMegaboxBookingList, fetchMegaboxTheaterInfo, toYyyymmdd as toMegaboxDate } from '../services/megabox/client.js';
 import { fetchCgvMovies, fetchCgvTheaters, toYyyymmdd as toCgvDate } from '../services/cgv/client.js';
+import {
+  encodeUnifiedSearchCursor,
+  type UnifiedSearchContinuationCursorPayload,
+  UNIFIED_SEARCH_CURSOR_VERSION,
+} from './cursor.js';
 import type {
   UnifiedSearchAdapter,
   UnifiedSearchAdapterResult,
@@ -25,12 +30,19 @@ function createBucketMeta(
   returnedCount: number,
   truncated: boolean,
   sortApplied: UnifiedSearchBucketMeta['sortApplied'] = 'service-default',
+  nextCursor?: string,
 ): UnifiedSearchBucketMeta {
-  return {
+  const meta: UnifiedSearchBucketMeta = {
     returnedCount,
     truncated,
     sortApplied,
   };
+
+  if (nextCursor) {
+    meta.nextCursor = nextCursor;
+  }
+
+  return meta;
 }
 
 function matchesQuery(value: string | undefined, query: string): boolean {
@@ -89,6 +101,21 @@ function dedupeMovies(movies: UnifiedSearchMovieResult[]): UnifiedSearchMovieRes
   return Array.from(uniqueMovies.values());
 }
 
+function getDaisoProductsContinuation(
+  query: UnifiedSearchAdapterQuery,
+): Extract<
+  UnifiedSearchContinuationCursorPayload,
+  { service: 'daiso'; bucket: 'products' }
+> | undefined {
+  const continuation = query.continuation;
+
+  if (continuation?.service === 'daiso' && continuation.bucket === 'products') {
+    return continuation;
+  }
+
+  return undefined;
+}
+
 export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
   return {
     service: 'daiso',
@@ -97,7 +124,24 @@ export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
       const result: UnifiedSearchAdapterResult = {};
 
       if (query.types.includes('product')) {
-        const { products, totalCount } = await fetchProducts(query.query, 1, query.limitPerService);
+        const continuation = getDaisoProductsContinuation(query);
+        const page = continuation?.page ?? 1;
+        const { products, totalCount } = await fetchProducts(
+          query.query,
+          page,
+          query.limitPerService,
+        );
+        const hasNextPage = totalCount > page * query.limitPerService;
+        const nextCursor = hasNextPage
+          ? encodeUnifiedSearchCursor({
+              v: UNIFIED_SEARCH_CURSOR_VERSION,
+              service: 'daiso',
+              bucket: 'products',
+              query: query.query,
+              limitPerService: query.limitPerService,
+              page: page + 1,
+            })
+          : undefined;
 
         result.products = products.map((product) => ({
           id: product.id,
@@ -112,7 +156,12 @@ export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
         }));
         result.meta = {
           ...result.meta,
-          products: createBucketMeta(result.products.length, totalCount > result.products.length),
+          products: createBucketMeta(
+            result.products.length,
+            hasNextPage,
+            'service-default',
+            nextCursor,
+          ),
         };
       }
 

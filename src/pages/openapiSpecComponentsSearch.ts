@@ -94,6 +94,7 @@ export const OPENAPI_SEARCH_COMPONENT_SCHEMAS = {
       returnedCount: { type: 'integer', example: 5 },
       truncated: { type: 'boolean', example: false },
       sortApplied: { type: 'string', example: 'service-default' },
+      nextCursor: { type: 'string', example: 'opaque-token' },
     },
   },
   UnifiedSearchServiceMeta: {

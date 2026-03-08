@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createDaisoUnifiedSearchAdapter, createOliveyoungUnifiedSearchAdapter } from '../../src/unified-search/adapters.js';
+import { encodeUnifiedSearchCursor } from '../../src/unified-search/cursor.js';
 import { mockFetch, createZyteSuccessResponse, setupUnifiedSearchFetchMock } from './testHelpers.js';
 
 setupUnifiedSearchFetchMock();
@@ -101,6 +102,55 @@ describe('createDaisoUnifiedSearchAdapter', () => {
       }),
     ]);
     expect(result.stores).toBeUndefined();
+  });
+
+  it('daiso product continuation은 다음 페이지와 nextCursor를 반영한다', async () => {
+    const adapter = createDaisoUnifiedSearchAdapter();
+
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          resultSet: {
+            result: [
+              {
+                totalSize: 11,
+                resultDocuments: [{ PD_NO: 'P6', PDNM: '정리함 6', PD_PRC: '1000' }],
+              },
+            ],
+          },
+        }),
+      ),
+    );
+
+    const result = await adapter.search({
+      query: '정리함',
+      service: 'daiso',
+      types: ['product'],
+      limitPerService: 5,
+      continuation: {
+        v: 1,
+        service: 'daiso',
+        bucket: 'products',
+        query: '정리함',
+        limitPerService: 5,
+        page: 2,
+      },
+    });
+
+    expect(mockFetch.mock.calls[0][0]).toContain('pageNum=2');
+    expect(result.meta?.products).toEqual({
+      returnedCount: 1,
+      truncated: true,
+      sortApplied: 'service-default',
+      nextCursor: encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'daiso',
+        bucket: 'products',
+        query: '정리함',
+        limitPerService: 5,
+        page: 3,
+      }),
+    });
   });
 
   it('store만 요청하면 상품 조회를 건너뛴다', async () => {
