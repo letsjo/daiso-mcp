@@ -5,6 +5,7 @@ import {
   LIMIT_PER_SERVICE_ERROR_MESSAGE,
   TIMEOUT_MS_ERROR_MESSAGE,
 } from '../../src/unified-search/constants.js';
+import * as cursorValidatorModule from '../../src/unified-search/cursorValidator.js';
 
 const mockFetch = vi.fn();
 setupFetchMock(mockFetch);
@@ -122,6 +123,34 @@ describe('handleUnifiedSearch', () => {
       }),
       400,
     );
+  });
+
+  it('cursor가 들어오면 현재는 CURSOR_NOT_IMPLEMENTED를 반환한다', async () => {
+    const ctx = createMockContext({
+      cursor: 'eyJ2IjoxLCJzZXJ2aWNlIjoiZGFpc28iLCJidWNrZXQiOiJwcm9kdWN0cyIsInF1ZXJ5Ijoi7KCV66as7ZWoIiwibGltaXRQZXJTZXJ2aWNlIjo1LCJwYWdlIjoyfQ',
+    });
+    await handleUnifiedSearch(ctx);
+
+    expect(ctx.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: {
+          code: 'CURSOR_NOT_IMPLEMENTED',
+          message: 'continuation cursor는 아직 구현되지 않았습니다.',
+        },
+      }),
+      400,
+    );
+  });
+
+  it('예상하지 못한 cursor validator 오류는 그대로 다시 던진다', async () => {
+    vi.spyOn(cursorValidatorModule, 'validateUnifiedSearchCursorInput').mockImplementation(() => {
+      throw new Error('unexpected validator failure');
+    });
+
+    const ctx = createMockContext({ q: '강남' });
+
+    await expect(handleUnifiedSearch(ctx)).rejects.toThrow('unexpected validator failure');
   });
 
   it('부분 실패가 발생해도 200 응답으로 그룹 결과를 반환한다', async () => {

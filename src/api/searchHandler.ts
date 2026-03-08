@@ -13,6 +13,10 @@ import {
   TIMEOUT_MS_ERROR_MESSAGE,
 } from '../unified-search/constants.js';
 import { createUnifiedSearchAggregator } from '../unified-search/createAggregator.js';
+import {
+  UnifiedSearchCursorValidationError,
+  validateUnifiedSearchCursorInput,
+} from '../unified-search/cursorValidator.js';
 import { type ApiContext, errorResponse } from './response.js';
 
 function parseCsvValues<T extends string>(
@@ -64,12 +68,6 @@ function parseCoordinate(rawValue: string | undefined): number | null | undefine
 }
 
 export async function handleUnifiedSearch(c: ApiContext) {
-  const query = c.req.query('q');
-
-  if (!query || query.trim().length === 0) {
-    return errorResponse(c, 'MISSING_QUERY', '검색어(q)를 입력해주세요.');
-  }
-
   const services = parseCsvValues(c.req.query('services'), SUPPORTED_UNIFIED_SEARCH_SERVICES);
   if (services.invalidValues.length > 0) {
     return errorResponse(
@@ -113,16 +111,40 @@ export async function handleUnifiedSearch(c: ApiContext) {
     return errorResponse(c, 'INVALID_LOCATION', 'lat, lng는 유효한 숫자여야 합니다.');
   }
 
+  let validatedQuery;
+
+  try {
+    validatedQuery = validateUnifiedSearchCursorInput({
+      query: c.req.query('q'),
+      services: services.values,
+      types: types.values,
+      limitPerService,
+      latitude,
+      longitude,
+      cursor: c.req.query('cursor'),
+    });
+  } catch (error) {
+    if (error instanceof UnifiedSearchCursorValidationError) {
+      return errorResponse(c, error.code, error.message);
+    }
+
+    throw error;
+  }
+
+  if (!validatedQuery.query || validatedQuery.query.trim().length === 0) {
+    return errorResponse(c, 'MISSING_QUERY', '검색어(q)를 입력해주세요.');
+  }
+
   const aggregator = createUnifiedSearchAggregator({
     zyteApiKey: c.env?.ZYTE_API_KEY,
   });
   const result = await aggregator.search({
-    query,
-    services: services.values,
-    types: types.values,
-    latitude,
-    longitude,
-    limitPerService,
+    query: validatedQuery.query,
+    services: validatedQuery.services,
+    types: validatedQuery.types,
+    latitude: validatedQuery.latitude,
+    longitude: validatedQuery.longitude,
+    limitPerService: validatedQuery.limitPerService,
     timeoutMs,
   });
 

@@ -14,6 +14,9 @@ import {
   TIMEOUT_MS_ERROR_MESSAGE,
 } from '../../../unified-search/constants.js';
 import { createUnifiedSearchAggregator } from '../../../unified-search/createAggregator.js';
+import {
+  validateUnifiedSearchCursorInput,
+} from '../../../unified-search/cursorValidator.js';
 import type {
   UnifiedSearchQuery,
   UnifiedSearchEntityType,
@@ -28,6 +31,7 @@ interface MultiSearchArgs {
   longitude?: number;
   limitPerService?: number;
   timeoutMs?: number;
+  cursor?: string;
 }
 
 function validatePositiveInteger(
@@ -58,23 +62,34 @@ async function multiSearch(
     longitude,
     limitPerService,
     timeoutMs,
+    cursor,
   } = args;
-
-  if (!query || query.trim().length === 0) {
-    throw new Error('검색어를 입력해주세요.');
-  }
 
   validatePositiveInteger(limitPerService, 'limitPerService');
   validatePositiveInteger(timeoutMs, 'timeoutMs');
 
-  const aggregator = createUnifiedSearchAggregator({ zyteApiKey });
-  const result = await aggregator.search({
+  const validatedQuery = validateUnifiedSearchCursorInput({
     query,
     services,
     types,
     latitude,
     longitude,
     limitPerService,
+    cursor,
+  });
+
+  if (!validatedQuery.query || validatedQuery.query.trim().length === 0) {
+    throw new Error('검색어를 입력해주세요.');
+  }
+
+  const aggregator = createUnifiedSearchAggregator({ zyteApiKey });
+  const result = await aggregator.search({
+    query: validatedQuery.query,
+    services: validatedQuery.services,
+    types: validatedQuery.types,
+    latitude: validatedQuery.latitude,
+    longitude: validatedQuery.longitude,
+    limitPerService: validatedQuery.limitPerService,
     timeoutMs,
   } satisfies UnifiedSearchQuery);
 
@@ -113,6 +128,10 @@ export function createMultiSearchTool(zyteApiKey?: string): ToolRegistration {
         .max(MAX_TIMEOUT_MS)
         .optional()
         .describe('서비스 fan-out 요청 시간 제한 (밀리초, 기본값: 15000, 최대: 30000)'),
+      cursor: z
+        .string()
+        .optional()
+        .describe('continuation pilot cursor (현재는 validator만 연결되고 실제 조회는 미구현)'),
     },
     handler: (args) => multiSearch(args, zyteApiKey),
   });

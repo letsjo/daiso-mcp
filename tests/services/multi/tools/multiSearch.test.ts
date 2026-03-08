@@ -65,6 +65,18 @@ describe('createMultiSearchTool', () => {
     await expect(tool.handler({ query: '   ' })).rejects.toThrow('검색어를 입력해주세요.');
   });
 
+  it('cursor가 들어오면 현재는 CURSOR_NOT_IMPLEMENTED를 던진다', async () => {
+    const tool = createMultiSearchTool();
+
+    await expect(
+      tool.handler({
+        query: '정리함',
+        cursor:
+          'eyJ2IjoxLCJzZXJ2aWNlIjoiZGFpc28iLCJidWNrZXQiOiJwcm9kdWN0cyIsInF1ZXJ5Ijoi7KCV66as7ZWoIiwibGltaXRQZXJTZXJ2aWNlIjo1LCJwYWdlIjoyfQ',
+      }),
+    ).rejects.toThrow('continuation cursor는 아직 구현되지 않았습니다.');
+  });
+
   it('limitPerService가 잘못되면 에러를 던진다', async () => {
     const tool = createMultiSearchTool();
 
