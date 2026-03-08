@@ -16,6 +16,7 @@
 - 통합 검색 continuation 전략 검토 문서 추가
 - 통합 검색 continuation pilot 계약 초안 추가
 - 통합 검색 continuation cursor 유틸 초안 추가
+- 통합 검색 continuation cursor validator와 REST/MCP 연결 추가
 
 ### Changed
 
@@ -27,6 +28,7 @@
 - 프롬프트 페이지를 멀티서비스/통합 검색 기준으로 갱신
 - 통합 검색의 `limitPerService`, `timeoutMs` 상한을 runtime과 OpenAPI에서 일치시킴
 - 통합 검색 계약 문서를 구현 기준 응답 메타데이터로 갱신
+- 통합 검색 continuation pilot 문서를 validator 연결 상태 기준으로 갱신
 
 ### Removed
 
