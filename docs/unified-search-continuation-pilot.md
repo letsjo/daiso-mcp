@@ -11,7 +11,8 @@
 
 - pilot용 opaque cursor encode/decode 유틸 초안은 `src/unified-search/cursor.ts`에 구현됨
 - REST `GET /api/search`와 MCP `multi_search`에 공통 validator 연결 완료
-- 유효한 pilot cursor는 현재 `CURSOR_NOT_IMPLEMENTED`로 명시적으로 거부하며, 실제 continuation 조회는 아직 미구현
+- `daiso products`는 실제 continuation 조회와 `nextCursor` 반환까지 구현 완료
+- `oliveyoung products/stores`는 validator만 연결되어 있고 현재는 `CURSOR_NOT_IMPLEMENTED`를 반환
 
 ## pilot 범위
 
@@ -161,8 +162,7 @@ continuation 시:
 
 ## 다음 구현 순서
 
-1. `daiso products` pilot 구현
-2. `oliveyoung products/stores` pilot 확장
+1. `oliveyoung products/stores` pilot 확장
 
 ## 비목표
 
