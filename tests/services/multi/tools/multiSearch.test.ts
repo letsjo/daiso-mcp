@@ -5,6 +5,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMultiSearchTool } from '../../../../src/services/multi/tools/multiSearch.js';
 import { createMockProductResponse } from '../../../api/testHelpers.js';
+import {
+  LIMIT_PER_SERVICE_ERROR_MESSAGE,
+  TIMEOUT_MS_ERROR_MESSAGE,
+} from '../../../../src/unified-search/constants.js';
 
 const mockFetch = vi.fn();
 
@@ -60,7 +64,7 @@ describe('createMultiSearchTool', () => {
     const tool = createMultiSearchTool();
 
     await expect(tool.handler({ query: '정리함', limitPerService: 0 })).rejects.toThrow(
-      'limitPerService는 1 이상의 정수여야 합니다.',
+      LIMIT_PER_SERVICE_ERROR_MESSAGE,
     );
   });
 
@@ -68,7 +72,23 @@ describe('createMultiSearchTool', () => {
     const tool = createMultiSearchTool();
 
     await expect(tool.handler({ query: '정리함', timeoutMs: 0 })).rejects.toThrow(
-      'timeoutMs는 1 이상의 정수여야 합니다.',
+      TIMEOUT_MS_ERROR_MESSAGE,
+    );
+  });
+
+  it('limitPerService가 최대치를 넘으면 에러를 던진다', async () => {
+    const tool = createMultiSearchTool();
+
+    await expect(tool.handler({ query: '정리함', limitPerService: 51 })).rejects.toThrow(
+      LIMIT_PER_SERVICE_ERROR_MESSAGE,
+    );
+  });
+
+  it('timeoutMs가 최대치를 넘으면 에러를 던진다', async () => {
+    const tool = createMultiSearchTool();
+
+    await expect(tool.handler({ query: '정리함', timeoutMs: 30001 })).rejects.toThrow(
+      TIMEOUT_MS_ERROR_MESSAGE,
     );
   });
 });
