@@ -337,7 +337,7 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 
 **선택 파라미터**:
 - q: 공통 검색어 (예: 강남, 정리함, 듄)
-- cursor: opaque continuation cursor (현재는 daiso product만 실제 조회 지원)
+- cursor: opaque continuation cursor (daiso product, oliveyoung product/store 지원)
 - services: 서비스 목록 (예: daiso,oliveyoung)
 - types: 결과 타입 목록 (예: product,store)
 - lat: 위도
@@ -397,7 +397,6 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 | INVALID_CURSOR | cursor 파싱 또는 검증 실패 |
 | CURSOR_SCOPE_NOT_SUPPORTED | multi-service 또는 multi-type cursor 요청 |
 | CURSOR_QUERY_MISMATCH | cursor와 요청 파라미터 불일치 |
-| CURSOR_NOT_IMPLEMENTED | pilot 범위지만 아직 미구현인 continuation |
 | INVALID_SERVICES | 지원하지 않는 서비스 지정 |
 | INVALID_TYPES | 지원하지 않는 결과 타입 지정 |
 | INVALID_LIMIT | 잘못된 limitPerService 값 |

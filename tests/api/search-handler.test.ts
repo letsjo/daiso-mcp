@@ -6,6 +6,7 @@ import {
   TIMEOUT_MS_ERROR_MESSAGE,
 } from '../../src/unified-search/constants.js';
 import { encodeUnifiedSearchCursor } from '../../src/unified-search/cursor.js';
+import { createZyteSuccessResponse } from '../unified-search/testHelpers.js';
 import * as cursorValidatorModule from '../../src/unified-search/cursorValidator.js';
 
 const mockFetch = vi.fn();
@@ -126,6 +127,22 @@ describe('handleUnifiedSearch', () => {
     );
   });
 
+  it('invalid cursor는 400 에러를 반환한다', async () => {
+    const ctx = createMockContext({ cursor: '%%%invalid' });
+    await handleUnifiedSearch(ctx);
+
+    expect(ctx.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: {
+          code: 'INVALID_CURSOR',
+          message: 'cursor를 디코딩할 수 없습니다.',
+        },
+      }),
+      400,
+    );
+  });
+
   it('daiso product cursor가 들어오면 다음 페이지를 조회한다', async () => {
     mockFetch.mockResolvedValueOnce(
       new Response(
@@ -181,7 +198,26 @@ describe('handleUnifiedSearch', () => {
     expect(mockFetch.mock.calls[0][0]).toContain('pageNum=2');
   });
 
-  it('미구현 oliveyoung cursor는 CURSOR_NOT_IMPLEMENTED를 반환한다', async () => {
+  it('oliveyoung product cursor가 들어오면 다음 페이지를 조회한다', async () => {
+    mockFetch.mockResolvedValueOnce(
+      createZyteSuccessResponse({
+        status: 'SUCCESS',
+        data: {
+          totalCount: 21,
+          nextPage: true,
+          searchList: [
+            {
+              goodsNumber: 'G6',
+              goodsName: '선크림 6',
+              priceToPay: 10000,
+              originalPrice: 12000,
+              o2oStockFlag: true,
+            },
+          ],
+        },
+      }),
+    );
+
     const ctx = createMockContext({
       cursor: encodeUnifiedSearchCursor({
         v: 1,
@@ -194,15 +230,43 @@ describe('handleUnifiedSearch', () => {
     });
     await handleUnifiedSearch(ctx);
 
-    expect(ctx.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        success: false,
-        error: {
-          code: 'CURSOR_NOT_IMPLEMENTED',
-          message: 'continuation cursor는 아직 구현되지 않았습니다.',
+    const payload = getJsonPayload(ctx) as {
+      success: boolean;
+      data: {
+        query: string;
+        results: {
+          oliveyoung: {
+            products: Array<{ id: string }>;
+          };
+        };
+      };
+      meta: {
+        requestedServices: string[];
+        requestedTypes: string[];
+        services: {
+          oliveyoung: {
+            products: {
+              nextCursor?: string;
+            };
+          };
         },
+      };
+    };
+
+    expect(payload.success).toBe(true);
+    expect(payload.data.query).toBe('선크림');
+    expect(payload.data.results.oliveyoung.products[0].id).toBe('G6');
+    expect(payload.meta.requestedServices).toEqual(['oliveyoung']);
+    expect(payload.meta.requestedTypes).toEqual(['product']);
+    expect(payload.meta.services.oliveyoung.products.nextCursor).toBe(
+      encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'oliveyoung',
+        bucket: 'products',
+        query: '선크림',
+        limitPerService: 5,
+        page: 3,
       }),
-      400,
     );
   });
 

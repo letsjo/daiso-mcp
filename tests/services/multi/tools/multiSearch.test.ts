@@ -10,6 +10,7 @@ import {
   TIMEOUT_MS_ERROR_MESSAGE,
 } from '../../../../src/unified-search/constants.js';
 import { encodeUnifiedSearchCursor } from '../../../../src/unified-search/cursor.js';
+import { createZyteSuccessResponse } from '../../../unified-search/testHelpers.js';
 
 const mockFetch = vi.fn();
 
@@ -24,7 +25,7 @@ afterEach(() => {
 
 describe('createMultiSearchTool', () => {
   it('올바른 도구 정의를 반환한다', () => {
-    const tool = createMultiSearchTool();
+    const tool = createMultiSearchTool('test-key');
 
     expect(tool.name).toBe('multi_search');
     expect(tool.metadata.title).toBe('통합 검색');
@@ -39,7 +40,7 @@ describe('createMultiSearchTool', () => {
       ),
     );
 
-    const tool = createMultiSearchTool();
+    const tool = createMultiSearchTool('test-key');
     const result = await tool.handler({
       query: '정리함',
       services: ['daiso'],
@@ -61,7 +62,7 @@ describe('createMultiSearchTool', () => {
   });
 
   it('검색어가 비어 있으면 에러를 던진다', async () => {
-    const tool = createMultiSearchTool();
+    const tool = createMultiSearchTool('test-key');
 
     await expect(tool.handler({ query: '   ' })).rejects.toThrow('검색어를 입력해주세요.');
   });
@@ -75,7 +76,7 @@ describe('createMultiSearchTool', () => {
       ),
     );
 
-    const tool = createMultiSearchTool();
+    const tool = createMultiSearchTool('test-key');
     const cursor = encodeUnifiedSearchCursor({
       v: 1,
       service: 'daiso',
@@ -106,21 +107,52 @@ describe('createMultiSearchTool', () => {
     expect(mockFetch.mock.calls[0][0]).toContain('pageNum=2');
   });
 
-  it('미구현 oliveyoung cursor는 CURSOR_NOT_IMPLEMENTED를 던진다', async () => {
-    const tool = createMultiSearchTool();
-
-    await expect(
-      tool.handler({
-        cursor: encodeUnifiedSearchCursor({
-          v: 1,
-          service: 'oliveyoung',
-          bucket: 'products',
-          query: '선크림',
-          limitPerService: 5,
-          page: 2,
-        }),
+  it('oliveyoung product cursor가 들어오면 다음 페이지를 조회한다', async () => {
+    mockFetch.mockResolvedValueOnce(
+      createZyteSuccessResponse({
+        status: 'SUCCESS',
+        data: {
+          totalCount: 21,
+          nextPage: true,
+          searchList: [
+            {
+              goodsNumber: 'G6',
+              goodsName: '선크림 6',
+              priceToPay: 10000,
+              originalPrice: 12000,
+              o2oStockFlag: true,
+            },
+          ],
+        },
       }),
-    ).rejects.toThrow('continuation cursor는 아직 구현되지 않았습니다.');
+    );
+
+    const tool = createMultiSearchTool('test-key');
+    const result = await tool.handler({
+      cursor: encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'oliveyoung',
+        bucket: 'products',
+        query: '선크림',
+        limitPerService: 5,
+        page: 2,
+      }),
+    });
+    const parsed = JSON.parse(result.content[0].text);
+
+    expect(parsed.success).toBe(true);
+    expect(parsed.data.query).toBe('선크림');
+    expect(parsed.data.results.oliveyoung.products).toHaveLength(1);
+    expect(parsed.meta.services.oliveyoung.products.nextCursor).toBe(
+      encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'oliveyoung',
+        bucket: 'products',
+        query: '선크림',
+        limitPerService: 5,
+        page: 3,
+      }),
+    );
   });
 
   it('limitPerService가 잘못되면 에러를 던진다', async () => {

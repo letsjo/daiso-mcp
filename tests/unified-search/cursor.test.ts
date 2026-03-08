@@ -50,6 +50,8 @@ describe('unified-search cursor', () => {
       query: '강남',
       limitPerService: 5,
       pageIdx: 2,
+      offset: 5,
+      pageSize: 20,
       latitude: 37.498,
       longitude: 127.027,
     });
@@ -61,6 +63,8 @@ describe('unified-search cursor', () => {
       query: '강남',
       limitPerService: 5,
       pageIdx: 2,
+      offset: 5,
+      pageSize: 20,
       latitude: 37.498,
       longitude: 127.027,
     });

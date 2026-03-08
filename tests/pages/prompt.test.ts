@@ -78,7 +78,6 @@ describe('generatePromptText', () => {
     expect(text).toContain('INVALID_CURSOR');
     expect(text).toContain('CURSOR_SCOPE_NOT_SUPPORTED');
     expect(text).toContain('CURSOR_QUERY_MISMATCH');
-    expect(text).toContain('CURSOR_NOT_IMPLEMENTED');
     expect(text).toContain('INVALID_SERVICES');
     expect(text).toContain('INVALID_TYPES');
     expect(text).toContain('INVALID_LIMIT');

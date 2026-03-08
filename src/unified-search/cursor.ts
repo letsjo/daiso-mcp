@@ -7,6 +7,7 @@ import { MAX_LIMIT_PER_SERVICE } from './constants.js';
 import type { UnifiedSearchBucketKey, UnifiedSearchServiceId } from './interfaces.js';
 
 export const UNIFIED_SEARCH_CURSOR_VERSION = 1;
+const DEFAULT_OLIVEYOUNG_STORES_PAGE_SIZE = 20;
 
 type UnifiedSearchCursorErrorCode = 'INVALID_CURSOR' | 'CURSOR_SCOPE_NOT_SUPPORTED';
 
@@ -40,7 +41,9 @@ const OLIVEYOUNG_STORES_CURSOR_SCHEMA = z.object({
   bucket: z.literal('stores'),
   query: z.string().min(1),
   limitPerService: z.number().int().min(1).max(MAX_LIMIT_PER_SERVICE),
-  pageIdx: z.number().int().min(2),
+  pageIdx: z.number().int().min(1),
+  offset: z.number().int().min(0).default(0),
+  pageSize: z.number().int().min(1).default(DEFAULT_OLIVEYOUNG_STORES_PAGE_SIZE),
   latitude: z.number().finite(),
   longitude: z.number().finite(),
 });

@@ -132,7 +132,7 @@ export function createMultiSearchTool(zyteApiKey?: string): ToolRegistration {
       cursor: z
         .string()
         .optional()
-        .describe('continuation pilot cursor (현재는 daiso product만 실제 조회 지원)'),
+        .describe('continuation pilot cursor (daiso product, oliveyoung product/store 실제 조회 지원)'),
     },
     handler: (args) => multiSearch(args, zyteApiKey),
   });

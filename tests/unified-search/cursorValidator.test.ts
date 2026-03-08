@@ -139,6 +139,8 @@ describe('unified-search cursor validator', () => {
       query: '강남',
       limitPerService: 5,
       pageIdx: 2,
+      offset: 0,
+      pageSize: 20,
       latitude: 37.498,
       longitude: 127.027,
     });
@@ -157,7 +159,7 @@ describe('unified-search cursor validator', () => {
     );
   });
 
-  it('미구현 oliveyoung cursor는 CURSOR_NOT_IMPLEMENTED를 반환한다', () => {
+  it('oliveyoung products cursor도 continuation을 반환한다', () => {
     const cursor = encodeUnifiedSearchCursor({
       v: 1,
       service: 'oliveyoung',
@@ -167,16 +169,66 @@ describe('unified-search cursor validator', () => {
       page: 2,
     });
 
-    expect(() =>
+    expect(
       validateUnifiedSearchCursorInput({
         cursor,
       }),
-    ).toThrowError(
-      new UnifiedSearchCursorValidationError(
-        'CURSOR_NOT_IMPLEMENTED',
-        'continuation cursor는 아직 구현되지 않았습니다.',
-      ),
-    );
+    ).toEqual({
+      query: '선크림',
+      services: ['oliveyoung'],
+      types: ['product'],
+      limitPerService: 5,
+      latitude: undefined,
+      longitude: undefined,
+      continuation: {
+        v: 1,
+        service: 'oliveyoung',
+        bucket: 'products',
+        query: '선크림',
+        limitPerService: 5,
+        page: 2,
+      },
+    });
+  });
+
+  it('oliveyoung stores cursor는 offset/pageSize까지 continuation에 포함한다', () => {
+    const cursor = encodeUnifiedSearchCursor({
+      v: 1,
+      service: 'oliveyoung',
+      bucket: 'stores',
+      query: '강남',
+      limitPerService: 5,
+      pageIdx: 1,
+      offset: 5,
+      pageSize: 20,
+      latitude: 37.498,
+      longitude: 127.027,
+    });
+
+    expect(
+      validateUnifiedSearchCursorInput({
+        cursor,
+      }),
+    ).toEqual({
+      query: '강남',
+      services: ['oliveyoung'],
+      types: ['store'],
+      limitPerService: 5,
+      latitude: 37.498,
+      longitude: 127.027,
+      continuation: {
+        v: 1,
+        service: 'oliveyoung',
+        bucket: 'stores',
+        query: '강남',
+        limitPerService: 5,
+        pageIdx: 1,
+        offset: 5,
+        pageSize: 20,
+        latitude: 37.498,
+        longitude: 127.027,
+      },
+    });
   });
 
   it('invalid cursor 오류를 그대로 매핑한다', () => {
