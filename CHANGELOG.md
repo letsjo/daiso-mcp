@@ -15,6 +15,7 @@
 - 통합 검색 응답에 서비스/버킷별 메타데이터 추가
 - 통합 검색 continuation 전략 검토 문서 추가
 - 통합 검색 continuation pilot 계약 초안 추가
+- 통합 검색 continuation cursor 유틸 초안 추가
 
 ### Changed
 
