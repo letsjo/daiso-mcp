@@ -131,6 +131,7 @@ interface UnifiedSearchAdapter {
 
 세부 검토 문서: `docs/unified-search-pagination-review.md`
 continuation 검토 문서: `docs/unified-search-continuation-review.md`
+continuation pilot 계약: `docs/unified-search-continuation-pilot.md`
 
 1. 서비스/버킷별 continuation 전략(`nextCursor`)을 도입할지 검토
 2. `multi_search`와 GET 응답 간 표현 차이를 더 줄일지 검토

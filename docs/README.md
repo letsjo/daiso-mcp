@@ -47,6 +47,7 @@
 - `smoke-test-strategy.md`
 - `troubleshooting.md`
 - `unified-search-continuation-review.md`
+- `unified-search-continuation-pilot.md`
 - `unified-search-contract.md`
 - `unified-search-design.md`
 - `unified-search-pagination-review.md`
