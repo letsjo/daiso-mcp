@@ -60,6 +60,15 @@ describe('GET /', () => {
     expect(cgvService.name).toBe('CGV');
   });
 
+  it('통합 검색 서비스가 등록되어 있다', async () => {
+    const res = await app.request('/');
+    const data = await res.json();
+
+    const multiService = data.services.find((s: { id: string }) => s.id === 'multi');
+    expect(multiService).toBeDefined();
+    expect(multiService.name).toBe('통합 검색');
+  });
+
   it('다이소 도구들이 포함되어 있다', async () => {
     const res = await app.request('/');
     const data = await res.json();
@@ -96,6 +105,13 @@ describe('GET /', () => {
     expect(data.tools).toContain('cgv_get_timetable');
   });
 
+  it('통합 검색 도구가 포함되어 있다', async () => {
+    const res = await app.request('/');
+    const data = await res.json();
+
+    expect(data.tools).toContain('multi_search');
+  });
+
   it('엔드포인트 정보를 포함한다', async () => {
     const res = await app.request('/');
     const data = await res.json();
@@ -123,7 +139,7 @@ describe('기본 페이지', () => {
     expect(res.headers.get('Content-Type')).toContain('text/plain');
 
     const text = await res.text();
-    expect(text).toContain('다이소 MCP API');
+    expect(text).toContain('멀티서비스 MCP API');
   });
 });
 

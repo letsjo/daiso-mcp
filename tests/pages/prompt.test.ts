@@ -42,6 +42,9 @@ describe('generatePromptText', () => {
     expect(text).toContain('/api/cgv/theaters');
     expect(text).toContain('/api/cgv/movies');
     expect(text).toContain('/api/cgv/timetable');
+
+    // 통합 검색 API
+    expect(text).toContain('/api/search?q=');
   });
 
   it('파라미터 설명을 포함한다', () => {
@@ -55,6 +58,8 @@ describe('generatePromptText', () => {
     expect(text).toContain('dong');
     expect(text).toContain('lat');
     expect(text).toContain('lng');
+    expect(text).toContain('services');
+    expect(text).toContain('types');
   });
 
   it('응답 예시를 포함한다', () => {
@@ -80,6 +85,11 @@ describe('generatePromptText', () => {
     expect(text).toContain('CGV_THEATER_SEARCH_FAILED');
     expect(text).toContain('CGV_MOVIE_SEARCH_FAILED');
     expect(text).toContain('CGV_TIMETABLE_FETCH_FAILED');
+    expect(text).toContain('INVALID_SERVICES');
+    expect(text).toContain('INVALID_TYPES');
+    expect(text).toContain('INVALID_LIMIT');
+    expect(text).toContain('INVALID_TIMEOUT');
+    expect(text).toContain('INVALID_LOCATION');
   });
 
   it('MCP 연결 정보를 포함한다', () => {
@@ -98,6 +108,7 @@ describe('generatePromptText', () => {
     expect(text).toContain('cgv_find_theaters');
     expect(text).toContain('cgv_search_movies');
     expect(text).toContain('cgv_get_timetable');
+    expect(text).toContain('multi_search');
   });
 
   it('사용 팁을 포함한다', () => {
@@ -133,7 +144,7 @@ describe('createPromptResponse', () => {
     const response = createPromptResponse('https://test.com');
     const body = await response.text();
 
-    expect(body).toContain('다이소 MCP API');
+    expect(body).toContain('멀티서비스 MCP API');
     expect(body).toContain('https://test.com');
   });
 });
