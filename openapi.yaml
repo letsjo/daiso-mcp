@@ -9,6 +9,7 @@ info:
       - 🔍 **제품 검색**: 키워드로 다이소 제품 검색
       - 🏪 **매장 찾기**: 지역/키워드로 매장 검색
       - 📦 **재고 확인**: 온라인 및 오프라인 매장 재고 조회
+      - 🧭 **통합 검색**: 여러 서비스를 한 번에 fan-out 조회
       - 🎬 **메가박스 지점/영화 조회**: 주변 지점, 상영 목록, 잔여 좌석 조회
       - 🎥 **CGV 지점/영화 조회**: 극장 목록, 영화 목록, 시간표 조회
       
@@ -24,6 +25,86 @@ servers:
   - url: "https://mcp.aka.page"
     description: Production Server
 paths:
+  /api/search:
+    get:
+      operationId: unifiedSearch
+      summary: 통합 검색
+      description: 다이소, 올리브영, 메가박스, CGV를 한 번에 조회하는 통합 검색 엔드포인트입니다.
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: 공통 검색어 (cursor 요청 시 생략 가능)
+          schema:
+            type: string
+          example: 강남
+        - name: cursor
+          in: query
+          required: false
+          description: opaque continuation cursor (daiso product, oliveyoung product/store pilot 지원)
+          schema:
+            type: string
+        - name: services
+          in: query
+          required: false
+          description: 조회할 서비스 목록 (쉼표 구분)
+          schema:
+            type: string
+            example: daiso,oliveyoung,megabox,cgv
+        - name: types
+          in: query
+          required: false
+          description: 조회할 결과 타입 목록 (쉼표 구분)
+          schema:
+            type: string
+            example: product,store,movie,theater
+        - name: lat
+          in: query
+          required: false
+          description: 위도
+          schema:
+            type: number
+            format: float
+            default: 37.5665
+        - name: lng
+          in: query
+          required: false
+          description: 경도
+          schema:
+            type: number
+            format: float
+            default: 126.978
+        - name: limitPerService
+          in: query
+          required: false
+          description: 서비스별 최대 결과 수
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+            maximum: 50
+        - name: timeoutMs
+          in: query
+          required: false
+          description: 서비스 fan-out 요청 시간 제한 (밀리초)
+          schema:
+            type: integer
+            default: 15000
+            minimum: 1
+            maximum: 30000
+      responses:
+        200:
+          description: 조회 성공 또는 부분 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnifiedSearchResponse"
+        400:
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/daiso/products:
     get:
       operationId: searchProducts
@@ -1319,6 +1400,247 @@ components:
               type: integer
             pageSize:
               type: integer
+    UnifiedSearchProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1001
+        title:
+          type: string
+          example: 정리함
+        service:
+          type: string
+          example: daiso
+        type:
+          type: string
+          example: product
+        price:
+          type: integer
+          example: 1000
+        originalPrice:
+          type: integer
+          example: 1500
+        category:
+          type: string
+          example: 수납
+        imageUrl:
+          type: string
+          example: "https://example.com/image.jpg"
+        stockStatus:
+          type: string
+          example: in_stock
+    UnifiedSearchStore:
+      type: object
+      properties:
+        id:
+          type: string
+          example: store-1
+        title:
+          type: string
+          example: 다이소 강남역점
+        service:
+          type: string
+          example: daiso
+        type:
+          type: string
+          example: store
+        address:
+          type: string
+          example: 서울특별시 강남구 강남대로 123
+        phone:
+          type: string
+          example: 02-1234-5678
+        latitude:
+          type: number
+          format: float
+          example: 37.4979
+        longitude:
+          type: number
+          format: float
+          example: 127.0276
+        distanceKm:
+          type: number
+          format: float
+          example: 0.5
+        pickupAvailable:
+          type: boolean
+          example: true
+    UnifiedSearchMovie:
+      type: object
+      properties:
+        id:
+          type: string
+          example: movie-1
+        title:
+          type: string
+          example: 영화A
+        service:
+          type: string
+          example: cgv
+        type:
+          type: string
+          example: movie
+        rating:
+          type: string
+          example: 12세
+        theaterName:
+          type: string
+          example: CGV 강남
+        playDate:
+          type: string
+          example: 20260308
+        startTime:
+          type: string
+          example: "14:00"
+    UnifiedSearchTheater:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 0056
+        title:
+          type: string
+          example: CGV 강남
+        service:
+          type: string
+          example: cgv
+        type:
+          type: string
+          example: theater
+        address:
+          type: string
+          example: 서울특별시 강남구 강남대로 438
+        latitude:
+          type: number
+          format: float
+          example: 37.4982
+        longitude:
+          type: number
+          format: float
+          example: 127.0264
+        regionCode:
+          type: string
+          example: 01
+        distanceKm:
+          type: number
+          format: float
+          example: 0.2
+    UnifiedSearchResultBuckets:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnifiedSearchProduct"
+        stores:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnifiedSearchStore"
+        movies:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnifiedSearchMovie"
+        theaters:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnifiedSearchTheater"
+    UnifiedSearchError:
+      type: object
+      properties:
+        service:
+          type: string
+          example: oliveyoung
+        code:
+          type: string
+          example: TIMEOUT
+        message:
+          type: string
+          example: 올리브영 API 요청 시간 초과
+    UnifiedSearchBucketMeta:
+      type: object
+      properties:
+        returnedCount:
+          type: integer
+          example: 5
+        truncated:
+          type: boolean
+          example: false
+        sortApplied:
+          type: string
+          example: service-default
+        nextCursor:
+          type: string
+          example: opaque-token
+    UnifiedSearchServiceMeta:
+      type: object
+      properties:
+        products:
+          $ref: "#/components/schemas/UnifiedSearchBucketMeta"
+        stores:
+          $ref: "#/components/schemas/UnifiedSearchBucketMeta"
+        movies:
+          $ref: "#/components/schemas/UnifiedSearchBucketMeta"
+        theaters:
+          $ref: "#/components/schemas/UnifiedSearchBucketMeta"
+    UnifiedSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            query:
+              type: string
+              example: 강남
+            results:
+              type: object
+              properties:
+                daiso:
+                  $ref: "#/components/schemas/UnifiedSearchResultBuckets"
+                oliveyoung:
+                  $ref: "#/components/schemas/UnifiedSearchResultBuckets"
+                megabox:
+                  $ref: "#/components/schemas/UnifiedSearchResultBuckets"
+                cgv:
+                  $ref: "#/components/schemas/UnifiedSearchResultBuckets"
+            errors:
+              type: array
+              items:
+                $ref: "#/components/schemas/UnifiedSearchError"
+        meta:
+          type: object
+          properties:
+            partialFailure:
+              type: boolean
+              example: false
+            requestedServices:
+              type: array
+              items:
+                type: string
+            requestedTypes:
+              type: array
+              items:
+                type: string
+            limitPerService:
+              type: integer
+              example: 5
+            timeoutMs:
+              type: integer
+              example: 15000
+            services:
+              type: object
+              properties:
+                daiso:
+                  $ref: "#/components/schemas/UnifiedSearchServiceMeta"
+                oliveyoung:
+                  $ref: "#/components/schemas/UnifiedSearchServiceMeta"
+                megabox:
+                  $ref: "#/components/schemas/UnifiedSearchServiceMeta"
+                cgv:
+                  $ref: "#/components/schemas/UnifiedSearchServiceMeta"
     ErrorResponse:
       type: object
       properties:
