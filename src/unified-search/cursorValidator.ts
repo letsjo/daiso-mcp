@@ -72,6 +72,10 @@ function isSameValue<T>(left: T | undefined, right: T | undefined): boolean {
   return left === right;
 }
 
+function hasUnsupportedScopedCursorValues(values: string[] | undefined): boolean {
+  return values !== undefined && values.length !== 1;
+}
+
 function getCursorLocation(
   cursor: UnifiedSearchContinuationCursorPayload,
 ): Pick<UnifiedSearchQuery, 'latitude' | 'longitude'> {
@@ -83,6 +87,12 @@ function getCursorLocation(
   }
 
   return {};
+}
+
+function isImplementedContinuationCursor(
+  cursor: UnifiedSearchContinuationCursorPayload,
+): boolean {
+  return cursor.service === 'daiso' && cursor.bucket === 'products';
 }
 
 export function validateUnifiedSearchCursorInput(
@@ -116,6 +126,16 @@ export function validateUnifiedSearchCursorInput(
   const cursorLocation = getCursorLocation(cursor);
 
   if (
+    hasUnsupportedScopedCursorValues(input.services) ||
+    hasUnsupportedScopedCursorValues(input.types)
+  ) {
+    throw new UnifiedSearchCursorValidationError(
+      'CURSOR_SCOPE_NOT_SUPPORTED',
+      'continuation cursor는 서비스 1개와 타입 1개 요청에서만 사용할 수 있습니다.',
+    );
+  }
+
+  if (
     !isSameValue(input.query, cursor.query) ||
     !isSameArray(input.services, cursorServices) ||
     !isSameArray(input.types, cursorTypes) ||
@@ -127,6 +147,22 @@ export function validateUnifiedSearchCursorInput(
       'CURSOR_QUERY_MISMATCH',
       'cursor와 요청 파라미터가 일치하지 않습니다.',
     );
+  }
+
+  const validatedQuery: UnifiedSearchCursorValidationResult = {
+    query: input.query ?? cursor.query,
+    services: input.services ?? cursorServices,
+    types: input.types ?? cursorTypes,
+    limitPerService: input.limitPerService ?? cursor.limitPerService,
+    latitude: input.latitude ?? cursorLocation.latitude,
+    longitude: input.longitude ?? cursorLocation.longitude,
+  };
+
+  if (isImplementedContinuationCursor(cursor)) {
+    return {
+      ...validatedQuery,
+      continuation: cursor,
+    };
   }
 
   throw new UnifiedSearchCursorValidationError(

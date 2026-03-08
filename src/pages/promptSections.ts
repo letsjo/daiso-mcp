@@ -333,9 +333,11 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 **URL**: ${baseUrl}/api/search?q={검색어}
 
 **필수 파라미터**:
-- q: 공통 검색어 (예: 강남, 정리함, 듄)
+- q 또는 cursor 중 하나 필수
 
 **선택 파라미터**:
+- q: 공통 검색어 (예: 강남, 정리함, 듄)
+- cursor: opaque continuation cursor (현재는 daiso product만 실제 조회 지원)
 - services: 서비스 목록 (예: daiso,oliveyoung)
 - types: 결과 타입 목록 (예: product,store)
 - lat: 위도
@@ -346,6 +348,7 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 **예시**:
 - ${baseUrl}/api/search?q=강남&services=daiso,oliveyoung&types=store
 - ${baseUrl}/api/search?q=듄&services=megabox,cgv&types=movie
+- ${baseUrl}/api/search?cursor={nextCursor}
 
 ## 응답 형식
 
@@ -353,11 +356,25 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 \`\`\`json
 {
   "success": true,
-  "data": { ... },
+  "data": {
+    "query": "정리함",
+    "results": { ... },
+    "errors": []
+  },
   "meta": {
-    "total": 100,
-    "page": 1,
-    "pageSize": 30
+    "requestedServices": ["daiso"],
+    "requestedTypes": ["product"],
+    "limitPerService": 5,
+    "services": {
+      "daiso": {
+        "products": {
+          "returnedCount": 5,
+          "truncated": true,
+          "sortApplied": "service-default",
+          "nextCursor": "opaque-token"
+        }
+      }
+    }
   }
 }
 \`\`\`
@@ -377,19 +394,10 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 | 코드 | 설명 |
 |------|------|
 | MISSING_QUERY | 검색어가 누락됨 |
-| MISSING_PARAMS | 필수 파라미터 누락 |
-| MISSING_PRODUCT_ID | 제품 ID 누락 |
-| NOT_FOUND | 결과를 찾을 수 없음 |
-| SEARCH_FAILED | 검색 실패 |
-| FETCH_FAILED | 데이터 조회 실패 |
-| OLIVEYOUNG_STORE_SEARCH_FAILED | 올리브영 매장 조회 실패 |
-| OLIVEYOUNG_INVENTORY_CHECK_FAILED | 올리브영 재고 조회 실패 |
-| MEGABOX_THEATER_SEARCH_FAILED | 메가박스 지점 조회 실패 |
-| MEGABOX_MOVIE_LIST_FAILED | 메가박스 영화 목록 조회 실패 |
-| MEGABOX_SEAT_LIST_FAILED | 메가박스 좌석 조회 실패 |
-| CGV_THEATER_SEARCH_FAILED | CGV 극장 조회 실패 |
-| CGV_MOVIE_SEARCH_FAILED | CGV 영화 목록 조회 실패 |
-| CGV_TIMETABLE_FETCH_FAILED | CGV 시간표 조회 실패 |
+| INVALID_CURSOR | cursor 파싱 또는 검증 실패 |
+| CURSOR_SCOPE_NOT_SUPPORTED | multi-service 또는 multi-type cursor 요청 |
+| CURSOR_QUERY_MISMATCH | cursor와 요청 파라미터 불일치 |
+| CURSOR_NOT_IMPLEMENTED | pilot 범위지만 아직 미구현인 continuation |
 | INVALID_SERVICES | 지원하지 않는 서비스 지정 |
 | INVALID_TYPES | 지원하지 않는 결과 타입 지정 |
 | INVALID_LIMIT | 잘못된 limitPerService 값 |
@@ -401,7 +409,7 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 ## 사용 팁
 
 1. **한글 검색어**: URL 인코딩이 자동으로 처리됩니다
-2. **페이지네이션**: 결과가 많을 경우 page 파라미터 사용
+2. **continuation**: meta.services.{service}.{bucket}.nextCursor가 있으면 같은 범위를 이어서 조회할 수 있습니다
 3. **재고 확인 워크플로우**:
    - 먼저 /api/daiso/products로 제품 검색
    - 결과에서 원하는 제품의 id 확인

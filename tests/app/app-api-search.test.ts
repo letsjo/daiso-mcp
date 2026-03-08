@@ -5,6 +5,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import app from '../../src/index.js';
 import { setupFetchMock } from './testHelpers.js';
+import { encodeUnifiedSearchCursor } from '../../src/unified-search/cursor.js';
 
 const mockFetch = vi.fn();
 setupFetchMock(mockFetch);
@@ -33,7 +34,56 @@ describe('GET /api/search', () => {
       returnedCount: 1,
       truncated: true,
       sortApplied: 'service-default',
+      nextCursor: encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'daiso',
+        bucket: 'products',
+        query: '정리함',
+        limitPerService: 1,
+        page: 2,
+      }),
     });
+  });
+
+  it('cursor만으로 daiso product 다음 페이지를 조회할 수 있다', async () => {
+    mockFetch.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          resultSet: {
+            result: [{ totalSize: 11, resultDocuments: [{ PD_NO: 'P6', PDNM: '정리함 6', PD_PRC: '1000' }] }],
+          },
+        }),
+      ),
+    );
+
+    const res = await app.request(
+      `/api/search?cursor=${encodeURIComponent(
+        encodeUnifiedSearchCursor({
+          v: 1,
+          service: 'daiso',
+          bucket: 'products',
+          query: '정리함',
+          limitPerService: 5,
+          page: 2,
+        }),
+      )}`,
+    );
+
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.data.query).toBe('정리함');
+    expect(data.data.results.daiso.products[0].id).toBe('P6');
+    expect(data.meta.services.daiso.products.nextCursor).toBe(
+      encodeUnifiedSearchCursor({
+        v: 1,
+        service: 'daiso',
+        bucket: 'products',
+        query: '정리함',
+        limitPerService: 5,
+        page: 3,
+      }),
+    );
   });
 
   it('잘못된 services는 400을 반환한다', async () => {

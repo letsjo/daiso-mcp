@@ -24,7 +24,7 @@ import type {
 } from '../../../unified-search/interfaces.js';
 
 interface MultiSearchArgs {
-  query: string;
+  query?: string;
   services?: UnifiedSearchServiceId[];
   types?: UnifiedSearchEntityType[];
   latitude?: number;
@@ -91,6 +91,7 @@ async function multiSearch(
     longitude: validatedQuery.longitude,
     limitPerService: validatedQuery.limitPerService,
     timeoutMs,
+    continuation: validatedQuery.continuation,
   } satisfies UnifiedSearchQuery);
 
   return createJsonTextResponse(result);
@@ -103,7 +104,7 @@ export function createMultiSearchTool(zyteApiKey?: string): ToolRegistration {
     description:
       '다이소, 올리브영, 메가박스, CGV를 한 번에 조회하는 통합 검색 도구입니다.',
     inputSchema: {
-      query: z.string().describe('공통 검색어'),
+      query: z.string().optional().describe('공통 검색어 (cursor 요청 시 생략 가능)'),
       services: z
         .array(z.enum(SUPPORTED_UNIFIED_SEARCH_SERVICES))
         .optional()
@@ -131,7 +132,7 @@ export function createMultiSearchTool(zyteApiKey?: string): ToolRegistration {
       cursor: z
         .string()
         .optional()
-        .describe('continuation pilot cursor (현재는 validator만 연결되고 실제 조회는 미구현)'),
+        .describe('continuation pilot cursor (현재는 daiso product만 실제 조회 지원)'),
     },
     handler: (args) => multiSearch(args, zyteApiKey),
   });

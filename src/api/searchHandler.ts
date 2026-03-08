@@ -146,6 +146,7 @@ export async function handleUnifiedSearch(c: ApiContext) {
     longitude: validatedQuery.longitude,
     limitPerService: validatedQuery.limitPerService,
     timeoutMs,
+    continuation: validatedQuery.continuation,
   });
 
   return c.json(result);

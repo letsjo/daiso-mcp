@@ -29,7 +29,7 @@ describe('unified-search cursor validator', () => {
     });
   });
 
-  it('pilot scope cursor는 현재 CURSOR_NOT_IMPLEMENTED를 반환한다', () => {
+  it('구현된 daiso products cursor는 실제 조회용 continuation을 반환한다', () => {
     const cursor = encodeUnifiedSearchCursor({
       v: 1,
       service: 'daiso',
@@ -39,16 +39,26 @@ describe('unified-search cursor validator', () => {
       page: 2,
     });
 
-    expect(() =>
+    expect(
       validateUnifiedSearchCursorInput({
         cursor,
       }),
-    ).toThrowError(
-      new UnifiedSearchCursorValidationError(
-        'CURSOR_NOT_IMPLEMENTED',
-        'continuation cursor는 아직 구현되지 않았습니다.',
-      ),
-    );
+    ).toEqual({
+      query: '정리함',
+      services: ['daiso'],
+      types: ['product'],
+      limitPerService: 5,
+      latitude: undefined,
+      longitude: undefined,
+      continuation: {
+        v: 1,
+        service: 'daiso',
+        bucket: 'products',
+        query: '정리함',
+        limitPerService: 5,
+        page: 2,
+      },
+    });
   });
 
   it('cursor와 query가 다르면 CURSOR_QUERY_MISMATCH를 반환한다', () => {
@@ -98,6 +108,29 @@ describe('unified-search cursor validator', () => {
     );
   });
 
+  it('multi-service 또는 multi-type cursor 요청은 CURSOR_SCOPE_NOT_SUPPORTED를 반환한다', () => {
+    const cursor = encodeUnifiedSearchCursor({
+      v: 1,
+      service: 'daiso',
+      bucket: 'products',
+      query: '정리함',
+      limitPerService: 5,
+      page: 2,
+    });
+
+    expect(() =>
+      validateUnifiedSearchCursorInput({
+        cursor,
+        services: ['daiso', 'oliveyoung'],
+      }),
+    ).toThrowError(
+      new UnifiedSearchCursorValidationError(
+        'CURSOR_SCOPE_NOT_SUPPORTED',
+        'continuation cursor는 서비스 1개와 타입 1개 요청에서만 사용할 수 있습니다.',
+      ),
+    );
+  });
+
   it('oliveyoung stores cursor는 위치가 맞아야 한다', () => {
     const cursor = encodeUnifiedSearchCursor({
       v: 1,
@@ -120,6 +153,28 @@ describe('unified-search cursor validator', () => {
       new UnifiedSearchCursorValidationError(
         'CURSOR_QUERY_MISMATCH',
         'cursor와 요청 파라미터가 일치하지 않습니다.',
+      ),
+    );
+  });
+
+  it('미구현 oliveyoung cursor는 CURSOR_NOT_IMPLEMENTED를 반환한다', () => {
+    const cursor = encodeUnifiedSearchCursor({
+      v: 1,
+      service: 'oliveyoung',
+      bucket: 'products',
+      query: '선크림',
+      limitPerService: 5,
+      page: 2,
+    });
+
+    expect(() =>
+      validateUnifiedSearchCursorInput({
+        cursor,
+      }),
+    ).toThrowError(
+      new UnifiedSearchCursorValidationError(
+        'CURSOR_NOT_IMPLEMENTED',
+        'continuation cursor는 아직 구현되지 않았습니다.',
       ),
     );
   });

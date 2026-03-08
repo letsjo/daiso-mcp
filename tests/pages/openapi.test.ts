@@ -15,9 +15,20 @@ describe('OpenAPI 페이지', () => {
     const spec = generateOpenApiSpec('https://example.com') as {
       openapi: string;
       servers: Array<{ url: string }>;
-      paths: Record<string, unknown>;
+      paths: {
+        '/api/search': {
+          get: {
+            parameters: Array<{ name: string; required?: boolean }>;
+          };
+        };
+      };
       components: {
         schemas: {
+          UnifiedSearchBucketMeta: {
+            properties: {
+              nextCursor: unknown;
+            };
+          };
           UnifiedSearchResponse: {
             properties: {
               meta: {
@@ -42,7 +53,14 @@ describe('OpenAPI 페이지', () => {
     expect(spec.paths['/api/cgv/theaters']).toBeDefined();
     expect(spec.paths['/api/cgv/movies']).toBeDefined();
     expect(spec.paths['/api/cgv/timetable']).toBeDefined();
+    expect(spec.paths['/api/search'].get.parameters).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'q', required: false }),
+        expect.objectContaining({ name: 'cursor', required: false }),
+      ]),
+    );
     expect(spec.components.schemas.UnifiedSearchResponse.properties.meta.properties.services).toBeDefined();
+    expect(spec.components.schemas.UnifiedSearchBucketMeta.properties.nextCursor).toBeDefined();
   });
 
   it('OpenAPI JSON 응답을 생성한다', async () => {

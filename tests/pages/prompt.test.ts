@@ -60,6 +60,7 @@ describe('generatePromptText', () => {
     expect(text).toContain('lng');
     expect(text).toContain('services');
     expect(text).toContain('types');
+    expect(text).toContain('cursor');
   });
 
   it('응답 예시를 포함한다', () => {
@@ -74,17 +75,10 @@ describe('generatePromptText', () => {
     const text = generatePromptText('https://test.com');
 
     expect(text).toContain('MISSING_QUERY');
-    expect(text).toContain('MISSING_PARAMS');
-    expect(text).toContain('NOT_FOUND');
-    expect(text).toContain('SEARCH_FAILED');
-    expect(text).toContain('OLIVEYOUNG_STORE_SEARCH_FAILED');
-    expect(text).toContain('OLIVEYOUNG_INVENTORY_CHECK_FAILED');
-    expect(text).toContain('MEGABOX_THEATER_SEARCH_FAILED');
-    expect(text).toContain('MEGABOX_MOVIE_LIST_FAILED');
-    expect(text).toContain('MEGABOX_SEAT_LIST_FAILED');
-    expect(text).toContain('CGV_THEATER_SEARCH_FAILED');
-    expect(text).toContain('CGV_MOVIE_SEARCH_FAILED');
-    expect(text).toContain('CGV_TIMETABLE_FETCH_FAILED');
+    expect(text).toContain('INVALID_CURSOR');
+    expect(text).toContain('CURSOR_SCOPE_NOT_SUPPORTED');
+    expect(text).toContain('CURSOR_QUERY_MISMATCH');
+    expect(text).toContain('CURSOR_NOT_IMPLEMENTED');
     expect(text).toContain('INVALID_SERVICES');
     expect(text).toContain('INVALID_TYPES');
     expect(text).toContain('INVALID_LIMIT');
@@ -116,7 +110,7 @@ describe('generatePromptText', () => {
 
     expect(text).toContain('사용 팁');
     expect(text).toContain('한글 검색어');
-    expect(text).toContain('페이지네이션');
+    expect(text).toContain('continuation');
     expect(text).toContain('재고 확인 워크플로우');
   });
 });

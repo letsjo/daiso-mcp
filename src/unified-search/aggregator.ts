@@ -66,11 +66,22 @@ function normalizeServiceMeta(
   const serviceMeta: UnifiedSearchServiceMeta = {};
 
   for (const bucketKey of bucketKeys) {
-    serviceMeta[bucketKey] = {
+    const bucketMeta = {
       returnedCount: buckets[bucketKey].length,
       truncated: meta?.[bucketKey]?.truncated ?? false,
       sortApplied: meta?.[bucketKey]?.sortApplied ?? 'service-default',
     };
+    const nextCursor = meta?.[bucketKey]?.nextCursor;
+
+    if (nextCursor) {
+      serviceMeta[bucketKey] = {
+        ...bucketMeta,
+        nextCursor,
+      };
+      continue;
+    }
+
+    serviceMeta[bucketKey] = bucketMeta;
   }
 
   return serviceMeta;

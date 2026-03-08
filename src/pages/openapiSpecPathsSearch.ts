@@ -19,10 +19,17 @@ export const OPENAPI_PATHS_SEARCH = {
         {
           name: 'q',
           in: 'query',
-          required: true,
-          description: '공통 검색어',
+          required: false,
+          description: '공통 검색어 (cursor 요청 시 생략 가능)',
           schema: { type: 'string' },
           example: '강남',
+        },
+        {
+          name: 'cursor',
+          in: 'query',
+          required: false,
+          description: 'opaque continuation cursor (현재는 daiso product pilot만 실제 조회 지원)',
+          schema: { type: 'string' },
         },
         {
           name: 'services',

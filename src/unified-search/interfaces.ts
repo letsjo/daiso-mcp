@@ -4,6 +4,8 @@
  * 기존 ServiceProvider 계약과 분리된 opt-in adapter 계층에서 사용합니다.
  */
 
+import type { UnifiedSearchContinuationCursorPayload } from './cursor.js';
+
 export type UnifiedSearchServiceId = 'daiso' | 'oliveyoung' | 'megabox' | 'cgv';
 
 export type UnifiedSearchEntityType = 'product' | 'store' | 'movie' | 'theater';
@@ -65,6 +67,7 @@ export interface UnifiedSearchBucketMeta {
   returnedCount: number;
   truncated: boolean;
   sortApplied: UnifiedSearchSortApplied;
+  nextCursor?: string;
 }
 
 export type UnifiedSearchServiceMeta = Partial<
@@ -85,6 +88,7 @@ export interface UnifiedSearchQuery {
   longitude?: number;
   limitPerService?: number;
   timeoutMs?: number;
+  continuation?: UnifiedSearchContinuationCursorPayload;
 }
 
 export interface UnifiedSearchAdapterQuery extends UnifiedSearchQuery {
