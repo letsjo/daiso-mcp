@@ -9,9 +9,10 @@ import { fetchMegaboxBookingList, fetchMegaboxTheaterInfo, toYyyymmdd as toMegab
 import { fetchCgvMovies, fetchCgvTheaters, toYyyymmdd as toCgvDate } from '../services/cgv/client.js';
 import type {
   UnifiedSearchAdapter,
+  UnifiedSearchAdapterResult,
   UnifiedSearchAdapterQuery,
+  UnifiedSearchBucketMeta,
   UnifiedSearchMovieResult,
-  UnifiedSearchResultBuckets,
   UnifiedSearchTheaterResult,
 } from './interfaces.js';
 
@@ -19,6 +20,18 @@ const DEFAULT_LATITUDE = 37.5665;
 const DEFAULT_LONGITUDE = 126.978;
 const DEFAULT_MEGABOX_AREA_CODE = '11';
 const MAX_CGV_MOVIE_SEARCH_THEATERS = 5;
+
+function createBucketMeta(
+  returnedCount: number,
+  truncated: boolean,
+  sortApplied: UnifiedSearchBucketMeta['sortApplied'] = 'service-default',
+): UnifiedSearchBucketMeta {
+  return {
+    returnedCount,
+    truncated,
+    sortApplied,
+  };
+}
 
 function matchesQuery(value: string | undefined, query: string): boolean {
   if (!value) {
@@ -81,10 +94,10 @@ export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
     service: 'daiso',
     supportedTypes: ['product', 'store'],
     async search(query) {
-      const result: Partial<UnifiedSearchResultBuckets> = {};
+      const result: UnifiedSearchAdapterResult = {};
 
       if (query.types.includes('product')) {
-        const { products } = await fetchProducts(query.query, 1, query.limitPerService);
+        const { products, totalCount } = await fetchProducts(query.query, 1, query.limitPerService);
 
         result.products = products.map((product) => ({
           id: product.id,
@@ -97,12 +110,17 @@ export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
           imageUrl: product.imageUrl,
           stockStatus: product.soldOut ? 'out_of_stock' : 'unknown',
         }));
+        result.meta = {
+          ...result.meta,
+          products: createBucketMeta(result.products.length, totalCount > result.products.length),
+        };
       }
 
       if (query.types.includes('store')) {
         const stores = await fetchStores(query.query);
+        const limitedStores = stores.slice(0, query.limitPerService);
 
-        result.stores = stores.slice(0, query.limitPerService).map((store) => ({
+        result.stores = limitedStores.map((store) => ({
           id: `${store.name}:${store.address}`,
           title: store.name,
           service: 'daiso',
@@ -113,6 +131,10 @@ export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
           longitude: store.lng,
           pickupAvailable: store.options.pickup,
         }));
+        result.meta = {
+          ...result.meta,
+          stores: createBucketMeta(result.stores.length, stores.length > limitedStores.length),
+        };
       }
 
       return result;
@@ -125,11 +147,11 @@ export function createOliveyoungUnifiedSearchAdapter(zyteApiKey?: string): Unifi
     service: 'oliveyoung',
     supportedTypes: ['product', 'store'],
     async search(query) {
-      const result: Partial<UnifiedSearchResultBuckets> = {};
+      const result: UnifiedSearchAdapterResult = {};
       const location = getSearchLocation(query);
 
       if (query.types.includes('product')) {
-        const { products } = await fetchOliveyoungProducts(
+        const { products, totalCount } = await fetchOliveyoungProducts(
           {
             keyword: query.query,
             page: 1,
@@ -152,10 +174,14 @@ export function createOliveyoungUnifiedSearchAdapter(zyteApiKey?: string): Unifi
           originalPrice: product.originalPrice,
           stockStatus: product.o2oStockFlag ? 'in_stock' : 'out_of_stock',
         }));
+        result.meta = {
+          ...result.meta,
+          products: createBucketMeta(result.products.length, totalCount > result.products.length),
+        };
       }
 
       if (query.types.includes('store')) {
-        const { stores } = await fetchOliveyoungStores(
+        const { stores, totalCount } = await fetchOliveyoungStores(
           {
             latitude: location.latitude,
             longitude: location.longitude,
@@ -167,8 +193,9 @@ export function createOliveyoungUnifiedSearchAdapter(zyteApiKey?: string): Unifi
             timeout: query.timeoutMs,
           },
         );
+        const limitedStores = stores.slice(0, query.limitPerService);
 
-        result.stores = stores.slice(0, query.limitPerService).map((store) => ({
+        result.stores = limitedStores.map((store) => ({
           id: store.storeCode,
           title: store.storeName,
           service: 'oliveyoung',
@@ -178,6 +205,10 @@ export function createOliveyoungUnifiedSearchAdapter(zyteApiKey?: string): Unifi
           longitude: store.longitude,
           pickupAvailable: store.pickupYn,
         }));
+        result.meta = {
+          ...result.meta,
+          stores: createBucketMeta(result.stores.length, totalCount > limitedStores.length),
+        };
       }
 
       return result;
@@ -190,7 +221,7 @@ export function createMegaboxUnifiedSearchAdapter(): UnifiedSearchAdapter {
     service: 'megabox',
     supportedTypes: ['movie', 'theater'],
     async search(query) {
-      const result: Partial<UnifiedSearchResultBuckets> = {};
+      const result: UnifiedSearchAdapterResult = {};
       const playDate = toMegaboxDate();
       const location = getSearchLocation(query);
       const { theaters, movies } = await fetchMegaboxBookingList({
@@ -200,8 +231,9 @@ export function createMegaboxUnifiedSearchAdapter(): UnifiedSearchAdapter {
       });
 
       if (query.types.includes('movie')) {
-        result.movies = movies
-          .filter((movie) => matchesQuery(movie.movieName, query.query))
+        const matchedMovies = movies.filter((movie) => matchesQuery(movie.movieName, query.query));
+
+        result.movies = matchedMovies
           .slice(0, query.limitPerService)
           .map((movie) => ({
             id: movie.movieId,
@@ -210,6 +242,10 @@ export function createMegaboxUnifiedSearchAdapter(): UnifiedSearchAdapter {
             type: 'movie',
             rating: movie.movieStatus,
           }));
+        result.meta = {
+          ...result.meta,
+          movies: createBucketMeta(result.movies.length, matchedMovies.length > result.movies.length),
+        };
       }
 
       if (query.types.includes('theater')) {
@@ -244,7 +280,16 @@ export function createMegaboxUnifiedSearchAdapter(): UnifiedSearchAdapter {
           })
           .filter((theater): theater is UnifiedSearchTheaterResult => theater !== null);
 
-        result.theaters = sortTheatersByDistance(matchedTheaters).slice(0, query.limitPerService);
+        const sortedTheaters = sortTheatersByDistance(matchedTheaters);
+        result.theaters = sortedTheaters.slice(0, query.limitPerService);
+        result.meta = {
+          ...result.meta,
+          theaters: createBucketMeta(
+            result.theaters.length,
+            sortedTheaters.length > result.theaters.length,
+            'distance-asc',
+          ),
+        };
       }
 
       return result;
@@ -257,7 +302,7 @@ export function createCgvUnifiedSearchAdapter(zyteApiKey?: string): UnifiedSearc
     service: 'cgv',
     supportedTypes: ['movie', 'theater'],
     async search(query) {
-      const result: Partial<UnifiedSearchResultBuckets> = {};
+      const result: UnifiedSearchAdapterResult = {};
       const playDate = toCgvDate();
       const theaters = await fetchCgvTheaters({
         playDate,
@@ -266,8 +311,11 @@ export function createCgvUnifiedSearchAdapter(zyteApiKey?: string): UnifiedSearc
       });
 
       if (query.types.includes('theater')) {
-        result.theaters = theaters
-          .filter((theater) => matchesQuery(theater.theaterName, query.query))
+        const matchedTheaters = theaters.filter((theater) =>
+          matchesQuery(theater.theaterName, query.query),
+        );
+
+        result.theaters = matchedTheaters
           .slice(0, query.limitPerService)
           .map((theater) => ({
             id: theater.theaterCode,
@@ -276,6 +324,13 @@ export function createCgvUnifiedSearchAdapter(zyteApiKey?: string): UnifiedSearc
             type: 'theater',
             regionCode: theater.regionCode,
           }));
+        result.meta = {
+          ...result.meta,
+          theaters: createBucketMeta(
+            result.theaters.length,
+            matchedTheaters.length > result.theaters.length,
+          ),
+        };
       }
 
       if (query.types.includes('movie')) {
@@ -310,6 +365,10 @@ export function createCgvUnifiedSearchAdapter(zyteApiKey?: string): UnifiedSearc
         );
 
         result.movies = matchedMovies.slice(0, query.limitPerService);
+        result.meta = {
+          ...result.meta,
+          movies: createBucketMeta(result.movies.length, matchedMovies.length > result.movies.length),
+        };
       }
 
       return result;

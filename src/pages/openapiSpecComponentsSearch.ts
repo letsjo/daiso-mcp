@@ -88,6 +88,23 @@ export const OPENAPI_SEARCH_COMPONENT_SCHEMAS = {
       message: { type: 'string', example: '올리브영 API 요청 시간 초과' },
     },
   },
+  UnifiedSearchBucketMeta: {
+    type: 'object',
+    properties: {
+      returnedCount: { type: 'integer', example: 5 },
+      truncated: { type: 'boolean', example: false },
+      sortApplied: { type: 'string', example: 'service-default' },
+    },
+  },
+  UnifiedSearchServiceMeta: {
+    type: 'object',
+    properties: {
+      products: { $ref: '#/components/schemas/UnifiedSearchBucketMeta' },
+      stores: { $ref: '#/components/schemas/UnifiedSearchBucketMeta' },
+      movies: { $ref: '#/components/schemas/UnifiedSearchBucketMeta' },
+      theaters: { $ref: '#/components/schemas/UnifiedSearchBucketMeta' },
+    },
+  },
   UnifiedSearchResponse: {
     type: 'object',
     properties: {
@@ -125,6 +142,15 @@ export const OPENAPI_SEARCH_COMPONENT_SCHEMAS = {
           },
           limitPerService: { type: 'integer', example: 5 },
           timeoutMs: { type: 'integer', example: 15000 },
+          services: {
+            type: 'object',
+            properties: {
+              daiso: { $ref: '#/components/schemas/UnifiedSearchServiceMeta' },
+              oliveyoung: { $ref: '#/components/schemas/UnifiedSearchServiceMeta' },
+              megabox: { $ref: '#/components/schemas/UnifiedSearchServiceMeta' },
+              cgv: { $ref: '#/components/schemas/UnifiedSearchServiceMeta' },
+            },
+          },
         },
       },
     },
