@@ -16,6 +16,19 @@ describe('OpenAPI 페이지', () => {
       openapi: string;
       servers: Array<{ url: string }>;
       paths: Record<string, unknown>;
+      components: {
+        schemas: {
+          UnifiedSearchResponse: {
+            properties: {
+              meta: {
+                properties: {
+                  services: unknown;
+                };
+              };
+            };
+          };
+        };
+      };
     };
 
     expect(spec.openapi).toBe('3.1.0');
@@ -29,6 +42,7 @@ describe('OpenAPI 페이지', () => {
     expect(spec.paths['/api/cgv/theaters']).toBeDefined();
     expect(spec.paths['/api/cgv/movies']).toBeDefined();
     expect(spec.paths['/api/cgv/timetable']).toBeDefined();
+    expect(spec.components.schemas.UnifiedSearchResponse.properties.meta.properties.services).toBeDefined();
   });
 
   it('OpenAPI JSON 응답을 생성한다', async () => {

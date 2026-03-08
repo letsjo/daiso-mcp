@@ -15,18 +15,25 @@ describe('GET /api/search', () => {
       new Response(
         JSON.stringify({
           resultSet: {
-            result: [{ totalSize: 1, resultDocuments: [{ PD_NO: 'P1', PDNM: '정리함', PD_PRC: '1000' }] }],
+            result: [{ totalSize: 2, resultDocuments: [{ PD_NO: 'P1', PDNM: '정리함', PD_PRC: '1000' }] }],
           },
         }),
       ),
     );
 
-    const res = await app.request('/api/search?q=%EC%A0%95%EB%A6%AC%ED%95%A8&services=daiso&types=product');
+    const res = await app.request(
+      '/api/search?q=%EC%A0%95%EB%A6%AC%ED%95%A8&services=daiso&types=product&limitPerService=1',
+    );
 
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.results.daiso.products).toHaveLength(1);
+    expect(data.meta.services.daiso.products).toEqual({
+      returnedCount: 1,
+      truncated: true,
+      sortApplied: 'service-default',
+    });
   });
 
   it('잘못된 services는 400을 반환한다', async () => {
