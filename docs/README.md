@@ -48,6 +48,7 @@
 - `troubleshooting.md`
 - `unified-search-contract.md`
 - `unified-search-design.md`
+- `unified-search-pagination-review.md`
 
 ## 사용 메모
 

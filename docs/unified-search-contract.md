@@ -112,6 +112,8 @@ interface UnifiedSearchAdapter {
 
 ## 다음 후속 작업
 
-1. `/api/search` 결과 수 제한, 정렬, 페이지네이션 메타데이터 확장 여부 검토
+세부 검토 문서: `docs/unified-search-pagination-review.md`
+
+1. 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터 추가
 2. `multi_search`와 GET 응답 간 표현 차이를 더 줄일지 검토
 3. 신규 소매 서비스 추가 전 공통 검색/매장 타입 재사용 범위 정리
