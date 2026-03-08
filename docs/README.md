@@ -46,6 +46,7 @@
 - `service-priority.md`
 - `smoke-test-strategy.md`
 - `troubleshooting.md`
+- `unified-search-contract.md`
 - `unified-search-design.md`
 
 ## 사용 메모
