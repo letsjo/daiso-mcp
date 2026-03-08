@@ -61,7 +61,9 @@
 - [x] `[P2]` 통합 검색 aggregator를 재사용하는 `multi_search` MCP 도구 추가하기
 - [x] `[P2]` `/api/search` 결과 수 제한, 정렬, 페이지네이션 메타데이터 확장 여부 검토하기
 - [x] `[P2]` `/api/search` 응답에 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터 추가하기
-- [ ] `[P2]` 서비스/버킷별 continuation 전략(`nextCursor`) 도입 가능성 검토하기
+- [x] `[P2]` 서비스/버킷별 continuation 전략(`nextCursor`) 도입 가능성 검토하기
+- [ ] `[P2]` `Daiso products`, `Oliveyoung products/stores` 범위에서 continuation pilot 계약 초안 작성하기
+- [ ] `[P2]` continuation 요청 조건을 `서비스 1개 + 타입 1개`로 제한할지 API 계약 정리하기
 - [ ] `[P2]` store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 도입 가능성 검토하기
 - [ ] `[P2]` `Emart24` 또는 `GS25` 착수 전에 공통 소매 검색/매장 타입 재사용 범위를 정리하기
 

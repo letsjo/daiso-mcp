@@ -46,6 +46,7 @@
 - `service-priority.md`
 - `smoke-test-strategy.md`
 - `troubleshooting.md`
+- `unified-search-continuation-review.md`
 - `unified-search-contract.md`
 - `unified-search-design.md`
 - `unified-search-pagination-review.md`
