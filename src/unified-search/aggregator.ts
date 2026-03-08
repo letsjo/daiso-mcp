@@ -6,10 +6,14 @@
 
 import type {
   UnifiedSearchAdapter,
+  UnifiedSearchAdapterResult,
+  UnifiedSearchBucketKey,
+  UnifiedSearchEntityType,
   UnifiedSearchError,
   UnifiedSearchQuery,
   UnifiedSearchResponse,
   UnifiedSearchResultBuckets,
+  UnifiedSearchServiceMeta,
   UnifiedSearchServiceId,
 } from './interfaces.js';
 import { ALL_ENTITY_TYPES, DEFAULT_LIMIT_PER_SERVICE } from './constants.js';
@@ -31,7 +35,7 @@ function createEmptyBuckets(): UnifiedSearchResultBuckets {
 }
 
 function normalizeBuckets(
-  buckets: Partial<UnifiedSearchResultBuckets> | undefined,
+  buckets: Partial<UnifiedSearchResultBuckets> | UnifiedSearchAdapterResult | undefined,
 ): UnifiedSearchResultBuckets {
   return {
     products: buckets?.products ?? [],
@@ -39,6 +43,37 @@ function normalizeBuckets(
     movies: buckets?.movies ?? [],
     theaters: buckets?.theaters ?? [],
   };
+}
+
+const ENTITY_TYPE_TO_BUCKET_KEY = {
+  product: 'products',
+  store: 'stores',
+  movie: 'movies',
+  theater: 'theaters',
+} as const;
+
+function getRequestedBucketKeys(
+  types: UnifiedSearchEntityType[],
+): UnifiedSearchBucketKey[] {
+  return types.map((type) => ENTITY_TYPE_TO_BUCKET_KEY[type]);
+}
+
+function normalizeServiceMeta(
+  bucketKeys: UnifiedSearchBucketKey[],
+  buckets: UnifiedSearchResultBuckets,
+  meta: UnifiedSearchServiceMeta | undefined,
+): UnifiedSearchServiceMeta {
+  const serviceMeta: UnifiedSearchServiceMeta = {};
+
+  for (const bucketKey of bucketKeys) {
+    serviceMeta[bucketKey] = {
+      returnedCount: buckets[bucketKey].length,
+      truncated: meta?.[bucketKey]?.truncated ?? false,
+      sortApplied: meta?.[bucketKey]?.sortApplied ?? 'service-default',
+    };
+  }
+
+  return serviceMeta;
 }
 
 function normalizeErrorCode(code: string): UnifiedSearchError['code'] {
@@ -109,6 +144,7 @@ export class UnifiedSearchAggregator {
     const requestedTypes = query.types ?? ALL_ENTITY_TYPES;
     const limitPerService = query.limitPerService ?? DEFAULT_LIMIT_PER_SERVICE;
     const results: Partial<Record<UnifiedSearchServiceId, UnifiedSearchResultBuckets>> = {};
+    const serviceMeta: Partial<Record<UnifiedSearchServiceId, UnifiedSearchServiceMeta>> = {};
     const errors: UnifiedSearchError[] = [];
 
     await Promise.all(
@@ -121,6 +157,7 @@ export class UnifiedSearchAggregator {
             code: 'UNSUPPORTED_SERVICE',
             message: `통합 검색 미지원 서비스입니다: ${service}`,
           });
+          serviceMeta[service] = {};
           return;
         }
 
@@ -128,6 +165,7 @@ export class UnifiedSearchAggregator {
 
         if (allowedTypes.length === 0) {
           results[service] = createEmptyBuckets();
+          serviceMeta[service] = {};
           return;
         }
 
@@ -139,10 +177,17 @@ export class UnifiedSearchAggregator {
             limitPerService,
           });
 
-          results[service] = normalizeBuckets(adapterResult);
+          const normalizedBuckets = normalizeBuckets(adapterResult);
+          results[service] = normalizedBuckets;
+          serviceMeta[service] = normalizeServiceMeta(
+            getRequestedBucketKeys(allowedTypes),
+            normalizedBuckets,
+            adapterResult.meta,
+          );
         } catch (error) {
           errors.push(toUnifiedSearchError(service, error));
           results[service] = createEmptyBuckets();
+          serviceMeta[service] = {};
         }
       }),
     );
@@ -160,6 +205,7 @@ export class UnifiedSearchAggregator {
         requestedTypes,
         limitPerService,
         timeoutMs: query.timeoutMs,
+        services: serviceMeta,
       },
     };
   }

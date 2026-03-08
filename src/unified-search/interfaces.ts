@@ -57,6 +57,20 @@ export interface UnifiedSearchResultBuckets {
   theaters: UnifiedSearchTheaterResult[];
 }
 
+export type UnifiedSearchBucketKey = keyof UnifiedSearchResultBuckets;
+
+export type UnifiedSearchSortApplied = 'service-default' | 'distance-asc';
+
+export interface UnifiedSearchBucketMeta {
+  returnedCount: number;
+  truncated: boolean;
+  sortApplied: UnifiedSearchSortApplied;
+}
+
+export type UnifiedSearchServiceMeta = Partial<
+  Record<UnifiedSearchBucketKey, UnifiedSearchBucketMeta>
+>;
+
 export interface UnifiedSearchError {
   service: UnifiedSearchServiceId;
   code: 'UNSUPPORTED_SERVICE' | 'UPSTREAM_ERROR' | 'TIMEOUT' | 'BAD_RESPONSE';
@@ -79,10 +93,15 @@ export interface UnifiedSearchAdapterQuery extends UnifiedSearchQuery {
   limitPerService: number;
 }
 
+export interface UnifiedSearchAdapterResult
+  extends Partial<UnifiedSearchResultBuckets> {
+  meta?: UnifiedSearchServiceMeta;
+}
+
 export interface UnifiedSearchAdapter {
   readonly service: UnifiedSearchServiceId;
   readonly supportedTypes: UnifiedSearchEntityType[];
-  search(query: UnifiedSearchAdapterQuery): Promise<Partial<UnifiedSearchResultBuckets>>;
+  search(query: UnifiedSearchAdapterQuery): Promise<UnifiedSearchAdapterResult>;
 }
 
 export interface UnifiedSearchResponse {
@@ -98,5 +117,6 @@ export interface UnifiedSearchResponse {
     requestedTypes: UnifiedSearchEntityType[];
     limitPerService: number;
     timeoutMs?: number;
+    services: Partial<Record<UnifiedSearchServiceId, UnifiedSearchServiceMeta>>;
   };
 }
