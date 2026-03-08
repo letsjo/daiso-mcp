@@ -55,6 +55,18 @@ describe('createDaisoUnifiedSearchAdapter', () => {
         pickupAvailable: true,
       }),
     ]);
+    expect(result.meta).toEqual({
+      products: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+      stores: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+    });
   });
 
   it('product만 요청하면 품절 상태를 out_of_stock으로 변환한다', async () => {
@@ -190,6 +202,18 @@ describe('createOliveyoungUnifiedSearchAdapter', () => {
         pickupAvailable: true,
       }),
     ]);
+    expect(result.meta).toEqual({
+      products: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+      stores: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+    });
   });
 
   it('product만 요청하면 품절 상태를 out_of_stock으로 변환한다', async () => {

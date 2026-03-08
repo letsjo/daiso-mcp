@@ -55,6 +55,18 @@ describe('createMegaboxUnifiedSearchAdapter', () => {
         distanceKm: 0,
       }),
     ]);
+    expect(result.meta).toEqual({
+      movies: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+      theaters: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'distance-asc',
+      },
+    });
   });
 
   it('movie만 요청하면 지점 상세 조회를 건너뛴다', async () => {
@@ -182,6 +194,13 @@ describe('createCgvUnifiedSearchAdapter', () => {
         regionCode: '01',
       }),
     ]);
+    expect(result.meta).toEqual({
+      theaters: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+    });
   });
 
   it('극장명이 매치되지 않으면 기본 후보 극장에서 영화를 수집하고 중복을 제거한다', async () => {
@@ -239,6 +258,13 @@ describe('createCgvUnifiedSearchAdapter', () => {
         theaterName: 'CGV 강남',
       }),
     ]);
+    expect(result.meta).toEqual({
+      movies: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
+    });
   });
 
   it('극장명이 매치되면 해당 극장 우선으로 영화를 조회한다', async () => {

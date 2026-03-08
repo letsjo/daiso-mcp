@@ -26,6 +26,13 @@ describe('UnifiedSearchAggregator', () => {
       supportedTypes: ['product', 'store'],
       search: vi.fn().mockResolvedValue({
         products: [{ id: 'p1', type: 'product', title: '정리함', service: 'daiso', price: 1000 }],
+        meta: {
+          products: {
+            returnedCount: 1,
+            truncated: false,
+            sortApplied: 'service-default',
+          },
+        },
       }),
     });
     const cgv = createAdapter({
@@ -33,6 +40,13 @@ describe('UnifiedSearchAggregator', () => {
       supportedTypes: ['movie', 'theater'],
       search: vi.fn().mockResolvedValue({
         theaters: [{ id: 't1', type: 'theater', title: 'CGV 강남', service: 'cgv' }],
+        meta: {
+          theaters: {
+            returnedCount: 1,
+            truncated: false,
+            sortApplied: 'service-default',
+          },
+        },
       }),
     });
     const aggregator = new UnifiedSearchAggregator([daiso, cgv]);
@@ -67,6 +81,32 @@ describe('UnifiedSearchAggregator', () => {
         requestedTypes: ['product', 'store', 'movie', 'theater'],
         limitPerService: 5,
         timeoutMs: undefined,
+        services: {
+          daiso: {
+            products: {
+              returnedCount: 1,
+              truncated: false,
+              sortApplied: 'service-default',
+            },
+            stores: {
+              returnedCount: 0,
+              truncated: false,
+              sortApplied: 'service-default',
+            },
+          },
+          cgv: {
+            movies: {
+              returnedCount: 0,
+              truncated: false,
+              sortApplied: 'service-default',
+            },
+            theaters: {
+              returnedCount: 1,
+              truncated: false,
+              sortApplied: 'service-default',
+            },
+          },
+        },
       },
     });
 
@@ -106,6 +146,15 @@ describe('UnifiedSearchAggregator', () => {
       requestedTypes: ['movie'],
       limitPerService: 3,
       timeoutMs: 1500,
+      services: {
+        cgv: {
+          movies: {
+            returnedCount: 1,
+            truncated: false,
+            sortApplied: 'service-default',
+          },
+        },
+      },
     });
     expect(getFirstCallQuery(cgv)).toMatchObject({
       service: 'cgv',
@@ -137,6 +186,7 @@ describe('UnifiedSearchAggregator', () => {
       movies: [],
       theaters: [],
     });
+    expect(result.meta.services.cgv).toEqual({});
   });
 
   it('등록되지 않은 서비스를 요청하면 partial failure를 반환한다', async () => {
@@ -156,6 +206,7 @@ describe('UnifiedSearchAggregator', () => {
       },
     ]);
     expect(result.meta.partialFailure).toBe(true);
+    expect(result.meta.services.megabox).toEqual({});
   });
 
   it('Error 인스턴스를 UPSTREAM_ERROR로 변환하고 빈 그룹을 남긴다', async () => {
@@ -184,6 +235,32 @@ describe('UnifiedSearchAggregator', () => {
       stores: [],
       movies: [],
       theaters: [],
+    });
+    expect(result.meta.services.oliveyoung).toEqual({});
+  });
+
+  it('어댑터 메타가 없으면 기본 버킷 메타데이터를 채운다', async () => {
+    const adapter = createAdapter({
+      service: 'daiso',
+      supportedTypes: ['product'],
+      search: vi.fn().mockResolvedValue({
+        products: [{ id: 'p1', type: 'product', title: '정리함', service: 'daiso' }],
+      }),
+    });
+    const aggregator = new UnifiedSearchAggregator([adapter]);
+
+    const result = await aggregator.search({
+      query: '정리함',
+      services: ['daiso'],
+      types: ['product'],
+    });
+
+    expect(result.meta.services.daiso).toEqual({
+      products: {
+        returnedCount: 1,
+        truncated: false,
+        sortApplied: 'service-default',
+      },
     });
   });
 
@@ -286,6 +363,7 @@ describe('UnifiedSearchAggregator', () => {
         requestedTypes: ['product', 'store', 'movie', 'theater'],
         limitPerService: 5,
         timeoutMs: undefined,
+        services: {},
       },
     });
   });

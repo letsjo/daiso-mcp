@@ -52,6 +52,11 @@ describe('createMultiSearchTool', () => {
     expect(parsed.data.results.daiso.products).toHaveLength(1);
     expect(parsed.meta.limitPerService).toBe(2);
     expect(parsed.meta.timeoutMs).toBe(2000);
+    expect(parsed.meta.services.daiso.products).toEqual({
+      returnedCount: 1,
+      truncated: false,
+      sortApplied: 'service-default',
+    });
   });
 
   it('검색어가 비어 있으면 에러를 던진다', async () => {

@@ -152,7 +152,11 @@ describe('handleUnifiedSearch', () => {
 
   it('유효한 limitPerService와 timeoutMs를 파싱해 전달한다', async () => {
     mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify(createMockProductResponse([{ PD_NO: 'P1', PDNM: '정리함', PD_PRC: '1000' }])))
+      new Response(
+        JSON.stringify(
+          createMockProductResponse([{ PD_NO: 'P1', PDNM: '정리함', PD_PRC: '1000' }], 1),
+        ),
+      ),
     );
 
     const ctx = createMockContext({
@@ -167,7 +171,19 @@ describe('handleUnifiedSearch', () => {
 
     const payload = getJsonPayload(ctx) as {
       success: boolean;
-      meta: { limitPerService: number; timeoutMs: number };
+      meta: {
+        limitPerService: number;
+        timeoutMs: number;
+        services: {
+          daiso: {
+            products: {
+              returnedCount: number;
+              truncated: boolean;
+              sortApplied: string;
+            };
+          };
+        };
+      };
     };
 
     expect(payload.success).toBe(true);
@@ -175,6 +191,15 @@ describe('handleUnifiedSearch', () => {
       expect.objectContaining({
         limitPerService: 3,
         timeoutMs: 2000,
+        services: {
+          daiso: {
+            products: {
+              returnedCount: 1,
+              truncated: false,
+              sortApplied: 'service-default',
+            },
+          },
+        },
       }),
     );
   });
