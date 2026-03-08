@@ -15,9 +15,9 @@ import {
  * 프롬프트 텍스트 생성
  */
 export function generatePromptText(baseUrl: string): string {
-  return `# 다이소 MCP API
+  return `# 멀티서비스 MCP API
 
-다이소 제품 검색, 매장 찾기, 재고 확인을 위한 API입니다.
+다이소, 올리브영, 메가박스, CGV와 통합 검색을 위한 API입니다.
 모든 요청은 GET 방식이며, 결과는 JSON으로 반환됩니다.
 
 Base URL: ${baseUrl}

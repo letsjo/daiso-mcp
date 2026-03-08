@@ -2,7 +2,6 @@
  * 통합 검색 aggregator 팩토리
  */
 
-import type { AppBindings } from '../api/response.js';
 import { UnifiedSearchAggregator } from './aggregator.js';
 import {
   createCgvUnifiedSearchAdapter,
@@ -11,11 +10,17 @@ import {
   createOliveyoungUnifiedSearchAdapter,
 } from './adapters.js';
 
-export function createUnifiedSearchAggregator(bindings?: AppBindings): UnifiedSearchAggregator {
+export interface UnifiedSearchAggregatorOptions {
+  zyteApiKey?: string;
+}
+
+export function createUnifiedSearchAggregator(
+  options: UnifiedSearchAggregatorOptions = {},
+): UnifiedSearchAggregator {
   return new UnifiedSearchAggregator([
     createDaisoUnifiedSearchAdapter(),
-    createOliveyoungUnifiedSearchAdapter(bindings?.ZYTE_API_KEY),
+    createOliveyoungUnifiedSearchAdapter(options.zyteApiKey),
     createMegaboxUnifiedSearchAdapter(),
-    createCgvUnifiedSearchAdapter(bindings?.ZYTE_API_KEY),
+    createCgvUnifiedSearchAdapter(options.zyteApiKey),
   ]);
 }
