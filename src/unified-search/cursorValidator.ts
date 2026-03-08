@@ -15,8 +15,7 @@ import type {
 type UnifiedSearchCursorValidationErrorCode =
   | 'INVALID_CURSOR'
   | 'CURSOR_SCOPE_NOT_SUPPORTED'
-  | 'CURSOR_QUERY_MISMATCH'
-  | 'CURSOR_NOT_IMPLEMENTED';
+  | 'CURSOR_QUERY_MISMATCH';
 
 const BUCKET_TO_TYPE = {
   products: 'product',
@@ -89,12 +88,6 @@ function getCursorLocation(
   return {};
 }
 
-function isImplementedContinuationCursor(
-  cursor: UnifiedSearchContinuationCursorPayload,
-): boolean {
-  return cursor.service === 'daiso' && cursor.bucket === 'products';
-}
-
 export function validateUnifiedSearchCursorInput(
   input: UnifiedSearchCursorValidationInput,
 ): UnifiedSearchCursorValidationResult {
@@ -158,15 +151,8 @@ export function validateUnifiedSearchCursorInput(
     longitude: input.longitude ?? cursorLocation.longitude,
   };
 
-  if (isImplementedContinuationCursor(cursor)) {
-    return {
-      ...validatedQuery,
-      continuation: cursor,
-    };
-  }
-
-  throw new UnifiedSearchCursorValidationError(
-    'CURSOR_NOT_IMPLEMENTED',
-    'continuation cursor는 아직 구현되지 않았습니다.',
-  );
+  return {
+    ...validatedQuery,
+    continuation: cursor,
+  };
 }

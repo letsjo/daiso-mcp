@@ -28,7 +28,7 @@ export const OPENAPI_PATHS_SEARCH = {
           name: 'cursor',
           in: 'query',
           required: false,
-          description: 'opaque continuation cursor (현재는 daiso product pilot만 실제 조회 지원)',
+          description: 'opaque continuation cursor (daiso product, oliveyoung product/store pilot 지원)',
           schema: { type: 'string' },
         },
         {
