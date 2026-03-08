@@ -11,8 +11,8 @@
 
 - pilot용 opaque cursor encode/decode 유틸 초안은 `src/unified-search/cursor.ts`에 구현됨
 - REST `GET /api/search`와 MCP `multi_search`에 공통 validator 연결 완료
-- `daiso products`는 실제 continuation 조회와 `nextCursor` 반환까지 구현 완료
-- `oliveyoung products/stores`는 validator만 연결되어 있고 현재는 `CURSOR_NOT_IMPLEMENTED`를 반환
+- `daiso products`, `oliveyoung products`, `oliveyoung stores`는 실제 continuation 조회와 `nextCursor` 반환까지 구현 완료
+- `oliveyoung stores`는 API page size와 `limitPerService` 차이를 맞추기 위해 cursor 내부에 `offset`, `pageSize`를 함께 저장
 
 ## pilot 범위
 
@@ -142,7 +142,9 @@ continuation 시:
   "bucket": "stores",
   "query": "강남",
   "limitPerService": 5,
-  "pageIdx": 2,
+  "pageIdx": 1,
+  "offset": 5,
+  "pageSize": 20,
   "latitude": 37.498,
   "longitude": 127.027
 }
@@ -160,9 +162,10 @@ continuation 시:
 - `CURSOR_QUERY_MISMATCH`
   - token과 요청 파라미터가 다름
 
-## 다음 구현 순서
+## 다음 후속 작업
 
-1. `oliveyoung products/stores` pilot 확장
+1. store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 검토
+2. 신규 소매 서비스 추가 전 공통 검색/매장 타입 재사용 범위 정리
 
 ## 비목표
 
