@@ -11,6 +11,7 @@
 - 차기 서비스 우선순위 문서와 서비스 지원 매트릭스 문서 추가
 - 통합 검색 aggregator를 연결한 `GET /api/search` REST 엔드포인트 추가
 - 통합 검색 aggregator를 재사용하는 `multi_search` MCP 도구 추가
+- 통합 검색 결과 제한/정렬/페이지네이션 검토 문서 추가
 
 ### Changed
 
@@ -20,6 +21,7 @@
 - Node 20 고정, 스모크 테스트 전략, 멀티서비스 문서 체계를 정리
 - 통합 검색 OpenAPI 스펙과 서비스별 adapter 테스트를 추가해 계약 범위를 확장
 - 프롬프트 페이지를 멀티서비스/통합 검색 기준으로 갱신
+- 통합 검색의 `limitPerService`, `timeoutMs` 상한을 runtime과 OpenAPI에서 일치시킴
 
 ### Removed
 
