@@ -23,6 +23,7 @@ import { registerDaisoRoutes } from './api/routes/daisoRoutes.js';
 import { registerOliveyoungRoutes } from './api/routes/oliveyoungRoutes.js';
 import { registerMegaboxRoutes } from './api/routes/megaboxRoutes.js';
 import { registerCgvRoutes } from './api/routes/cgvRoutes.js';
+import { registerSearchRoutes } from './api/routes/searchRoutes.js';
 
 // 서버 메타데이터
 const SERVER_NAME = 'multi-service-mcp';
@@ -139,6 +140,7 @@ registerDaisoRoutes(app);
 registerOliveyoungRoutes(app);
 registerMegaboxRoutes(app);
 registerCgvRoutes(app);
+registerSearchRoutes(app);
 
 // MCP 엔드포인트
 app.all('/mcp', async (c) => {

@@ -5,12 +5,14 @@
 import { OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS } from './openapiSpecComponentsDaisoOliveyoung.js';
 import { OPENAPI_CGV_COMPONENT_SCHEMAS } from './openapiSpecComponentsCgv.js';
 import { OPENAPI_MEGABOX_COMPONENT_SCHEMAS } from './openapiSpecComponentsMegabox.js';
+import { OPENAPI_SEARCH_COMPONENT_SCHEMAS } from './openapiSpecComponentsSearch.js';
 
 export const OPENAPI_COMPONENTS = {
   schemas: {
     ...OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS,
     ...OPENAPI_MEGABOX_COMPONENT_SCHEMAS,
     ...OPENAPI_CGV_COMPONENT_SCHEMAS,
+    ...OPENAPI_SEARCH_COMPONENT_SCHEMAS,
     ErrorResponse: {
       type: 'object',
       properties: {
