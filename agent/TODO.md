@@ -64,7 +64,8 @@
 - [x] `[P2]` 서비스/버킷별 continuation 전략(`nextCursor`) 도입 가능성 검토하기
 - [x] `[P2]` `Daiso products`, `Oliveyoung products/stores` 범위에서 continuation pilot 계약 초안 작성하기
 - [x] `[P2]` continuation 요청 조건을 `서비스 1개 + 타입 1개`로 제한할지 API 계약 정리하기
-- [ ] `[P2]` continuation pilot용 cursor encode/decode 유틸 초안 추가하기
+- [x] `[P2]` continuation pilot용 cursor encode/decode 유틸 초안 추가하기
+- [ ] `[P2]` continuation cursor validator를 REST/MCP 공통으로 연결하기
 - [ ] `[P2]` `daiso products` continuation pilot 구현하기
 - [ ] `[P2]` `oliveyoung products/stores` continuation pilot 구현하기
 - [ ] `[P2]` store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 도입 가능성 검토하기

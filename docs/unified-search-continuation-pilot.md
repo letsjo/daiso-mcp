@@ -7,6 +7,11 @@
 - continuation을 전면 도입하지 않고, 안정성이 높은 bucket만 대상으로 pilot 계약을 먼저 고정합니다.
 - 이번 초안은 `GET /api/search`와 `multi_search`가 공통으로 재사용할 수 있는 규칙을 정의합니다.
 
+## 현재 상태
+
+- pilot용 opaque cursor encode/decode 유틸 초안은 `src/unified-search/cursor.ts`에 구현됨
+- 아직 REST/MCP 요청에 실제로 연결되지는 않음
+
 ## pilot 범위
 
 ### 포함
