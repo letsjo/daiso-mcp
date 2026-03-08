@@ -127,6 +127,7 @@ interface UnifiedSearchAdapter {
 - OpenAPI / prompt 노출 완료
 - 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터 추가 완료
 - continuation cursor encode/decode 유틸과 REST/MCP 공통 validator 연결 완료
+- `daiso products` continuation pilot과 `nextCursor` 반환 구현 완료
 
 ## 다음 후속 작업
 
@@ -134,6 +135,6 @@ interface UnifiedSearchAdapter {
 continuation 검토 문서: `docs/unified-search-continuation-review.md`
 continuation pilot 계약: `docs/unified-search-continuation-pilot.md`
 
-1. `daiso products` continuation pilot 구현
-2. `oliveyoung products/stores` continuation pilot 구현
-3. 신규 소매 서비스 추가 전 공통 검색/매장 타입 재사용 범위 정리
+1. `oliveyoung products/stores` continuation pilot 구현
+2. 신규 소매 서비스 추가 전 공통 검색/매장 타입 재사용 범위 정리
+3. store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 검토

@@ -66,7 +66,7 @@
 - [x] `[P2]` continuation 요청 조건을 `서비스 1개 + 타입 1개`로 제한할지 API 계약 정리하기
 - [x] `[P2]` continuation pilot용 cursor encode/decode 유틸 초안 추가하기
 - [x] `[P2]` continuation cursor validator를 REST/MCP 공통으로 연결하기
-- [ ] `[P2]` `daiso products` continuation pilot 구현하기
+- [x] `[P2]` `daiso products` continuation pilot 구현하기
 - [ ] `[P2]` `oliveyoung products/stores` continuation pilot 구현하기
 - [ ] `[P2]` store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 도입 가능성 검토하기
 - [ ] `[P2]` `Emart24` 또는 `GS25` 착수 전에 공통 소매 검색/매장 타입 재사용 범위를 정리하기
