@@ -95,7 +95,9 @@ export async function handleUnifiedSearch(c: ApiContext) {
     return errorResponse(c, 'INVALID_LOCATION', 'lat, lng는 유효한 숫자여야 합니다.');
   }
 
-  const aggregator = createUnifiedSearchAggregator(c.env);
+  const aggregator = createUnifiedSearchAggregator({
+    zyteApiKey: c.env?.ZYTE_API_KEY,
+  });
   const result = await aggregator.search({
     query,
     services: services.values,

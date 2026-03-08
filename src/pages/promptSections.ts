@@ -326,6 +326,27 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 
 ---
 
+### 13. 통합 검색
+
+**설명**: 여러 서비스를 한 번에 fan-out 조회하고 서비스별 그룹 결과를 반환합니다.
+
+**URL**: ${baseUrl}/api/search?q={검색어}
+
+**필수 파라미터**:
+- q: 공통 검색어 (예: 강남, 정리함, 듄)
+
+**선택 파라미터**:
+- services: 서비스 목록 (예: daiso,oliveyoung)
+- types: 결과 타입 목록 (예: product,store)
+- lat: 위도
+- lng: 경도
+- limitPerService: 서비스별 최대 결과 수 (기본값: 5)
+- timeoutMs: fan-out 타임아웃 (기본값: 15000)
+
+**예시**:
+- ${baseUrl}/api/search?q=강남&services=daiso,oliveyoung&types=store
+- ${baseUrl}/api/search?q=듄&services=megabox,cgv&types=movie
+
 ## 응답 형식
 
 ### 성공 응답
@@ -369,6 +390,11 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 | CGV_THEATER_SEARCH_FAILED | CGV 극장 조회 실패 |
 | CGV_MOVIE_SEARCH_FAILED | CGV 영화 목록 조회 실패 |
 | CGV_TIMETABLE_FETCH_FAILED | CGV 시간표 조회 실패 |
+| INVALID_SERVICES | 지원하지 않는 서비스 지정 |
+| INVALID_TYPES | 지원하지 않는 결과 타입 지정 |
+| INVALID_LIMIT | 잘못된 limitPerService 값 |
+| INVALID_TIMEOUT | 잘못된 timeoutMs 값 |
+| INVALID_LOCATION | 잘못된 좌표 값 |
 
 ---
 
@@ -401,5 +427,6 @@ MCP 연결 정보: ${baseUrl}/mcp
 - megabox_get_remaining_seats: 메가박스 잔여 좌석 조회
 - cgv_find_theaters: CGV 극장 검색
 - cgv_search_movies: CGV 영화 검색
-- cgv_get_timetable: CGV 시간표 조회`;
+- cgv_get_timetable: CGV 시간표 조회
+- multi_search: 다중 서비스 통합 검색`;
 }

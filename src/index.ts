@@ -15,6 +15,7 @@ import { createDaisoService } from './services/daiso/index.js';
 import { createOliveyoungService } from './services/oliveyoung/index.js';
 import { createMegaboxService } from './services/megabox/index.js';
 import { createCgvService } from './services/cgv/index.js';
+import { createMultiService } from './services/multi/index.js';
 import { createPromptResponse } from './pages/prompt.js';
 import { createOpenApiJsonResponse, createOpenApiYamlResponse } from './pages/openapi.js';
 import { createPrivacyResponse } from './pages/privacy.js';
@@ -44,6 +45,10 @@ const createRegistry = (bindings?: AppBindings) => {
       }),
     () =>
       createOliveyoungService({
+        zyteApiKey: bindings?.ZYTE_API_KEY,
+      }),
+    () =>
+      createMultiService({
         zyteApiKey: bindings?.ZYTE_API_KEY,
       }),
   ]);
