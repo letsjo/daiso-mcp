@@ -85,9 +85,10 @@
 - `limitPerService` 상한을 `50`으로 고정하고 runtime 검증을 추가했습니다.
 - `timeoutMs` 상한을 `30000`으로 고정하고 runtime 검증을 추가했습니다.
 - OpenAPI와 runtime의 제한값 드리프트를 제거했습니다.
+- 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터를 응답에 추가했습니다.
 
 ## 다음 구현 작업
 
-1. `/api/search` 응답에 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터 추가
-2. `multi_search`도 같은 메타데이터를 그대로 재사용하도록 계약 유지
+1. 서비스/버킷별 continuation 전략(`nextCursor`) 도입 가능성 검토
+2. `multi_search`와 GET 응답 간 표현 차이를 더 줄일지 검토
 3. store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 도입 가능성 별도 검토

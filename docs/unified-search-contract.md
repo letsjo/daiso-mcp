@@ -43,7 +43,23 @@
     "partialFailure": false,
     "requestedServices": ["daiso", "cgv"],
     "requestedTypes": ["product", "store", "movie", "theater"],
-    "limitPerService": 5
+    "limitPerService": 5,
+    "services": {
+      "daiso": {
+        "products": {
+          "returnedCount": 1,
+          "truncated": false,
+          "sortApplied": "service-default"
+        }
+      },
+      "cgv": {
+        "theaters": {
+          "returnedCount": 1,
+          "truncated": false,
+          "sortApplied": "service-default"
+        }
+      }
+    }
   }
 }
 ```
@@ -109,11 +125,12 @@ interface UnifiedSearchAdapter {
 - `GET /api/search` REST 엔드포인트 연결 완료
 - MCP `multi_search` 도구 연결 완료
 - OpenAPI / prompt 노출 완료
+- 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터 추가 완료
 
 ## 다음 후속 작업
 
 세부 검토 문서: `docs/unified-search-pagination-review.md`
 
-1. 서비스/버킷별 `returnedCount`, `truncated`, `sortApplied` 메타데이터 추가
+1. 서비스/버킷별 continuation 전략(`nextCursor`)을 도입할지 검토
 2. `multi_search`와 GET 응답 간 표현 차이를 더 줄일지 검토
 3. 신규 소매 서비스 추가 전 공통 검색/매장 타입 재사용 범위 정리
