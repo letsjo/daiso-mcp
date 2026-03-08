@@ -2,6 +2,13 @@
  * OpenAPI 경로 정의 (통합 검색)
  */
 
+import {
+  DEFAULT_LIMIT_PER_SERVICE,
+  DEFAULT_TIMEOUT_MS,
+  MAX_LIMIT_PER_SERVICE,
+  MAX_TIMEOUT_MS,
+} from '../unified-search/constants.js';
+
 export const OPENAPI_PATHS_SEARCH = {
   '/api/search': {
     get: {
@@ -50,14 +57,24 @@ export const OPENAPI_PATHS_SEARCH = {
           in: 'query',
           required: false,
           description: '서비스별 최대 결과 수',
-          schema: { type: 'integer', default: 5, minimum: 1, maximum: 50 },
+          schema: {
+            type: 'integer',
+            default: DEFAULT_LIMIT_PER_SERVICE,
+            minimum: 1,
+            maximum: MAX_LIMIT_PER_SERVICE,
+          },
         },
         {
           name: 'timeoutMs',
           in: 'query',
           required: false,
           description: '서비스 fan-out 요청 시간 제한 (밀리초)',
-          schema: { type: 'integer', default: 15000, minimum: 1, maximum: 30000 },
+          schema: {
+            type: 'integer',
+            default: DEFAULT_TIMEOUT_MS,
+            minimum: 1,
+            maximum: MAX_TIMEOUT_MS,
+          },
         },
       ],
       responses: {

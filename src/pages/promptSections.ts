@@ -340,8 +340,8 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 - types: 결과 타입 목록 (예: product,store)
 - lat: 위도
 - lng: 경도
-- limitPerService: 서비스별 최대 결과 수 (기본값: 5)
-- timeoutMs: fan-out 타임아웃 (기본값: 15000)
+- limitPerService: 서비스별 최대 결과 수 (기본값: 5, 최대: 50)
+- timeoutMs: fan-out 타임아웃 (기본값: 15000, 최대: 30000)
 
 **예시**:
 - ${baseUrl}/api/search?q=강남&services=daiso,oliveyoung&types=store

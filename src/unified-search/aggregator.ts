@@ -6,16 +6,14 @@
 
 import type {
   UnifiedSearchAdapter,
-  UnifiedSearchEntityType,
   UnifiedSearchError,
   UnifiedSearchQuery,
   UnifiedSearchResponse,
   UnifiedSearchResultBuckets,
   UnifiedSearchServiceId,
 } from './interfaces.js';
+import { ALL_ENTITY_TYPES, DEFAULT_LIMIT_PER_SERVICE } from './constants.js';
 
-const DEFAULT_LIMIT_PER_SERVICE = 5;
-const ALL_ENTITY_TYPES: UnifiedSearchEntityType[] = ['product', 'store', 'movie', 'theater'];
 const SUPPORTED_ERROR_CODES = new Set<UnifiedSearchError['code']>([
   'UNSUPPORTED_SERVICE',
   'UPSTREAM_ERROR',

@@ -5,25 +5,20 @@
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
 import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
+import {
+  LIMIT_PER_SERVICE_ERROR_MESSAGE,
+  MAX_LIMIT_PER_SERVICE,
+  MAX_TIMEOUT_MS,
+  SUPPORTED_UNIFIED_SEARCH_SERVICES,
+  SUPPORTED_UNIFIED_SEARCH_TYPES,
+  TIMEOUT_MS_ERROR_MESSAGE,
+} from '../../../unified-search/constants.js';
 import { createUnifiedSearchAggregator } from '../../../unified-search/createAggregator.js';
 import type {
-  UnifiedSearchEntityType,
   UnifiedSearchQuery,
+  UnifiedSearchEntityType,
   UnifiedSearchServiceId,
 } from '../../../unified-search/interfaces.js';
-
-const SUPPORTED_SERVICES: [UnifiedSearchServiceId, ...UnifiedSearchServiceId[]] = [
-  'daiso',
-  'oliveyoung',
-  'megabox',
-  'cgv',
-];
-const SUPPORTED_TYPES: [UnifiedSearchEntityType, ...UnifiedSearchEntityType[]] = [
-  'product',
-  'store',
-  'movie',
-  'theater',
-];
 
 interface MultiSearchArgs {
   query: string;
@@ -39,8 +34,15 @@ function validatePositiveInteger(
   value: number | undefined,
   fieldName: 'limitPerService' | 'timeoutMs',
 ): void {
-  if (value !== undefined && value < 1) {
-    throw new Error(`${fieldName}는 1 이상의 정수여야 합니다.`);
+  const maxValue =
+    fieldName === 'limitPerService' ? MAX_LIMIT_PER_SERVICE : MAX_TIMEOUT_MS;
+
+  if (value !== undefined && (value < 1 || value > maxValue)) {
+    throw new Error(
+      fieldName === 'limitPerService'
+        ? LIMIT_PER_SERVICE_ERROR_MESSAGE
+        : TIMEOUT_MS_ERROR_MESSAGE,
+    );
   }
 }
 
@@ -88,11 +90,11 @@ export function createMultiSearchTool(zyteApiKey?: string): ToolRegistration {
     inputSchema: {
       query: z.string().describe('공통 검색어'),
       services: z
-        .array(z.enum(SUPPORTED_SERVICES))
+        .array(z.enum(SUPPORTED_UNIFIED_SEARCH_SERVICES))
         .optional()
         .describe('조회할 서비스 목록 (생략 시 전체)'),
       types: z
-        .array(z.enum(SUPPORTED_TYPES))
+        .array(z.enum(SUPPORTED_UNIFIED_SEARCH_TYPES))
         .optional()
         .describe('조회할 결과 타입 목록 (생략 시 전체)'),
       latitude: z.number().optional().describe('위도'),
@@ -101,14 +103,16 @@ export function createMultiSearchTool(zyteApiKey?: string): ToolRegistration {
         .number()
         .int()
         .positive()
+        .max(MAX_LIMIT_PER_SERVICE)
         .optional()
-        .describe('서비스별 최대 결과 수 (기본값: 5)'),
+        .describe('서비스별 최대 결과 수 (기본값: 5, 최대: 50)'),
       timeoutMs: z
         .number()
         .int()
         .positive()
+        .max(MAX_TIMEOUT_MS)
         .optional()
-        .describe('서비스 fan-out 요청 시간 제한 (밀리초, 기본값: 15000)'),
+        .describe('서비스 fan-out 요청 시간 제한 (밀리초, 기본값: 15000, 최대: 30000)'),
     },
     handler: (args) => multiSearch(args, zyteApiKey),
   });
