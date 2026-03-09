@@ -109,6 +109,25 @@ describe('handleGetProduct', () => {
     );
   });
 
+  it('PDNM과 EXH_PD_NM이 모두 없으면 빈 문자열을 사용한다', async () => {
+    const product = {
+      PD_NO: '12345',
+      PDNM: '',
+      EXH_PD_NM: '',
+      PD_PRC: '1000',
+    };
+    mockFetch.mockResolvedValue(new Response(JSON.stringify(createMockProductResponse([product]))));
+
+    const ctx = createMockContext({}, { id: '12345' });
+    await handleGetProduct(ctx);
+
+    expect(ctx.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ name: '' }),
+      }),
+    );
+  });
+
   it('API 에러 시 500 에러를 반환한다', async () => {
     mockFetch.mockRejectedValue(new Error('API Error'));
 

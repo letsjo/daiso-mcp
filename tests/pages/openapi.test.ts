@@ -24,6 +24,21 @@ describe('OpenAPI 페이지', () => {
       };
       components: {
         schemas: {
+          Product: {
+            properties: {
+              links: unknown;
+            };
+          };
+          MegaboxShowtime: {
+            properties: {
+              links: unknown;
+            };
+          };
+          CgvTimetable: {
+            properties: {
+              links: unknown;
+            };
+          };
           UnifiedSearchBucketMeta: {
             properties: {
               nextCursor: unknown;
@@ -85,6 +100,9 @@ describe('OpenAPI 페이지', () => {
     expect(
       spec.components.schemas.UnifiedSearchResponse.properties.meta.properties.services,
     ).toBeDefined();
+    expect(spec.components.schemas.Product.properties.links).toBeDefined();
+    expect(spec.components.schemas.MegaboxShowtime.properties.links).toBeDefined();
+    expect(spec.components.schemas.CgvTimetable.properties.links).toBeDefined();
     expect(spec.components.schemas.UnifiedSearchBucketMeta.properties.nextCursor).toBeDefined();
   });
 

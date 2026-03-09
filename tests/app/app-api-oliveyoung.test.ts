@@ -69,6 +69,9 @@ describe('GET /api/oliveyoung/inventory', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.keyword).toBe('선크림');
+    expect(data.data.inventory.products[0].links.officialProductUrl).toContain(
+      'goodsNo=A1',
+    );
   });
 
   it('keyword 없이 요청하면 에러를 반환한다', async () => {
