@@ -159,6 +159,50 @@ describe('createMegaboxUnifiedSearchAdapter', () => {
 
     expect(result.theaters?.map((theater) => theater.title)).toEqual(['강남 B', '강남 A']);
   });
+
+  it('통합 검색에서도 메가박스 상세 조회 수를 제한한다', async () => {
+    const adapter = createMegaboxUnifiedSearchAdapter();
+    const theaters = Array.from({ length: 50 }, (_, index) => ({
+      brchNo: String(index + 1).padStart(4, '0'),
+      brchNm: `지점 ${index + 1}`,
+    }));
+
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          areaBrchList: theaters,
+          movieList: [],
+        }),
+      ),
+    );
+
+    for (let index = 0; index < 20; index += 1) {
+      mockFetch.mockResolvedValueOnce(
+        new Response(
+          `<dt>도로명주소</dt><dd>서울 강남구 ${index + 1}</dd><a href="?lng=127.0&lat=37.5">지도</a>`,
+        ),
+      );
+    }
+
+    const result = await adapter.search({
+      query: '강남구',
+      service: 'megabox',
+      types: ['theater'],
+      limitPerService: 2,
+      latitude: 37.5,
+      longitude: 127.0,
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(21);
+    expect(result.theaters).toHaveLength(2);
+    expect(result.meta).toEqual({
+      theaters: {
+        returnedCount: 2,
+        truncated: true,
+        sortApplied: 'distance-asc',
+      },
+    });
+  });
 });
 
 describe('createCgvUnifiedSearchAdapter', () => {
