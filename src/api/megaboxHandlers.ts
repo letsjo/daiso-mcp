@@ -11,6 +11,7 @@ import {
   DEFAULT_MEGABOX_LONGITUDE,
   findNearbyMegaboxTheaters,
 } from '../services/megabox/theaterLocator.js';
+import { matchesTimeWindow, normalizeTimeWindow } from '../utils/timeWindow.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 /**
@@ -101,8 +102,17 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
   const theaterId = c.req.query('theaterId') || undefined;
   const movieId = c.req.query('movieId') || undefined;
   const areaCode = c.req.query('areaCode') || '11';
+  const fromTime = c.req.query('fromTime') || undefined;
+  const toTime = c.req.query('toTime') || undefined;
   const limit = parseInt(c.req.query('limit') || '50');
   const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
+  let timeWindow;
+
+  try {
+    timeWindow = normalizeTimeWindow({ fromTime, toTime });
+  } catch (error) {
+    return errorResponse(c, 'INVALID_TIME_WINDOW', (error as Error).message, 400);
+  }
 
   try {
     const { showtimes } = await fetchMegaboxBookingList({
@@ -116,6 +126,7 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
     const seats = showtimes
       .filter((item) => (theaterId ? item.theaterId === theaterId : true))
       .filter((item) => (movieId ? item.movieId === movieId : true))
+      .filter((item) => matchesTimeWindow(item.startTime, timeWindow))
       .sort((a, b) => {
         if (a.startTime === b.startTime) {
           return a.theaterName.localeCompare(b.theaterName);
@@ -132,6 +143,8 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
           theaterId: theaterId || null,
           movieId: movieId || null,
           areaCode,
+          fromTime: timeWindow.fromTime || null,
+          toTime: timeWindow.toTime || null,
         },
         seats,
       },

@@ -89,4 +89,61 @@ describe('GET /api/cgv/timetable', () => {
     expect(data.success).toBe(true);
     expect(data.data.timetable).toHaveLength(1);
   });
+
+  it('시간대 필터가 있으면 해당 회차만 반환한다', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          statusCode: 0,
+          statusMessage: '조회 되었습니다.',
+          data: [
+            {
+              siteNo: '0056',
+              siteNm: 'CGV강남',
+              scnYmd: '20260304',
+              scnSseq: '1',
+              movNo: 'M1',
+              movNm: '영화A',
+              scnsrtTm: '1730',
+              scnendTm: '1930',
+              stcnt: 100,
+              frSeatCnt: 30,
+            },
+            {
+              siteNo: '0056',
+              siteNm: 'CGV강남',
+              scnYmd: '20260304',
+              scnSseq: '2',
+              movNo: 'M1',
+              movNm: '영화A',
+              scnsrtTm: '1830',
+              scnendTm: '2030',
+              stcnt: 100,
+              frSeatCnt: 20,
+            },
+          ],
+        }),
+      ),
+    );
+
+    const res = await app.request(
+      '/api/cgv/timetable?playDate=20260304&theaterCode=0056&fromTime=1800&toTime=1900',
+    );
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.data.filters.fromTime).toBe('1800');
+    expect(data.data.filters.toTime).toBe('1900');
+    expect(data.data.timetable).toHaveLength(1);
+    expect(data.data.timetable[0].scheduleId).toBe('2026030400562');
+  });
+
+  it('잘못된 시간대는 400을 반환한다', async () => {
+    const res = await app.request('/api/cgv/timetable?playDate=20260304&fromTime=2500');
+    expect(res.status).toBe(400);
+
+    const data = await res.json();
+    expect(data.success).toBe(false);
+    expect(data.error.code).toBe('INVALID_TIME_WINDOW');
+  });
 });

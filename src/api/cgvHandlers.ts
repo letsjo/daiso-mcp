@@ -4,6 +4,7 @@
 
 import { fetchCgvMovies, fetchCgvTheaters, fetchCgvTimetable, toYyyymmdd } from '../services/cgv/client.js';
 import { filterAndSortTimetable } from '../services/cgv/timetable.js';
+import { normalizeTimeWindow } from '../utils/timeWindow.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 /**
@@ -85,8 +86,17 @@ export async function handleCgvGetTimetable(c: ApiContext) {
   const playDate = c.req.query('playDate') || toYyyymmdd();
   const theaterCode = c.req.query('theaterCode') || undefined;
   const movieCode = c.req.query('movieCode') || undefined;
+  const fromTime = c.req.query('fromTime') || undefined;
+  const toTime = c.req.query('toTime') || undefined;
   const limit = parseInt(c.req.query('limit') || '50');
   const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
+  let timeWindow;
+
+  try {
+    timeWindow = normalizeTimeWindow({ fromTime, toTime });
+  } catch (error) {
+    return errorResponse(c, 'INVALID_TIME_WINDOW', (error as Error).message, 400);
+  }
 
   try {
     const timetable = await fetchCgvTimetable({
@@ -97,7 +107,13 @@ export async function handleCgvGetTimetable(c: ApiContext) {
       zyteApiKey: c.env?.ZYTE_API_KEY,
     });
 
-    const filtered = filterAndSortTimetable(timetable, { theaterCode, movieCode, limit });
+    const filtered = filterAndSortTimetable(timetable, {
+      theaterCode,
+      movieCode,
+      fromTime: timeWindow.fromTime,
+      toTime: timeWindow.toTime,
+      limit,
+    });
 
     return successResponse(
       c,
@@ -106,6 +122,8 @@ export async function handleCgvGetTimetable(c: ApiContext) {
         filters: {
           theaterCode: theaterCode || null,
           movieCode: movieCode || null,
+          fromTime: timeWindow.fromTime || null,
+          toTime: timeWindow.toTime || null,
         },
         timetable: filtered,
       },

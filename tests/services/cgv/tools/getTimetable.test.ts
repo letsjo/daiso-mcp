@@ -186,4 +186,55 @@ describe('createGetTimetableTool', () => {
     expect(parsed.filters.theaterCode).toBeNull();
     expect(parsed.filters.movieCode).toBeNull();
   });
+
+  it('시간대 필터로 회차를 좁힐 수 있다', async () => {
+    mockFetch.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          statusCode: 0,
+          statusMessage: '조회 되었습니다.',
+          data: [
+            {
+              siteNo: '0056',
+              siteNm: 'CGV강남',
+              scnYmd: '20260304',
+              scnSseq: '1',
+              movNo: 'M1',
+              movNm: '영화A',
+              scnsrtTm: '1730',
+              scnendTm: '1930',
+              stcnt: 120,
+              frSeatCnt: 50,
+            },
+            {
+              siteNo: '0056',
+              siteNm: 'CGV강남',
+              scnYmd: '20260304',
+              scnSseq: '2',
+              movNo: 'M1',
+              movNm: '영화A',
+              scnsrtTm: '1830',
+              scnendTm: '2030',
+              stcnt: 120,
+              frSeatCnt: 40,
+            },
+          ],
+        }),
+      ),
+    );
+
+    const tool = createGetTimetableTool();
+    const result = await tool.handler({
+      playDate: '20260304',
+      theaterCode: '0056',
+      fromTime: '1800',
+      toTime: '1900',
+    });
+
+    const parsed = JSON.parse(result.content[0].text);
+    expect(parsed.count).toBe(1);
+    expect(parsed.filters.fromTime).toBe('1800');
+    expect(parsed.filters.toTime).toBe('1900');
+    expect(parsed.timetable[0].scheduleId).toBe('2026030400562');
+  });
 });

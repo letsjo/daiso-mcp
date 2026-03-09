@@ -181,4 +181,48 @@ describe('createGetRemainingSeatsTool', () => {
     expect(parsed.count).toBe(1);
     expect(parsed.seats[0].movieId).toBe('M1');
   });
+
+  it('시간대 필터로 회차를 좁힐 수 있다', async () => {
+    mockFetch.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          movieFormList: [
+            {
+              playSchdlNo: 'S1',
+              movieNo: 'M1',
+              movieNm: '영화A',
+              brchNo: '1000',
+              brchNm: '강남',
+              playDe: '20260304',
+              playStartTime: '1730',
+              playEndTime: '1930',
+              restSeatCnt: 10,
+              totSeatCnt: 100,
+            },
+            {
+              playSchdlNo: 'S2',
+              movieNo: 'M1',
+              movieNm: '영화A',
+              brchNo: '1000',
+              brchNm: '강남',
+              playDe: '20260304',
+              playStartTime: '1830',
+              playEndTime: '2030',
+              restSeatCnt: 15,
+              totSeatCnt: 100,
+            },
+          ],
+        }),
+      ),
+    );
+
+    const tool = createGetRemainingSeatsTool();
+    const result = await tool.handler({ playDate: '20260304', fromTime: '1800', toTime: '1900' });
+
+    const parsed = JSON.parse(result.content[0].text);
+    expect(parsed.count).toBe(1);
+    expect(parsed.filters.fromTime).toBe('1800');
+    expect(parsed.filters.toTime).toBe('1900');
+    expect(parsed.seats[0].scheduleId).toBe('S2');
+  });
 });

@@ -7,11 +7,14 @@ import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
 import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchCgvTimetable, toYyyymmdd } from '../client.js';
 import { filterAndSortTimetable } from '../timetable.js';
+import { normalizeTimeWindow } from '../../../utils/timeWindow.js';
 
 interface GetTimetableArgs {
   playDate?: string;
   theaterCode?: string;
   movieCode?: string;
+  fromTime?: string;
+  toTime?: string;
   limit?: number;
   timeoutMs?: number;
 }
@@ -21,9 +24,12 @@ async function getTimetable(args: GetTimetableArgs, apiKey?: string): Promise<Mc
     playDate = toYyyymmdd(),
     theaterCode,
     movieCode,
+    fromTime,
+    toTime,
     limit = 50,
     timeoutMs = 15000,
   } = args;
+  const timeWindow = normalizeTimeWindow({ fromTime, toTime });
 
   const timetable = await fetchCgvTimetable({
     playDate,
@@ -33,13 +39,21 @@ async function getTimetable(args: GetTimetableArgs, apiKey?: string): Promise<Mc
     zyteApiKey: apiKey,
   });
 
-  const filtered = filterAndSortTimetable(timetable, { theaterCode, movieCode, limit });
+  const filtered = filterAndSortTimetable(timetable, {
+    theaterCode,
+    movieCode,
+    fromTime: timeWindow.fromTime,
+    toTime: timeWindow.toTime,
+    limit,
+  });
 
   const result = {
     playDate,
     filters: {
       theaterCode: theaterCode || null,
       movieCode: movieCode || null,
+      fromTime: timeWindow.fromTime || null,
+      toTime: timeWindow.toTime || null,
       limit,
     },
     count: filtered.length,
@@ -58,6 +72,8 @@ export function createGetTimetableTool(apiKey?: string): ToolRegistration {
       playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
       theaterCode: z.string().optional().describe('CGV 극장 코드 (예: 0056)'),
       movieCode: z.string().optional().describe('CGV 영화 코드'),
+      fromTime: z.string().optional().describe('조회 시작 시각 하한 (HHMM, 예: 1800)'),
+      toTime: z.string().optional().describe('조회 시작 시각 상한 (HHMM, 예: 2100)'),
       limit: z.number().optional().default(50).describe('최대 결과 수 (기본값: 50)'),
       timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },

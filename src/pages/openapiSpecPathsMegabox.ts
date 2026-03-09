@@ -155,6 +155,20 @@ export const OPENAPI_PATHS_MEGABOX = {
               schema: { type: 'string', default: '11' },
             },
             {
+              name: 'fromTime',
+              in: 'query',
+              required: false,
+              description: '조회 시작 시각 하한 (HHMM)',
+              schema: { type: 'string', example: '1800' },
+            },
+            {
+              name: 'toTime',
+              in: 'query',
+              required: false,
+              description: '조회 시작 시각 상한 (HHMM)',
+              schema: { type: 'string', example: '2100' },
+            },
+            {
               name: 'limit',
               in: 'query',
               required: false,
@@ -163,6 +177,14 @@ export const OPENAPI_PATHS_MEGABOX = {
             },
           ],
           responses: {
+            '400': {
+              description: '잘못된 시간대 조건',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ErrorResponse' },
+                },
+              },
+            },
             '200': {
               description: '조회 성공',
               content: {
