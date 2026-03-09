@@ -42,6 +42,7 @@
 - CGV 영화 목록을 실제 상영작 전체 기준 + `popularity-desc` 정렬로 보강
 - CGV OpenAPI/프롬프트/GPT 지침에서 극장 검색과 영화 목록 액션의 역할 차이를 명확히 함
 - GPT 지침에서 응답의 `links`를 바로 사용자에게 노출하도록 안내 강화
+- 메가박스 `officialBookingUrl`을 내부 iframe 경로 대신 공개 `/booking?playSchdlNo=...` 진입점으로 수정
 
 ### Removed
 

@@ -27,6 +27,9 @@
 - `/booking` 본문에서 데이터가 바로 내려오지 않음
 - 실제 예매 데이터는 iframe에서 동작
   - iframe URL: `/on/oh/ohb/SimpleBooking/simpleBookingPage.do`
+- 외부에 노출할 딥링크는 내부 iframe URL보다 `https://www.megabox.co.kr/booking?playSchdlNo={회차ID}`가 안전함
+  - 2026-03-10 재검증 기준 `/booking?playSchdlNo=...`는 상단 공개 예매 페이지에서 좌석 단계 진입을 초기화함
+  - 반대로 `simpleBookingPage.do?...`를 직접 열면 내부 선택 프레임만 보여서 사용자 입장에서는 예매 버튼이 없는 페이지처럼 보일 수 있음
 
 ### B. 사용자 동작별 호출 흐름
 
