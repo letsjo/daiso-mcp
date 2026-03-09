@@ -32,7 +32,7 @@ export interface NearbyMegaboxTheater {
   distanceKm: number;
 }
 
-function getTheaterDetailRequestLimit(limit: number): number {
+export function getMegaboxTheaterDetailRequestLimit(limit: number): number {
   return Math.min(
     Math.max(limit * THEATER_DETAIL_REQUEST_MULTIPLIER, MIN_THEATER_DETAIL_REQUESTS),
     MAX_THEATER_DETAIL_REQUESTS,
@@ -59,7 +59,7 @@ export async function findNearbyMegaboxTheaters(
     timeout: params.timeoutMs,
   });
 
-  const sampledTheaters = theaters.slice(0, getTheaterDetailRequestLimit(params.limit));
+  const sampledTheaters = theaters.slice(0, getMegaboxTheaterDetailRequestLimit(params.limit));
   const infoResults = await Promise.allSettled(
     sampledTheaters.map((theater) => fetchMegaboxTheaterInfo(theater.theaterId, params.timeoutMs)),
   );
