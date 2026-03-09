@@ -111,6 +111,67 @@ describe('GET /api/cgv/movies', () => {
   });
 });
 
+describe('GET /api/cgv/movies/by-theater', () => {
+  it('극장명 기반 CGV 영화 목록을 반환한다', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [
+              {
+                regnGrpCd: '01',
+                regnGrpNm: '서울',
+                siteList: [{ siteNo: '0366', siteNm: '고덕강일' }],
+              },
+            ],
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [
+              {
+                siteNo: '0366',
+                siteNm: 'CGV 고덕강일',
+                scnYmd: '20260304',
+                scnSseq: '1',
+                movNo: 'M1',
+                movNm: '영화A',
+                cratgClsNm: '12세',
+                scnsrtTm: '1010',
+                sortOseq: '1',
+              },
+            ],
+          }),
+        ),
+      );
+
+    const res = await app.request(
+      '/api/cgv/movies/by-theater?playDate=20260304&theaterQuery=%EA%B3%A0%EB%8D%95%EA%B0%95%EC%9D%BC',
+    );
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.data.filters.theaterCode).toBeNull();
+    expect(data.data.filters.theaterQuery).toBe('고덕강일');
+    expect(data.meta.sortApplied).toBe('popularity-desc');
+  });
+
+  it('theaterQuery가 없으면 400을 반환한다', async () => {
+    const res = await app.request('/api/cgv/movies/by-theater?playDate=20260304');
+    expect(res.status).toBe(400);
+
+    const data = await res.json();
+    expect(data.error.code).toBe('MISSING_THEATER_QUERY');
+  });
+});
+
 describe('GET /api/cgv/timetable', () => {
   it('CGV 시간표를 반환한다', async () => {
     mockFetch.mockResolvedValueOnce(
