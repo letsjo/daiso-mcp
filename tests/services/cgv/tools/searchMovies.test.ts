@@ -46,6 +46,63 @@ describe('createSearchMoviesTool', () => {
     expect(parsed.filters.theaterCode).toBe('0056');
   });
 
+  it('극장명 검색어와 정렬 기준을 반영한다', async () => {
+    mockFetch
+      .mockImplementationOnce(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              statusCode: 0,
+              statusMessage: '조회 되었습니다.',
+              data: [
+                {
+                  regnGrpCd: '01',
+                  regnGrpNm: '서울',
+                  siteList: [{ siteNo: '0366', siteNm: '고덕강일' }],
+                },
+              ],
+            }),
+          ),
+        ),
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              statusCode: 0,
+              statusMessage: '조회 되었습니다.',
+              data: [
+                {
+                  siteNo: '0366',
+                  siteNm: 'CGV 고덕강일',
+                  scnYmd: '20260304',
+                  scnSseq: '1',
+                  movNo: 'M1',
+                  movNm: '영화A',
+                  cratgClsNm: '12세',
+                  scnsrtTm: '1010',
+                  sortOseq: '1',
+                },
+              ],
+            }),
+          ),
+        ),
+      );
+
+    const tool = createSearchMoviesTool();
+    const result = await tool.handler({
+      playDate: '20260304',
+      theaterQuery: '고덕강일',
+      sort: 'popularity-desc',
+    });
+
+    const parsed = JSON.parse(result.content[0].text);
+    expect(parsed.filters.theaterCode).toBeNull();
+    expect(parsed.filters.theaterQuery).toBe('고덕강일');
+    expect(parsed.filters.sort).toBe('popularity-desc');
+    expect(parsed.movies[0].showtimeCount).toBe(1);
+  });
+
   it('필터가 없으면 null로 반환한다', async () => {
     mockFetch
       .mockImplementationOnce(() =>
@@ -68,7 +125,23 @@ describe('createSearchMoviesTool', () => {
       .mockImplementationOnce(() =>
         Promise.resolve(
           new Response(
-            JSON.stringify({ statusCode: 0, statusMessage: '조회 되었습니다.', data: [] }),
+            JSON.stringify({
+              statusCode: 0,
+              statusMessage: '조회 되었습니다.',
+              data: [
+                {
+                  siteNo: '0056',
+                  siteNm: 'CGV 강남',
+                  scnYmd: '20260304',
+                  scnSseq: '1',
+                  movNo: 'M1',
+                  movNm: '영화A',
+                  cratgClsNm: '전체관람가',
+                  scnsrtTm: '1010',
+                  sortOseq: '1',
+                },
+              ],
+            }),
           ),
         ),
       );
@@ -78,5 +151,7 @@ describe('createSearchMoviesTool', () => {
 
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.filters.theaterCode).toBeNull();
+    expect(parsed.filters.theaterQuery).toBeNull();
+    expect(parsed.filters.sort).toBe('popularity-desc');
   });
 });

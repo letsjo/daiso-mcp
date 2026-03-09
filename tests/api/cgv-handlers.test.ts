@@ -125,13 +125,15 @@ describe('handleCgvFindTheaters', () => {
 
 describe('handleCgvSearchMovies', () => {
   it('CGV 영화 목록을 반환한다', async () => {
-    mockFetch.mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          statusCode: 0,
-          statusMessage: '조회 되었습니다.',
-          data: [{ movNo: '30000985', movNm: '영화A', cratgClsNm: '12세' }],
-        }),
+    mockFetch.mockImplementation(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [{ movNo: '30000985', movNm: '영화A', cratgClsNm: '12세' }],
+          }),
+        ),
       ),
     );
 
@@ -160,6 +162,15 @@ describe('handleCgvSearchMovies', () => {
                 siteList: [{ siteNo: '0056', siteNm: '강남' }],
               },
             ],
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [{ movNo: '30000985', movNm: '영화A' }],
           }),
         ),
       )

@@ -38,13 +38,15 @@ describe('GET /api/cgv/theaters', () => {
 
 describe('GET /api/cgv/movies', () => {
   it('CGV 영화 목록을 반환한다', async () => {
-    mockFetch.mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          statusCode: 0,
-          statusMessage: '조회 되었습니다.',
-          data: [{ movNo: '30000985', movNm: '영화A', cratgClsNm: '12세' }],
-        }),
+    mockFetch.mockImplementation(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [{ movNo: '30000985', movNm: '영화A', cratgClsNm: '12세' }],
+          }),
+        ),
       ),
     );
 
@@ -54,6 +56,58 @@ describe('GET /api/cgv/movies', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.movies).toHaveLength(1);
+  });
+
+  it('극장명 검색어와 인기 정렬을 지원한다', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [
+              {
+                regnGrpCd: '01',
+                regnGrpNm: '서울',
+                siteList: [{ siteNo: '0366', siteNm: '고덕강일' }],
+              },
+            ],
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [
+              {
+                siteNo: '0366',
+                siteNm: 'CGV 고덕강일',
+                scnYmd: '20260304',
+                scnSseq: '1',
+                movNo: 'M1',
+                movNm: '영화A',
+                cratgClsNm: '12세',
+                scnsrtTm: '1010',
+                sortOseq: '1',
+              },
+            ],
+          }),
+        ),
+      );
+
+    const res = await app.request(
+      '/api/cgv/movies?playDate=20260304&theaterQuery=%EA%B3%A0%EB%8D%95%EA%B0%95%EC%9D%BC&sort=popularity-desc',
+    );
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.data.filters.theaterQuery).toBe('고덕강일');
+    expect(data.data.filters.sort).toBe('popularity-desc');
+    expect(data.meta.sortApplied).toBe('popularity-desc');
+    expect(data.data.movies[0].showtimeCount).toBe(1);
   });
 });
 
