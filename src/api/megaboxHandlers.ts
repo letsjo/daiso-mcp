@@ -4,75 +4,36 @@
 
 import {
   fetchMegaboxBookingList,
-  fetchMegaboxTheaterInfo,
   toYyyymmdd,
 } from '../services/megabox/client.js';
+import {
+  DEFAULT_MEGABOX_LATITUDE,
+  DEFAULT_MEGABOX_LONGITUDE,
+  findNearbyMegaboxTheaters,
+} from '../services/megabox/theaterLocator.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
-
-function calculateDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return 6371 * c;
-}
 
 /**
  * 메가박스 주변 지점 조회 API 핸들러
  * GET /api/megabox/theaters?lat={위도}&lng={경도}&playDate={YYYYMMDD}&areaCode={지역코드}
  */
 export async function handleMegaboxFindNearbyTheaters(c: ApiContext) {
-  const lat = parseFloat(c.req.query('lat') || '37.5665');
-  const lng = parseFloat(c.req.query('lng') || '126.978');
+  const lat = parseFloat(c.req.query('lat') || `${DEFAULT_MEGABOX_LATITUDE}`);
+  const lng = parseFloat(c.req.query('lng') || `${DEFAULT_MEGABOX_LONGITUDE}`);
   const playDate = c.req.query('playDate') || toYyyymmdd();
   const areaCode = c.req.query('areaCode') || '11';
   const limit = parseInt(c.req.query('limit') || '10');
   const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
 
   try {
-    const { theaters } = await fetchMegaboxBookingList({
+    const theaters = await findNearbyMegaboxTheaters({
+      latitude: lat,
+      longitude: lng,
       playDate,
       areaCode,
-      timeout: timeoutMs,
+      limit,
+      timeoutMs,
     });
-
-    const infoResults = await Promise.allSettled(
-      theaters.map((theater) => fetchMegaboxTheaterInfo(theater.theaterId, timeoutMs))
-    );
-
-    const merged = theaters
-      .map((theater, index) => {
-        const infoResult = infoResults[index];
-        if (infoResult.status !== 'fulfilled') {
-          return null;
-        }
-
-        if (infoResult.value.latitude === null || infoResult.value.longitude === null) {
-          return null;
-        }
-
-        const distanceKm = calculateDistanceKm(
-          lat,
-          lng,
-          infoResult.value.latitude,
-          infoResult.value.longitude
-        );
-
-        return {
-          theaterId: theater.theaterId,
-          theaterName: theater.theaterName,
-          address: infoResult.value.address,
-          latitude: infoResult.value.latitude,
-          longitude: infoResult.value.longitude,
-          distanceKm: Number(distanceKm.toFixed(2)),
-        };
-      })
-      .filter((theater): theater is NonNullable<typeof theater> => theater !== null)
-      .sort((a, b) => a.distanceKm - b.distanceKm)
-      .slice(0, limit);
 
     return successResponse(
       c,
@@ -80,9 +41,9 @@ export async function handleMegaboxFindNearbyTheaters(c: ApiContext) {
         location: { latitude: lat, longitude: lng },
         playDate,
         areaCode,
-        theaters: merged,
+        theaters,
       },
-      { total: merged.length, pageSize: limit }
+      { total: theaters.length, pageSize: limit }
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
@@ -123,7 +84,7 @@ export async function handleMegaboxListNowShowing(c: ApiContext) {
         movies: result.movies,
         showtimes: result.showtimes,
       },
-      { total: result.showtimes.length }
+      { total: result.showtimes.length },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
@@ -174,7 +135,7 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
         },
         seats,
       },
-      { total: seats.length, pageSize: limit }
+      { total: seats.length, pageSize: limit },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
