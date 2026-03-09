@@ -42,7 +42,8 @@ export function createFindTheatersTool(apiKey?: string): ToolRegistration {
   return createTool<FindTheatersArgs>({
     name: 'cgv_find_theaters',
     title: 'CGV 극장 검색',
-    description: '지역 코드 기준으로 CGV 극장 목록을 조회합니다.',
+    description:
+      '지역 코드 기준으로 CGV 극장 목록과 극장 코드를 조회합니다. 영화 목록 조회가 목적이면 cgv_search_movies 또는 cgv_search_movies_by_theater를 사용하세요.',
     inputSchema: {
       playDate: z.string().optional().describe('조회 날짜(YYYYMMDD, 기본값: 오늘)'),
       regionCode: z.string().optional().describe('지역 코드 (예: 01 서울)'),

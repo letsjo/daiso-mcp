@@ -6,6 +6,7 @@ import type { ServiceProvider } from '../../core/interfaces.js';
 import type { ServiceMetadata, ToolRegistration } from '../../core/types.js';
 import { createFindTheatersTool } from './tools/findTheaters.js';
 import { createSearchMoviesTool } from './tools/searchMovies.js';
+import { createSearchMoviesByTheaterTool } from './tools/searchMoviesByTheater.js';
 import { createGetTimetableTool } from './tools/getTimetable.js';
 
 const CGV_METADATA: ServiceMetadata = {
@@ -24,6 +25,7 @@ class CgvService implements ServiceProvider {
     return [
       createFindTheatersTool(this.options.zyteApiKey),
       createSearchMoviesTool(this.options.zyteApiKey),
+      createSearchMoviesByTheaterTool(this.options.zyteApiKey),
       createGetTimetableTool(this.options.zyteApiKey),
     ];
   }

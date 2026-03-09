@@ -19,7 +19,7 @@ export function createMegaboxSeatMapPromptSection(baseUrl: string): string {
 export function createCgvAndCommonPromptSection(baseUrl: string): string {
   return `### 11. CGV 극장 검색
 
-**설명**: 지역 코드 기준으로 CGV 극장 목록을 조회합니다.
+**설명**: 지역 코드 기준으로 CGV 극장 목록과 극장 코드를 조회합니다. 영화 목록 조회용이 아닙니다.
 
 **URL**: ${baseUrl}/api/cgv/theaters?playDate={YYYYMMDD}
 
@@ -36,7 +36,7 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 
 ### 12. CGV 영화 검색
 
-**설명**: 날짜/극장 조건으로 CGV 영화 목록을 조회합니다. 기본값은 상영 편성 수 기준 인기 우선 정렬입니다.
+**설명**: 날짜/극장 조건으로 CGV 영화 목록을 조회합니다. 기본값은 상영 편성 수 기준 인기 우선 정렬입니다. 극장명을 이미 알고 있으면 theaterQuery를 사용하세요.
 
 **URL**: ${baseUrl}/api/cgv/movies?playDate={YYYYMMDD}
 
@@ -52,7 +52,26 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 
 ---
 
-### 13. CGV 시간표 조회
+### 13. CGV 극장명 기반 영화 검색
+
+**설명**: 극장명으로 CGV 영화 목록을 바로 조회합니다. "고덕 CGV 영화 목록", "고덕강일 CGV 상영작" 같은 요청에 가장 적합합니다.
+
+**URL**: ${baseUrl}/api/cgv/movies/by-theater?theaterQuery={극장명}
+
+**필수 파라미터**:
+- theaterQuery: 극장명 검색어 (예: 고덕강일)
+
+**선택 파라미터**:
+- playDate: 조회 날짜 (YYYYMMDD, 기본값: 오늘)
+- sort: 정렬 기준 (popularity-desc, cgv-default)
+
+**예시**:
+- ${baseUrl}/api/cgv/movies/by-theater?playDate=20260304&theaterQuery=고덕강일
+- ${baseUrl}/api/cgv/movies/by-theater?theaterQuery=강남&sort=popularity-desc
+
+---
+
+### 14. CGV 시간표 조회
 
 **설명**: 날짜/극장/영화 조건으로 CGV 상영 시간표를 조회합니다.
 
@@ -74,7 +93,7 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 
 ---
 
-### 14. 통합 검색
+### 15. 통합 검색
 
 **설명**: 여러 서비스를 한 번에 fan-out 조회하고 서비스별 그룹 결과를 반환합니다.
 
@@ -183,6 +202,7 @@ MCP 연결 정보: ${baseUrl}/mcp
 - megabox_get_seat_map: 메가박스 좌석맵 조회
 - cgv_find_theaters: CGV 극장 검색
 - cgv_search_movies: CGV 영화 검색
+- cgv_search_movies_by_theater: CGV 극장별 영화 검색
 - cgv_get_timetable: CGV 시간표 조회
 - multi_search: 다중 서비스 통합 검색`;
 }
