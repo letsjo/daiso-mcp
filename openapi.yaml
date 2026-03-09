@@ -638,6 +638,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /api/megabox/seat-map:
+    get:
+      operationId: megaboxGetSeatMap
+      summary: 메가박스 좌석맵 조회
+      description: 회차 ID(playSchdlNo) 기준으로 메가박스 read-only 좌석맵을 조회합니다.
+      parameters:
+        - name: playSchdlNo
+          in: query
+          required: true
+          description: 메가박스 회차 ID
+          schema:
+            type: string
+            example: 2603101372011
+        - name: timeoutMs
+          in: query
+          required: false
+          description: 요청 제한 시간(ms)
+          schema:
+            type: integer
+            default: 15000
+            minimum: 1
+            maximum: 30000
+      responses:
+        200:
+          description: 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MegaboxSeatMapResponse"
+        400:
+          description: 회차 ID 누락
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        404:
+          description: 좌석맵 미존재
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        500:
+          description: 메가박스 API 호출 실패
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/cgv/theaters:
     get:
       operationId: cgvFindTheaters
@@ -1336,6 +1383,208 @@ components:
               type: integer
             pageSize:
               type: integer
+    MegaboxSeatMapSeat:
+      type: object
+      properties:
+        seatId:
+          type: string
+          example: 00100101
+        seatLabel:
+          type: string
+          example: A1
+        rowLabel:
+          type: string
+          example: A
+        seatNumber:
+          type: integer
+          example: 1
+        rowNumber:
+          type: integer
+          example: 1
+        columnNumber:
+          type: integer
+          example: 1
+        zoneCode:
+          type: string
+          nullable: true
+          example: GERN_ZONE
+        classCode:
+          type: string
+          nullable: true
+          example: RECLINE_CLS
+        statusCode:
+          type: string
+          nullable: true
+          example: GERN_SELL
+        availability:
+          type: string
+          enum:
+            - available
+            - unavailable
+        exposed:
+          type: boolean
+          example: true
+        coordinates:
+          type: object
+          properties:
+            x:
+              type: integer
+              example: 1
+            y:
+              type: integer
+              example: 1
+        selectionGroupName:
+          type: string
+          nullable: true
+          example: A2
+        note:
+          type: string
+          nullable: true
+          example: null
+    MegaboxSeatMapPrice:
+      type: object
+      properties:
+        ticketKindCode:
+          type: string
+          example: TKA
+        ticketTypeName:
+          type: string
+          example: 성인
+        amounts:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            clsDisabledAmt: 15000
+            clsReclineAmt: 17000
+    MegaboxSeatMapScheduleOption:
+      type: object
+      properties:
+        scheduleId:
+          type: string
+          example: 2603101372011
+        startTime:
+          type: string
+          example: "18:00"
+        endTime:
+          type: string
+          example: "20:07"
+        remainingSeats:
+          type: integer
+          example: 112
+    MegaboxSeatMap:
+      type: object
+      properties:
+        scheduleId:
+          type: string
+          example: 2603101372011
+        playDate:
+          type: string
+          example: 20260310
+        movie:
+          type: object
+          properties:
+            movieId:
+              type: string
+              example: 25104501
+            movieName:
+              type: string
+              example: 왕과 사는 남자
+            playKindName:
+              type: string
+              nullable: true
+              example: 2D
+            rating:
+              type: string
+              nullable: true
+              example: 12세이상관람가
+        theater:
+          type: object
+          properties:
+            theaterId:
+              type: string
+              example: 1372
+            theaterName:
+              type: string
+              example: 강남
+            areaCode:
+              type: string
+              nullable: true
+              example: 10
+        auditorium:
+          type: object
+          properties:
+            auditoriumId:
+              type: string
+              nullable: true
+              example: 03
+            auditoriumName:
+              type: string
+              nullable: true
+              example: 르 리클라이너 3관
+            auditoriumKindCode:
+              type: string
+              nullable: true
+              example: RCL
+        time:
+          type: object
+          properties:
+            startTime:
+              type: string
+              example: "18:00"
+            endTime:
+              type: string
+              example: "20:07"
+        summary:
+          type: object
+          properties:
+            totalSeats:
+              type: integer
+              example: 116
+            exposedSeats:
+              type: integer
+              example: 116
+            availableSeats:
+              type: integer
+              example: 112
+            unavailableSeats:
+              type: integer
+              example: 4
+            maxTicketCount:
+              type: integer
+              example: 8
+        seats:
+          type: array
+          items:
+            $ref: "#/components/schemas/MegaboxSeatMapSeat"
+        ticketPrices:
+          type: array
+          items:
+            $ref: "#/components/schemas/MegaboxSeatMapPrice"
+        scheduleOptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/MegaboxSeatMapScheduleOption"
+    MegaboxSeatMapResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            playSchdlNo:
+              type: string
+              example: 2603101372011
+            seatMap:
+              $ref: "#/components/schemas/MegaboxSeatMap"
+        meta:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 116
     CgvTheater:
       type: object
       properties:
