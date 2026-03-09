@@ -103,6 +103,7 @@ describe('GET /', () => {
 
     expect(data.tools).toContain('cgv_find_theaters');
     expect(data.tools).toContain('cgv_search_movies');
+    expect(data.tools).toContain('cgv_search_movies_by_theater');
     expect(data.tools).toContain('cgv_get_timetable');
   });
 

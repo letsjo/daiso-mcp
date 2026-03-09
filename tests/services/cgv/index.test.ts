@@ -23,14 +23,15 @@ describe('createCgvService', () => {
     expect(service.metadata.description).toBeDefined();
   });
 
-  it('3개의 도구를 반환한다', () => {
+  it('4개의 도구를 반환한다', () => {
     const service = createCgvService();
     const tools = service.getTools();
 
-    expect(tools).toHaveLength(3);
+    expect(tools).toHaveLength(4);
     expect(tools.map((tool) => tool.name)).toEqual([
       'cgv_find_theaters',
       'cgv_search_movies',
+      'cgv_search_movies_by_theater',
       'cgv_get_timetable',
     ]);
   });

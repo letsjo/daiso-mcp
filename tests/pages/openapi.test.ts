@@ -53,6 +53,7 @@ describe('OpenAPI 페이지', () => {
     expect(spec.paths['/api/megabox/seat-map']).toBeDefined();
     expect(spec.paths['/api/cgv/theaters']).toBeDefined();
     expect(spec.paths['/api/cgv/movies']).toBeDefined();
+    expect(spec.paths['/api/cgv/movies/by-theater']).toBeDefined();
     expect(spec.paths['/api/cgv/timetable']).toBeDefined();
     expect(spec.paths['/api/search'].get.parameters).toEqual(
       expect.arrayContaining([

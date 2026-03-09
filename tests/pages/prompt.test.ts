@@ -42,6 +42,7 @@ describe('generatePromptText', () => {
     // CGV API
     expect(text).toContain('/api/cgv/theaters');
     expect(text).toContain('/api/cgv/movies');
+    expect(text).toContain('/api/cgv/movies/by-theater');
     expect(text).toContain('/api/cgv/timetable');
 
     // 통합 검색 API
@@ -106,6 +107,7 @@ describe('generatePromptText', () => {
     expect(text).toContain('megabox_get_seat_map');
     expect(text).toContain('cgv_find_theaters');
     expect(text).toContain('cgv_search_movies');
+    expect(text).toContain('cgv_search_movies_by_theater');
     expect(text).toContain('cgv_get_timetable');
     expect(text).toContain('multi_search');
   });

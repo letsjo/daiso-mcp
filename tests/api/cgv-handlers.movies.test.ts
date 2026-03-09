@@ -3,7 +3,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { handleCgvSearchMovies } from '../../src/api/cgvHandlers.js';
+import { handleCgvSearchMovies, handleCgvSearchMoviesByTheater } from '../../src/api/cgvHandlers.js';
 
 const mockFetch = vi.fn();
 
@@ -134,6 +134,26 @@ describe('handleCgvSearchMovies movie-specific cases', () => {
         },
       }),
       404,
+    );
+  });
+});
+
+describe('handleCgvSearchMoviesByTheater', () => {
+  it('theaterQuery가 없으면 400을 반환한다', async () => {
+    const ctx = createMockContext({ playDate: '20260304' }) as unknown as Parameters<
+      typeof handleCgvSearchMoviesByTheater
+    >[0];
+    await handleCgvSearchMoviesByTheater(ctx);
+
+    expect(ctx.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: {
+          code: 'MISSING_THEATER_QUERY',
+          message: 'theaterQuery 파라미터가 필요합니다.',
+        },
+      }),
+      400,
     );
   });
 });
