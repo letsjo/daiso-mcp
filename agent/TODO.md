@@ -1,7 +1,7 @@
 # TODO
 
 작성 기준: 2026-03-07
-최근 업데이트: 2026-03-08
+최근 업데이트: 2026-03-10
 
 ## 완료된 작업
 
@@ -27,13 +27,25 @@
 - [x] 로컬 개발 환경을 Node 20으로 고정하도록 `.nvmrc`, `.node-version`, `volta` 설정을 보강하기
 - [x] 외부 서비스 API 변경을 빠르게 감지할 최소 스모크 테스트 전략과 실행 스크립트를 정리하기
 
+### GPT / Actions
+
+- [x] `[P1]` CGV 영화 목록을 실제 상영작 전체 기준으로 재구성하고 기본 정렬을 `popularity-desc`로 보강하기
+- [x] `[P1]` `고덕 CGV 영화 목록` 같은 자연어 질의용으로 `cgvFindMoviesByTheater` / `cgv_search_movies_by_theater` 액션 추가하기
+- [x] `[P1]` OpenAPI, 프롬프트, GPT 지침에서 `cgvFindTheaters`와 영화 목록 액션의 역할 차이를 명확히 문서화하기
+
 ### 문서 / 지식 관리
 
 - [x] `agent/` 문서 인덱스, 레포 분석, TODO 문서 생성
 - [x] `docs/` 분석 문서를 서비스별 인덱스로 묶어 탐색성을 높이기
 - [x] 장기적으로 신규 서비스 추가 절차를 템플릿화하기
 
-## 다음 작업 후보
+## 해야 할 작업
+
+### 운영 / 배포
+
+- [ ] `[P1]` `mcp.aka.page`가 최신 `workers.dev` 배포를 가리키도록 Cloudflare 라우팅과 canonical URL을 정리하기
+- [ ] `[P1]` README와 공개 설정 문서에서 `mcp.aka.page`, `workers.dev`, `openapi.json`의 역할을 한 번에 이해되게 재정리하기
+- [ ] `[P2]` OpenAPI 변경 시 Custom GPT가 스키마를 재가져와야 한다는 운영 체크리스트와 버전 관리 규칙을 정하기
 
 ### 리팩터링
 
@@ -49,6 +61,12 @@
 - [x] `[P2]` `npm run check`에 `check:openapi`를 포함할지 결정하고, 포함 시 로컬 개발 흐름 영향도 검토하기
 - [ ] `[P2]` `@modelcontextprotocol/sdk`가 `express-rate-limit` 상향을 포함하면 override 제거하기
 - [ ] `[P2]` 수동 smoke test 외에 schedule 기반 외부 연동 점검 워크플로우를 검토하기
+
+### GPT / Actions
+
+- [ ] `[P1]` `고덕 CGV 영화 목록`, `강남 메가박스 영화 목록` 같은 대표 자연어 질의에 대한 수동 점검 시나리오를 문서화하기
+- [ ] `[P1]` CGV/메가박스 시간표 조회에도 극장명 검색어 기반 1-hop 진입을 줄일 수 있을지 검토하기
+- [ ] `[P2]` 공개 GPT 대화 스타터와 README 예시를 실제 Actions 선택 안정성 기준으로 재정리하기
 
 ### 기능 확장
 
@@ -84,7 +102,8 @@
 
 ## 메모
 
-- 최근 검증 완료 항목: `npm run check`, `npm run test:coverage`, `npm audit --omit=dev`
+- 최근 검증 완료 항목: `npm run check`, `npm run test:coverage`, `npm run check:openapi`, `Deploy to Cloudflare Workers`
+- 최근 런타임 확인: `/api/cgv/movies/by-theater?playDate=20260310&theaterQuery=고덕강일` 응답에서 `왕과 사는 남자` 포함 11건 확인
 - 실서비스 기본 점검 스크립트: `examples/api-test.sh`
 - 신규 서비스 추가 시작점: `docs/new-service-template.md`
 - 2026-03-08 확인: `@modelcontextprotocol/sdk` 최신 `1.27.1`은 여전히 `express-rate-limit ^8.2.1` 의존이라 override 제거 불가
