@@ -22,6 +22,7 @@
 - 영화관 좌석 조회용 `minRemainingSeats`, `sort` 공통 필터와 유틸 추가
 - 메가박스 read-only 좌석맵 조회 API와 MCP 도구 추가
 - CGV 극장명 기반 영화 목록 조회 API(`/api/cgv/movies/by-theater`)와 MCP 도구 추가
+- 상품/회차 응답에 공식 상세/예매/좌석 진입용 `links` 필드 추가
 
 ### Changed
 
@@ -40,6 +41,7 @@
 - 메가박스 좌석맵 조사 문서를 재검증 결과와 구현 상태 기준으로 갱신
 - CGV 영화 목록을 실제 상영작 전체 기준 + `popularity-desc` 정렬로 보강
 - CGV OpenAPI/프롬프트/GPT 지침에서 극장 검색과 영화 목록 액션의 역할 차이를 명확히 함
+- GPT 지침에서 응답의 `links`를 바로 사용자에게 노출하도록 안내 강화
 
 ### Removed
 
