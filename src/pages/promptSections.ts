@@ -267,11 +267,13 @@ export function createOliveyoungMegaboxPromptSection(baseUrl: string): string {
 - areaCode: 지역 코드 (기본값: 11)
 - fromTime: 조회 시작 시각 하한 (HHMM)
 - toTime: 조회 시작 시각 상한 (HHMM)
+- minRemainingSeats: 최소 남은 좌석 수
+- sort: 정렬 기준 (startTime-asc, remainingSeats-desc, remainingSeats-asc)
 - limit: 최대 결과 수 (기본값: 50)
 
 **예시**:
 - ${baseUrl}/api/megabox/seats?playDate=20260304&theaterId=1372
-- ${baseUrl}/api/megabox/seats?playDate=20260304&movieId=25104500&fromTime=1800&toTime=2100&limit=20`;
+- ${baseUrl}/api/megabox/seats?playDate=20260304&movieId=25104500&fromTime=1800&toTime=2100&minRemainingSeats=10&sort=remainingSeats-desc&limit=20`;
 }
 
 /**
@@ -322,11 +324,13 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 - movieCode: 영화 코드
 - fromTime: 조회 시작 시각 하한 (HHMM)
 - toTime: 조회 시작 시각 상한 (HHMM)
+- minRemainingSeats: 최소 남은 좌석 수
+- sort: 정렬 기준 (startTime-asc, remainingSeats-desc, remainingSeats-asc)
 - limit: 최대 결과 수 (기본값: 50)
 
 **예시**:
 - ${baseUrl}/api/cgv/timetable?playDate=20260304&theaterCode=0056
-- ${baseUrl}/api/cgv/timetable?playDate=20260304&movieCode=200001&fromTime=1800&toTime=2100
+- ${baseUrl}/api/cgv/timetable?playDate=20260304&movieCode=200001&fromTime=1800&toTime=2100&minRemainingSeats=10&sort=remainingSeats-desc
 
 ---
 

@@ -97,8 +97,8 @@ describe('createGetRemainingSeatsTool', () => {
               totSeatCnt: 100,
             },
           ],
-        })
-      )
+        }),
+      ),
     );
 
     const tool = createGetRemainingSeatsTool();
@@ -127,8 +127,8 @@ describe('createGetRemainingSeatsTool', () => {
               totSeatCnt: 100,
             },
           ],
-        })
-      )
+        }),
+      ),
     );
 
     const tool = createGetRemainingSeatsTool();
@@ -170,8 +170,8 @@ describe('createGetRemainingSeatsTool', () => {
               totSeatCnt: 100,
             },
           ],
-        })
-      )
+        }),
+      ),
     );
 
     const tool = createGetRemainingSeatsTool();
@@ -182,7 +182,7 @@ describe('createGetRemainingSeatsTool', () => {
     expect(parsed.seats[0].movieId).toBe('M1');
   });
 
-  it('시간대 필터로 회차를 좁힐 수 있다', async () => {
+  it('시간대, 최소 잔여 좌석, 정렬 기준으로 회차를 좁힐 수 있다', async () => {
     mockFetch.mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -217,12 +217,20 @@ describe('createGetRemainingSeatsTool', () => {
     );
 
     const tool = createGetRemainingSeatsTool();
-    const result = await tool.handler({ playDate: '20260304', fromTime: '1800', toTime: '1900' });
+    const result = await tool.handler({
+      playDate: '20260304',
+      fromTime: '1700',
+      toTime: '1900',
+      minRemainingSeats: 12,
+      sort: 'remainingSeats-desc',
+    });
 
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.count).toBe(1);
-    expect(parsed.filters.fromTime).toBe('1800');
+    expect(parsed.filters.fromTime).toBe('1700');
     expect(parsed.filters.toTime).toBe('1900');
+    expect(parsed.filters.minRemainingSeats).toBe(12);
+    expect(parsed.filters.sort).toBe('remainingSeats-desc');
     expect(parsed.seats[0].scheduleId).toBe('S2');
   });
 });

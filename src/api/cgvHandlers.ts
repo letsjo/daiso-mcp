@@ -2,9 +2,15 @@
  * CGV GET API 핸들러
  */
 
-import { fetchCgvMovies, fetchCgvTheaters, fetchCgvTimetable, toYyyymmdd } from '../services/cgv/client.js';
+import {
+  fetchCgvMovies,
+  fetchCgvTheaters,
+  fetchCgvTimetable,
+  toYyyymmdd,
+} from '../services/cgv/client.js';
 import { filterAndSortTimetable } from '../services/cgv/timetable.js';
 import { normalizeTimeWindow } from '../utils/timeWindow.js';
+import { normalizeMinRemainingSeats, normalizeShowtimeSort } from '../utils/showtimeQuery.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 /**
@@ -88,14 +94,27 @@ export async function handleCgvGetTimetable(c: ApiContext) {
   const movieCode = c.req.query('movieCode') || undefined;
   const fromTime = c.req.query('fromTime') || undefined;
   const toTime = c.req.query('toTime') || undefined;
+  const minRemainingSeatsQuery = c.req.query('minRemainingSeats');
+  const sort = c.req.query('sort') || undefined;
   const limit = parseInt(c.req.query('limit') || '50');
   const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
   let timeWindow;
+  let minRemainingSeats;
+  let normalizedSort;
 
   try {
     timeWindow = normalizeTimeWindow({ fromTime, toTime });
   } catch (error) {
     return errorResponse(c, 'INVALID_TIME_WINDOW', (error as Error).message, 400);
+  }
+
+  try {
+    minRemainingSeats = normalizeMinRemainingSeats(
+      minRemainingSeatsQuery ? Number(minRemainingSeatsQuery) : undefined,
+    );
+    normalizedSort = normalizeShowtimeSort(sort);
+  } catch (error) {
+    return errorResponse(c, 'INVALID_SHOWTIME_FILTER', (error as Error).message, 400);
   }
 
   try {
@@ -112,6 +131,8 @@ export async function handleCgvGetTimetable(c: ApiContext) {
       movieCode,
       fromTime: timeWindow.fromTime,
       toTime: timeWindow.toTime,
+      minRemainingSeats,
+      sort: normalizedSort,
       limit,
     });
 
@@ -124,6 +145,8 @@ export async function handleCgvGetTimetable(c: ApiContext) {
           movieCode: movieCode || null,
           fromTime: timeWindow.fromTime || null,
           toTime: timeWindow.toTime || null,
+          minRemainingSeats: minRemainingSeats ?? null,
+          sort: normalizedSort,
         },
         timetable: filtered,
       },

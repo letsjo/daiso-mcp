@@ -90,7 +90,7 @@ describe('GET /api/cgv/timetable', () => {
     expect(data.data.timetable).toHaveLength(1);
   });
 
-  it('시간대 필터가 있으면 해당 회차만 반환한다', async () => {
+  it('시간대, 최소 잔여 좌석, 정렬 기준으로 회차를 좁힌다', async () => {
     mockFetch.mockResolvedValueOnce(
       new Response(
         JSON.stringify({
@@ -127,15 +127,17 @@ describe('GET /api/cgv/timetable', () => {
     );
 
     const res = await app.request(
-      '/api/cgv/timetable?playDate=20260304&theaterCode=0056&fromTime=1800&toTime=1900',
+      '/api/cgv/timetable?playDate=20260304&theaterCode=0056&fromTime=1700&toTime=1900&minRemainingSeats=25&sort=remainingSeats-desc',
     );
     expect(res.status).toBe(200);
 
     const data = await res.json();
-    expect(data.data.filters.fromTime).toBe('1800');
+    expect(data.data.filters.fromTime).toBe('1700');
     expect(data.data.filters.toTime).toBe('1900');
+    expect(data.data.filters.minRemainingSeats).toBe(25);
+    expect(data.data.filters.sort).toBe('remainingSeats-desc');
     expect(data.data.timetable).toHaveLength(1);
-    expect(data.data.timetable[0].scheduleId).toBe('2026030400562');
+    expect(data.data.timetable[0].scheduleId).toBe('2026030400561');
   });
 
   it('잘못된 시간대는 400을 반환한다', async () => {
@@ -145,5 +147,14 @@ describe('GET /api/cgv/timetable', () => {
     const data = await res.json();
     expect(data.success).toBe(false);
     expect(data.error.code).toBe('INVALID_TIME_WINDOW');
+  });
+
+  it('잘못된 좌석 필터는 400을 반환한다', async () => {
+    const res = await app.request('/api/cgv/timetable?playDate=20260304&sort=distance-asc');
+    expect(res.status).toBe(400);
+
+    const data = await res.json();
+    expect(data.success).toBe(false);
+    expect(data.error.code).toBe('INVALID_SHOWTIME_FILTER');
   });
 });
