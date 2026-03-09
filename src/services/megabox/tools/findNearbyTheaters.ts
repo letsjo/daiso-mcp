@@ -5,7 +5,12 @@
 import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
 import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
-import { fetchMegaboxBookingList, fetchMegaboxTheaterInfo, toYyyymmdd } from '../client.js';
+import { toYyyymmdd } from '../client.js';
+import {
+  DEFAULT_MEGABOX_LATITUDE,
+  DEFAULT_MEGABOX_LONGITUDE,
+  findNearbyMegaboxTheaters,
+} from '../theaterLocator.js';
 
 interface FindNearbyTheatersArgs {
   latitude?: number;
@@ -16,70 +21,31 @@ interface FindNearbyTheatersArgs {
   timeoutMs?: number;
 }
 
-function calculateDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return 6371 * c;
-}
-
 async function findNearbyTheaters(args: FindNearbyTheatersArgs): Promise<McpToolResponse> {
   const {
-    latitude = 37.5665,
-    longitude = 126.978,
+    latitude = DEFAULT_MEGABOX_LATITUDE,
+    longitude = DEFAULT_MEGABOX_LONGITUDE,
     playDate = toYyyymmdd(),
     areaCode = '11',
     limit = 10,
     timeoutMs = 15000,
   } = args;
 
-  const { theaters } = await fetchMegaboxBookingList({
+  const theaters = await findNearbyMegaboxTheaters({
+    latitude,
+    longitude,
     playDate,
     areaCode,
-    timeout: timeoutMs,
+    limit,
+    timeoutMs,
   });
-
-  const infoResults = await Promise.allSettled(
-    theaters.map((theater) => fetchMegaboxTheaterInfo(theater.theaterId, timeoutMs)),
-  );
-
-  const merged = theaters
-    .map((theater, index) => {
-      const infoResult = infoResults[index];
-      if (infoResult.status !== 'fulfilled') {
-        return null;
-      }
-
-      const info = infoResult.value;
-      if (info.latitude === null || info.longitude === null) {
-        return null;
-      }
-
-      const distanceKm = calculateDistanceKm(latitude, longitude, info.latitude, info.longitude);
-
-      return {
-        theaterId: theater.theaterId,
-        theaterName: theater.theaterName,
-        address: info.address,
-        latitude: info.latitude,
-        longitude: info.longitude,
-        distanceKm: Number(distanceKm.toFixed(2)),
-      };
-    })
-    .filter((theater): theater is NonNullable<typeof theater> => theater !== null)
-    .sort((a, b) => a.distanceKm - b.distanceKm)
-    .slice(0, limit);
 
   const result = {
     location: { latitude, longitude },
     playDate,
     areaCode,
-    count: merged.length,
-    theaters: merged,
+    count: theaters.length,
+    theaters,
   };
 
   return createJsonTextResponse(result);
