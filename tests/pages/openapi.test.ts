@@ -50,6 +50,7 @@ describe('OpenAPI 페이지', () => {
     expect(spec.paths['/api/megabox/theaters']).toBeDefined();
     expect(spec.paths['/api/megabox/movies']).toBeDefined();
     expect(spec.paths['/api/megabox/seats']).toBeDefined();
+    expect(spec.paths['/api/megabox/seat-map']).toBeDefined();
     expect(spec.paths['/api/cgv/theaters']).toBeDefined();
     expect(spec.paths['/api/cgv/movies']).toBeDefined();
     expect(spec.paths['/api/cgv/timetable']).toBeDefined();
@@ -65,6 +66,11 @@ describe('OpenAPI 페이지', () => {
         expect.objectContaining({ name: 'toTime', required: false }),
         expect.objectContaining({ name: 'minRemainingSeats', required: false }),
         expect.objectContaining({ name: 'sort', required: false }),
+      ]),
+    );
+    expect(spec.paths['/api/megabox/seat-map'].get.parameters).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'playSchdlNo', required: true }),
       ]),
     );
     expect(spec.paths['/api/cgv/timetable'].get.parameters).toEqual(

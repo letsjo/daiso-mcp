@@ -2,7 +2,11 @@
  * 메가박스 GET API 핸들러
  */
 
-import { fetchMegaboxBookingList, toYyyymmdd } from '../services/megabox/client.js';
+import {
+  fetchMegaboxBookingList,
+  fetchMegaboxSeatMap,
+  toYyyymmdd,
+} from '../services/megabox/client.js';
 import {
   DEFAULT_MEGABOX_LATITUDE,
   DEFAULT_MEGABOX_LONGITUDE,
@@ -168,5 +172,43 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
     return errorResponse(c, 'MEGABOX_SEAT_LIST_FAILED', message, 500);
+  }
+}
+
+/**
+ * 메가박스 좌석맵 조회 API 핸들러
+ * GET /api/megabox/seat-map?playSchdlNo={회차ID}
+ */
+export async function handleMegaboxGetSeatMap(c: ApiContext) {
+  const playSchdlNo = c.req.query('playSchdlNo') || undefined;
+  const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
+
+  if (!playSchdlNo) {
+    return errorResponse(c, 'MISSING_PLAY_SCHEDULE_ID', 'playSchdlNo를 입력해주세요.', 400);
+  }
+
+  try {
+    const seatMap = await fetchMegaboxSeatMap(playSchdlNo, timeoutMs);
+
+    if (!seatMap) {
+      return errorResponse(
+        c,
+        'MEGABOX_SEAT_MAP_NOT_FOUND',
+        '메가박스 좌석맵을 찾을 수 없습니다.',
+        404,
+      );
+    }
+
+    return successResponse(
+      c,
+      {
+        playSchdlNo,
+        seatMap,
+      },
+      { total: seatMap.summary.totalSeats },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
+    return errorResponse(c, 'MEGABOX_SEAT_MAP_FETCH_FAILED', message, 500);
   }
 }

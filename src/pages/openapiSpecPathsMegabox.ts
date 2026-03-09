@@ -222,4 +222,61 @@ export const OPENAPI_PATHS_MEGABOX = {
       },
     },
   },
+  '/api/megabox/seat-map': {
+    get: {
+      operationId: 'megaboxGetSeatMap',
+      summary: '메가박스 좌석맵 조회',
+      description: '회차 ID(playSchdlNo) 기준으로 메가박스 read-only 좌석맵을 조회합니다.',
+      parameters: [
+        {
+          name: 'playSchdlNo',
+          in: 'query',
+          required: true,
+          description: '메가박스 회차 ID',
+          schema: { type: 'string', example: '2603101372011' },
+        },
+        {
+          name: 'timeoutMs',
+          in: 'query',
+          required: false,
+          description: '요청 제한 시간(ms)',
+          schema: { type: 'integer', default: 15000, minimum: 1, maximum: 30000 },
+        },
+      ],
+      responses: {
+        '200': {
+          description: '조회 성공',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/MegaboxSeatMapResponse' },
+            },
+          },
+        },
+        '400': {
+          description: '회차 ID 누락',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        '404': {
+          description: '좌석맵 미존재',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        '500': {
+          description: '메가박스 API 호출 실패',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+      },
+    },
+  },
 };

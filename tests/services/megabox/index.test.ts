@@ -23,15 +23,16 @@ describe('createMegaboxService', () => {
     expect(service.metadata.description).toBeDefined();
   });
 
-  it('3개의 도구를 반환한다', () => {
+  it('4개의 도구를 반환한다', () => {
     const service = createMegaboxService();
     const tools = service.getTools();
 
-    expect(tools).toHaveLength(3);
+    expect(tools).toHaveLength(4);
     expect(tools.map((t) => t.name)).toEqual([
       'megabox_find_nearby_theaters',
       'megabox_list_now_showing',
       'megabox_get_remaining_seats',
+      'megabox_get_seat_map',
     ]);
   });
 });

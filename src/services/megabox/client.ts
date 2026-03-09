@@ -6,6 +6,12 @@ import { MEGABOX_API } from './api.js';
 import type {
   MegaboxBookingListResponse,
   MegaboxMovie,
+  MegaboxSeatAvailability,
+  MegaboxSeatMap,
+  MegaboxSeatMapPrice,
+  MegaboxSeatMapResponse,
+  MegaboxSeatMapScheduleOption,
+  MegaboxSeatMapSeat,
   MegaboxShowtime,
   MegaboxTheater,
   MegaboxTheaterInfo,
@@ -126,6 +132,82 @@ function parseAddress(html: string): string {
   return '';
 }
 
+function normalizeSeatAvailability(statusCode?: string | null): MegaboxSeatAvailability {
+  return statusCode && statusCode.endsWith('SELL') ? 'available' : 'unavailable';
+}
+
+function extractNonZeroAmounts(source: Record<string, unknown>): Record<string, number> {
+  return Object.entries(source).reduce<Record<string, number>>((accumulator, [key, value]) => {
+    if (!key.endsWith('Amt')) {
+      return accumulator;
+    }
+
+    const amount =
+      typeof value === 'number' || typeof value === 'string' ? toNumber(value) : 0;
+    if (amount > 0) {
+      accumulator[key] = amount;
+    }
+
+    return accumulator;
+  }, {});
+}
+
+function normalizeMegaboxSeatMapSeats(
+  items: MegaboxSeatMapResponse['seatListSD01'] = [],
+): MegaboxSeatMapSeat[] {
+  return items
+    .filter((item) => item.seatUniqNo)
+    .map((item) => {
+      const rowLabel = item.rowNm || '';
+      const seatNumber = toNumber(item.seatNo);
+
+      return {
+        seatId: item.seatUniqNo as string,
+        seatLabel: `${rowLabel}${seatNumber || ''}`.trim(),
+        rowLabel,
+        seatNumber,
+        rowNumber: toNumber(item.rowNo),
+        columnNumber: toNumber(item.colNo),
+        zoneCode: item.seatZoneCd || null,
+        classCode: item.seatClassCd || null,
+        statusCode: item.seatStatCd || null,
+        availability: normalizeSeatAvailability(item.seatStatCd),
+        exposed: item.seatExpoAt === 'Y',
+        coordinates: {
+          x: toNumber(item.horzCoorVal),
+          y: toNumber(item.vertCoorVal),
+        },
+        selectionGroupName: item.seatChoiGrpNm || null,
+        note: item.seatNotiMsg || null,
+      };
+    });
+}
+
+function normalizeMegaboxSeatMapPrices(
+  items: MegaboxSeatMapResponse['seatTicketAmtList'] = [],
+): MegaboxSeatMapPrice[] {
+  return items
+    .filter((item) => item.ticketKindCd && item.ticketTypeName)
+    .map((item) => ({
+      ticketKindCode: item.ticketKindCd as string,
+      ticketTypeName: item.ticketTypeName as string,
+      amounts: extractNonZeroAmounts(item),
+    }));
+}
+
+function normalizeMegaboxSeatMapScheduleOptions(
+  items: MegaboxSeatMapResponse['playSeqList'] = [],
+): MegaboxSeatMapScheduleOption[] {
+  return items
+    .filter((item) => item.playSchdlNo)
+    .map((item) => ({
+      scheduleId: item.playSchdlNo as string,
+      startTime: formatTime(item.playStartTime),
+      endTime: formatTime(item.playEndTime),
+      remainingSeats: toNumber(item.choiCnt),
+    }));
+}
+
 export async function fetchMegaboxTheaterInfo(
   theaterId: string,
   timeout = 15000,
@@ -163,6 +245,82 @@ export async function fetchMegaboxTheaterInfo(
     };
   } catch (error) {
     rethrowAsTimeout(error, '메가박스 지점 정보 조회 시간 초과');
+    throw error;
+  }
+}
+
+export async function fetchMegaboxSeatMap(
+  playScheduleId: string,
+  timeout = 15000,
+): Promise<MegaboxSeatMap | null> {
+  const form = new URLSearchParams({
+    playSchdlNo: playScheduleId,
+  });
+
+  try {
+    const response = await fetchWithTimeout(
+      `${MEGABOX_API.BASE_URL}${MEGABOX_API.SELECT_SEAT_LIST_PATH}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Accept: 'application/json, text/javascript, */*; q=0.01',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: form.toString(),
+        timeout,
+      },
+    );
+
+    throwIfResponseNotOk(response, '메가박스 좌석맵 조회 실패');
+
+    const body = (await response.json()) as MegaboxSeatMapResponse;
+    if (!body.movieDtlInfo?.playSchdlNo) {
+      return null;
+    }
+
+    const seats = normalizeMegaboxSeatMapSeats(body.seatListSD01);
+    const exposedSeats = seats.filter((seat) => seat.exposed).length;
+    const availableSeats = seats.filter(
+      (seat) => seat.exposed && seat.availability === 'available',
+    ).length;
+
+    return {
+      scheduleId: body.movieDtlInfo.playSchdlNo,
+      playDate: body.movieDtlInfo.playDe || '',
+      movie: {
+        movieId: body.movieDtlInfo.movieNo || '',
+        movieName: body.movieDtlInfo.movieNm || '',
+        playKindName: body.movieDtlInfo.playKindName || null,
+        rating: body.movieDtlInfo.admisClassName || null,
+      },
+      theater: {
+        theaterId: body.movieDtlInfo.brchNo || '',
+        theaterName: body.movieDtlInfo.brchNm || '',
+        areaCode: body.movieDtlInfo.areaCd || null,
+      },
+      auditorium: {
+        auditoriumId: body.movieDtlInfo.theabNo || null,
+        auditoriumName: body.movieDtlInfo.theabNm || null,
+        auditoriumKindCode: body.movieDtlInfo.theabKindCd || null,
+      },
+      time: {
+        startTime: formatTime(body.movieDtlInfo.playStartTime),
+        endTime: formatTime(body.movieDtlInfo.playEndTime),
+      },
+      summary: {
+        totalSeats: seats.length,
+        exposedSeats,
+        availableSeats,
+        unavailableSeats: seats.length - availableSeats,
+        maxTicketCount: toNumber(body.maxTicketCnt),
+      },
+      seats,
+      ticketPrices: normalizeMegaboxSeatMapPrices(body.seatTicketAmtList),
+      scheduleOptions: normalizeMegaboxSeatMapScheduleOptions(body.playSeqList),
+    };
+  } catch (error) {
+    rethrowAsTimeout(error, '메가박스 좌석맵 조회 시간 초과');
     throw error;
   }
 }

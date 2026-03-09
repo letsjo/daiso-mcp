@@ -158,3 +158,56 @@ describe('GET /api/megabox/seats', () => {
     expect(data.error.code).toBe('INVALID_SHOWTIME_FILTER');
   });
 });
+
+describe('GET /api/megabox/seat-map', () => {
+  it('메가박스 좌석맵을 반환한다', async () => {
+    mockFetch.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          movieDtlInfo: {
+            playSchdlNo: '2603101372011',
+            brchNo: '1372',
+            brchNm: '강남',
+            movieNo: '25104501',
+            movieNm: '왕과 사는 남자',
+            playDe: '20260310',
+            playStartTime: '1800',
+            playEndTime: '2007',
+          },
+          maxTicketCnt: '8',
+          seatListSD01: [
+            {
+              seatUniqNo: '00100101',
+              rowNm: 'A',
+              seatNo: 1,
+              rowNo: 1,
+              colNo: 1,
+              seatExpoAt: 'Y',
+              horzCoorVal: 1,
+              vertCoorVal: 1,
+              seatStatCd: 'GERN_SELL',
+            },
+          ],
+          seatTicketAmtList: [],
+        }),
+      ),
+    );
+
+    const res = await app.request('/api/megabox/seat-map?playSchdlNo=2603101372011');
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.data.playSchdlNo).toBe('2603101372011');
+    expect(data.data.seatMap.summary.totalSeats).toBe(1);
+  });
+
+  it('회차 ID가 없으면 400을 반환한다', async () => {
+    const res = await app.request('/api/megabox/seat-map');
+    expect(res.status).toBe(400);
+
+    const data = await res.json();
+    expect(data.success).toBe(false);
+    expect(data.error.code).toBe('MISSING_PLAY_SCHEDULE_ID');
+  });
+});

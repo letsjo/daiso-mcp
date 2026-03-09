@@ -37,6 +37,7 @@ describe('generatePromptText', () => {
     expect(text).toContain('/api/megabox/theaters');
     expect(text).toContain('/api/megabox/movies');
     expect(text).toContain('/api/megabox/seats');
+    expect(text).toContain('/api/megabox/seat-map');
 
     // CGV API
     expect(text).toContain('/api/cgv/theaters');
@@ -102,6 +103,7 @@ describe('generatePromptText', () => {
     expect(text).toContain('megabox_find_nearby_theaters');
     expect(text).toContain('megabox_list_now_showing');
     expect(text).toContain('megabox_get_remaining_seats');
+    expect(text).toContain('megabox_get_seat_map');
     expect(text).toContain('cgv_find_theaters');
     expect(text).toContain('cgv_search_movies');
     expect(text).toContain('cgv_get_timetable');
