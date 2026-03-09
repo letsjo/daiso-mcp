@@ -94,6 +94,7 @@ describe('GET /', () => {
     expect(data.tools).toContain('megabox_find_nearby_theaters');
     expect(data.tools).toContain('megabox_list_now_showing');
     expect(data.tools).toContain('megabox_get_remaining_seats');
+    expect(data.tools).toContain('megabox_get_seat_map');
   });
 
   it('CGV 도구들이 포함되어 있다', async () => {

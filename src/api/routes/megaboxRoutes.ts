@@ -6,6 +6,7 @@ import type { Hono } from 'hono';
 import { withEdgeCache } from '../../utils/cache.js';
 import {
   handleMegaboxFindNearbyTheaters,
+  handleMegaboxGetSeatMap,
   handleMegaboxListNowShowing,
   handleMegaboxGetRemainingSeats,
 } from '../megaboxHandlers.js';
@@ -45,6 +46,18 @@ export function registerMegaboxRoutes(app: Hono<{ Bindings: AppBindings }>): voi
         keyPrefix: 'megabox-seats-v1',
       },
       () => handleMegaboxGetRemainingSeats(c),
+    ),
+  );
+
+  app.get('/api/megabox/seat-map', async (c) =>
+    withEdgeCache(
+      c.req.url,
+      {
+        ttlSeconds: 60,
+        staleWhileRevalidateSeconds: 15,
+        keyPrefix: 'megabox-seat-map-v1',
+      },
+      () => handleMegaboxGetSeatMap(c),
     ),
   );
 }

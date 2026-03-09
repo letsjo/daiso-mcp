@@ -5,5 +5,6 @@
 export const MEGABOX_API = {
   BASE_URL: 'https://www.megabox.co.kr',
   SELECT_BOOKING_LIST_PATH: '/on/oh/ohb/SimpleBooking/selectBokdList.do',
+  SELECT_SEAT_LIST_PATH: '/on/oh/ohz/PcntSeatChoi/selectSeatList.do',
   THEATER_INFO_PATH: '/on/oh/ohc/Brch/infoPage.do',
 } as const;

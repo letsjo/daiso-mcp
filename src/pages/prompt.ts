@@ -6,10 +6,13 @@
  */
 
 import {
-  createCgvAndCommonPromptSection,
   createDaisoPromptSection,
   createOliveyoungMegaboxPromptSection,
 } from './promptSections.js';
+import {
+  createCgvAndCommonPromptSection,
+  createMegaboxSeatMapPromptSection,
+} from './promptSectionsCinema.js';
 
 /**
  * 프롬프트 텍스트 생성
@@ -30,6 +33,10 @@ ${createDaisoPromptSection(baseUrl)}
 ---
 
 ${createOliveyoungMegaboxPromptSection(baseUrl)}
+
+---
+
+${createMegaboxSeatMapPromptSection(baseUrl)}
 
 ---
 
