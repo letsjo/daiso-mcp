@@ -71,13 +71,47 @@ export const OPENAPI_PATHS_CGV = {
           description: '극장 코드 (예: 0056)',
           schema: { type: 'string', example: '0056' },
         },
+        {
+          name: 'theaterQuery',
+          in: 'query',
+          required: false,
+          description: '극장명 검색어 (예: 고덕강일)',
+          schema: { type: 'string', example: '고덕강일' },
+        },
+        {
+          name: 'sort',
+          in: 'query',
+          required: false,
+          description: '정렬 기준',
+          schema: {
+            type: 'string',
+            enum: ['popularity-desc', 'cgv-default'],
+            default: 'popularity-desc',
+          },
+        },
       ],
       responses: {
+        '400': {
+          description: '잘못된 영화 정렬 기준',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
         '200': {
           description: '조회 성공',
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/CgvMovieSearchResponse' },
+            },
+          },
+        },
+        '404': {
+          description: 'CGV 극장을 찾지 못함',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
             },
           },
         },

@@ -17,6 +17,9 @@ export const OPENAPI_CGV_COMPONENT_SCHEMAS = {
       movieCode: { type: 'string', example: '200001' },
       movieName: { type: 'string', example: '테스트 영화' },
       rating: { type: 'string', example: '12' },
+      ticketRate: { type: 'number', example: 18.4 },
+      showtimeCount: { type: 'integer', example: 6 },
+      firstStartTime: { type: 'string', example: '10:40' },
     },
   },
   CgvTimetable: {
@@ -75,6 +78,8 @@ export const OPENAPI_CGV_COMPONENT_SCHEMAS = {
             type: 'object',
             properties: {
               theaterCode: { type: 'string', nullable: true },
+              theaterQuery: { type: 'string', nullable: true },
+              sort: { type: 'string', example: 'popularity-desc' },
             },
           },
           movies: {
@@ -87,6 +92,7 @@ export const OPENAPI_CGV_COMPONENT_SCHEMAS = {
         type: 'object',
         properties: {
           total: { type: 'integer' },
+          sortApplied: { type: 'string', example: 'popularity-desc' },
         },
       },
     },

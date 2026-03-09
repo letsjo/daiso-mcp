@@ -36,16 +36,19 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 
 ### 12. CGV 영화 검색
 
-**설명**: 날짜/극장 조건으로 CGV 영화 목록을 조회합니다.
+**설명**: 날짜/극장 조건으로 CGV 영화 목록을 조회합니다. 기본값은 상영 편성 수 기준 인기 우선 정렬입니다.
 
 **URL**: ${baseUrl}/api/cgv/movies?playDate={YYYYMMDD}
 
 **선택 파라미터**:
 - playDate: 조회 날짜 (YYYYMMDD, 기본값: 오늘)
 - theaterCode: 극장 코드 (예: 0056)
+- theaterQuery: 극장명 검색어 (예: 고덕강일)
+- sort: 정렬 기준 (popularity-desc, cgv-default)
 
 **예시**:
 - ${baseUrl}/api/cgv/movies?playDate=20260304&theaterCode=0056
+- ${baseUrl}/api/cgv/movies?playDate=20260304&theaterQuery=고덕강일
 
 ---
 

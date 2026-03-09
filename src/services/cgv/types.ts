@@ -8,10 +8,17 @@ export interface CgvTheater {
   regionCode?: string;
 }
 
+export const CGV_MOVIE_SORT_VALUES = ['popularity-desc', 'cgv-default'] as const;
+
+export type CgvMovieSort = (typeof CGV_MOVIE_SORT_VALUES)[number];
+
 export interface CgvMovie {
   movieCode: string;
   movieName: string;
   rating?: string;
+  ticketRate?: number;
+  showtimeCount?: number;
+  firstStartTime?: string;
 }
 
 export interface CgvTimetable {
@@ -34,13 +41,16 @@ interface CgvTheaterItem {
   bzplcOperStusNm?: string;
 }
 
-interface CgvMovieItem {
+export interface CgvMovieItem {
   movNo?: string;
   movNm?: string;
   cratgClsNm?: string | null;
+  cratgClsCd?: string | null;
+  atktRate?: number | string | null;
+  scnBssTm?: string | null;
 }
 
-interface CgvTimetableItem {
+export interface CgvTimetableItem {
   siteNo?: string;
   siteNm?: string;
   scnYmd?: string;
@@ -53,6 +63,8 @@ interface CgvTimetableItem {
   stcnt?: number | string;
   frSeatCnt?: number | string;
   frtmpSeatCnt?: number | string;
+  cratgClsNm?: string | null;
+  sortOseq?: number | string | null;
 }
 
 export interface CgvTheaterListResponse {
