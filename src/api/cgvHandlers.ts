@@ -13,6 +13,7 @@ import {
 import { filterAndSortTimetable } from '../services/cgv/timetable.js';
 import { normalizeTimeWindow } from '../utils/timeWindow.js';
 import { normalizeMinRemainingSeats, normalizeShowtimeSort } from '../utils/showtimeQuery.js';
+import { withCgvTimetableLinks } from './responseLinks.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 interface CgvMovieSearchInput {
@@ -203,7 +204,7 @@ export async function handleCgvGetTimetable(c: ApiContext) {
           minRemainingSeats: minRemainingSeats ?? null,
           sort: normalizedSort,
         },
-        timetable: filtered,
+        timetable: filtered.map((item) => withCgvTimetableLinks(item, c.req.url)),
       },
       { total: filtered.length, pageSize: limit },
     );

@@ -18,6 +18,11 @@ import {
   normalizeMinRemainingSeats,
   normalizeShowtimeSort,
 } from '../utils/showtimeQuery.js';
+import {
+  buildMegaboxSeatMapLinks,
+  withMegaboxShowtimeLinks,
+  withMegaboxTheaterLinks,
+} from './responseLinks.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 /**
@@ -48,7 +53,7 @@ export async function handleMegaboxFindNearbyTheaters(c: ApiContext) {
         location: { latitude: lat, longitude: lng },
         playDate,
         areaCode,
-        theaters,
+        theaters: theaters.map(withMegaboxTheaterLinks),
       },
       { total: theaters.length, pageSize: limit },
     );
@@ -87,9 +92,9 @@ export async function handleMegaboxListNowShowing(c: ApiContext) {
           movieId: movieId || null,
           areaCode,
         },
-        theaters: result.theaters,
+        theaters: result.theaters.map(withMegaboxTheaterLinks),
         movies: result.movies,
-        showtimes: result.showtimes,
+        showtimes: result.showtimes.map((showtime) => withMegaboxShowtimeLinks(showtime, c.req.url)),
       },
       { total: result.showtimes.length },
     );
@@ -165,7 +170,7 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
           minRemainingSeats: minRemainingSeats ?? null,
           sort: normalizedSort,
         },
-        seats,
+        seats: seats.map((showtime) => withMegaboxShowtimeLinks(showtime, c.req.url)),
       },
       { total: seats.length, pageSize: limit },
     );
@@ -203,6 +208,7 @@ export async function handleMegaboxGetSeatMap(c: ApiContext) {
       c,
       {
         playSchdlNo,
+        links: buildMegaboxSeatMapLinks(seatMap, c.req.url),
         seatMap,
       },
       { total: seatMap.summary.totalSeats },

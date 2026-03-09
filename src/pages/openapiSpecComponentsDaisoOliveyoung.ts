@@ -3,6 +3,32 @@
  */
 
 export const OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS = {
+  DaisoProductLinks: {
+    type: 'object',
+    properties: {
+      apiDetailUrl: {
+        type: 'string',
+        example: 'https://daiso-mcp.hyunoh-jo.workers.dev/api/daiso/products/12345',
+      },
+      apiInventoryUrl: {
+        type: 'string',
+        example: 'https://daiso-mcp.hyunoh-jo.workers.dev/api/daiso/inventory?productId=12345',
+      },
+      officialMallFinderUrl: {
+        type: 'string',
+        example: 'https://www.daisomall.co.kr/ms/msg/SCR_MSG_0015',
+      },
+    },
+  },
+  OliveyoungProductLinks: {
+    type: 'object',
+    properties: {
+      officialProductUrl: {
+        type: 'string',
+        example: 'https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000200614',
+      },
+    },
+  },
   Product: {
     type: 'object',
     description: '제품 정보',
@@ -18,6 +44,7 @@ export const OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS = {
       soldOut: { type: 'boolean', description: '품절 여부', example: false },
       isNew: { type: 'boolean', description: '신상품 여부', example: false },
       pickupAvailable: { type: 'boolean', description: '매장 픽업 가능 여부', example: true },
+      links: { $ref: '#/components/schemas/DaisoProductLinks' },
     },
   },
   ProductDetail: {
@@ -32,6 +59,7 @@ export const OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS = {
       brand: { type: 'string', description: '브랜드명' },
       soldOut: { type: 'boolean', description: '품절 여부' },
       isNew: { type: 'boolean', description: '신상품 여부' },
+      links: { $ref: '#/components/schemas/DaisoProductLinks' },
     },
   },
   Store: {
@@ -184,6 +212,7 @@ export const OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS = {
       discountRate: { type: 'integer', example: 37 },
       o2oStockFlag: { type: 'boolean', example: true },
       o2oRemainQuantity: { type: 'integer', example: 0 },
+      links: { $ref: '#/components/schemas/OliveyoungProductLinks' },
     },
   },
   OliveyoungStoreSearchResponse: {
