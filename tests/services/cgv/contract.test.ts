@@ -36,9 +36,19 @@ describe('cgv representative payload contracts', () => {
   });
 
   it('영화 목록 fixture를 정규화한다', async () => {
-    mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify(readJsonFixture('cgv/movies.json'))),
-    );
+    mockFetch
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            statusCode: 0,
+            statusMessage: '조회 되었습니다.',
+            data: [],
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(readJsonFixture('cgv/movies.json'))),
+      );
 
     const result = await fetchCgvMovies({ playDate: '20260304', theaterCode: '0056' });
 

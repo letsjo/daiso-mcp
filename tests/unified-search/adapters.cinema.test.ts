@@ -306,7 +306,19 @@ describe('createCgvUnifiedSearchAdapter', () => {
         new Response(
           JSON.stringify({
             statusCode: 0,
-            data: [{ movNo: 'M1', movNm: '영화A', cratgClsNm: '12세' }],
+            data: [
+              {
+                siteNo: '0056',
+                siteNm: 'CGV 강남',
+                scnYmd: '20260304',
+                scnSseq: '1',
+                movNo: 'M1',
+                movNm: '영화A',
+                cratgClsNm: '12세',
+                scnsrtTm: '1010',
+                sortOseq: '1',
+              },
+            ],
           }),
         ),
       )
@@ -315,8 +327,17 @@ describe('createCgvUnifiedSearchAdapter', () => {
           JSON.stringify({
             statusCode: 0,
             data: [
-              { movNo: 'M1', movNm: '영화A', cratgClsNm: '12세' },
-              { movNo: 'M2', movNm: '영화B' },
+              {
+                siteNo: '0013',
+                siteNm: 'CGV 용산',
+                scnYmd: '20260304',
+                scnSseq: '1',
+                movNo: 'M2',
+                movNm: '영화B',
+                cratgClsNm: '15세',
+                scnsrtTm: '1110',
+                sortOseq: '1',
+              },
             ],
           }),
         ),
@@ -370,7 +391,19 @@ describe('createCgvUnifiedSearchAdapter', () => {
         new Response(
           JSON.stringify({
             statusCode: 0,
-            data: [{ movNo: 'M3', movNm: '강남 상영작' }],
+            data: [
+              {
+                siteNo: '0056',
+                siteNm: 'CGV 강남',
+                scnYmd: '20260304',
+                scnSseq: '1',
+                movNo: 'M3',
+                movNm: '강남 상영작',
+                cratgClsNm: '12세',
+                scnsrtTm: '1010',
+                sortOseq: '1',
+              },
+            ],
           }),
         ),
       );
