@@ -17,6 +17,10 @@ import {
   fetchOliveyoungProducts,
   fetchOliveyoungStores,
 } from '../services/oliveyoung/client.js';
+import {
+  withDaisoProductLinks,
+  withOliveyoungProductLinks,
+} from './responseLinks.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 /**
@@ -34,8 +38,9 @@ export async function handleSearchProducts(c: ApiContext) {
 
   try {
     const { products, totalCount } = await fetchProducts(query, page, pageSize);
+    const productsWithLinks = products.map((product) => withDaisoProductLinks(product, c.req.url));
 
-    return successResponse(c, { products }, { total: totalCount, page, pageSize });
+    return successResponse(c, { products: productsWithLinks }, { total: totalCount, page, pageSize });
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
     return errorResponse(c, 'SEARCH_FAILED', message, 500);
@@ -62,7 +67,7 @@ export async function handleGetProduct(c: ApiContext) {
 
     const result = {
       id: product.PD_NO,
-      name: product.PDNM || product.EXH_PD_NM,
+      name: product.PDNM || product.EXH_PD_NM || '',
       price: parseInt(product.PD_PRC) || 0,
       currency: 'KRW',
       imageUrl: getImageUrl(product.ATCH_FILE_URL),
@@ -71,7 +76,7 @@ export async function handleGetProduct(c: ApiContext) {
       isNew: product.NEW_PD_YN === 'Y',
     };
 
-    return successResponse(c, result);
+    return successResponse(c, withDaisoProductLinks(result, c.req.url));
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
     return errorResponse(c, 'FETCH_FAILED', message, 500);
@@ -241,7 +246,7 @@ export async function handleOliveyoungCheckInventory(c: ApiContext) {
         inventory: {
           totalCount: productResult.totalCount,
           nextPage: productResult.nextPage,
-          products: productResult.products,
+          products: productResult.products.map(withOliveyoungProductLinks),
         },
       },
       { total: productResult.totalCount, page, pageSize: size }

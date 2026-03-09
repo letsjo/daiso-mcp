@@ -3,6 +3,20 @@
  */
 
 export const OPENAPI_CGV_COMPONENT_SCHEMAS = {
+  CgvTimetableLinks: {
+    type: 'object',
+    properties: {
+      officialBookingUrl: {
+        type: 'string',
+        example: 'https://www.cgv.co.kr/cnm/movieBook',
+      },
+      apiTimetableUrl: {
+        type: 'string',
+        example:
+          'https://daiso-mcp.hyunoh-jo.workers.dev/api/cgv/timetable?playDate=20260310&theaterCode=0366&movieCode=30000927',
+      },
+    },
+  },
   CgvTheater: {
     type: 'object',
     properties: {
@@ -35,6 +49,7 @@ export const OPENAPI_CGV_COMPONENT_SCHEMAS = {
       endTime: { type: 'string', example: '11:20' },
       totalSeats: { type: 'integer', example: 150 },
       remainingSeats: { type: 'integer', example: 42 },
+      links: { $ref: '#/components/schemas/CgvTimetableLinks' },
     },
   },
   CgvTheaterSearchResponse: {

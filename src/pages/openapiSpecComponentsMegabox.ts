@@ -3,6 +3,38 @@
  */
 
 export const OPENAPI_MEGABOX_COMPONENT_SCHEMAS = {
+  MegaboxTheaterLinks: {
+    type: 'object',
+    properties: {
+      officialTheaterUrl: {
+        type: 'string',
+        example: 'https://www.megabox.co.kr/theater?brchNo=1372',
+      },
+    },
+  },
+  MegaboxShowtimeLinks: {
+    type: 'object',
+    properties: {
+      officialTheaterUrl: {
+        type: 'string',
+        example: 'https://www.megabox.co.kr/theater?brchNo=1372',
+      },
+      officialBookingUrl: {
+        type: 'string',
+        example:
+          'https://www.megabox.co.kr/on/oh/ohb/SimpleBooking/simpleBookingPage.do?rpstMovieNo=25104501&brchNo1=1372&sellChnlCd=ONLINE&playDe=20260310&naverPlaySchdlNo=2603101372011',
+      },
+      officialSeatMapUrl: {
+        type: 'string',
+        example:
+          'https://www.megabox.co.kr/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do?playSchdlNo=2603101372011',
+      },
+      apiSeatMapUrl: {
+        type: 'string',
+        example: 'https://daiso-mcp.hyunoh-jo.workers.dev/api/megabox/seat-map?playSchdlNo=2603101372011',
+      },
+    },
+  },
   MegaboxTheater: {
     type: 'object',
     properties: {
@@ -12,6 +44,7 @@ export const OPENAPI_MEGABOX_COMPONENT_SCHEMAS = {
       latitude: { type: 'number', format: 'float', example: 37.4982 },
       longitude: { type: 'number', format: 'float', example: 127.0264 },
       distanceKm: { type: 'number', format: 'float', example: 0.5 },
+      links: { $ref: '#/components/schemas/MegaboxTheaterLinks' },
     },
   },
   MegaboxShowtime: {
@@ -27,6 +60,7 @@ export const OPENAPI_MEGABOX_COMPONENT_SCHEMAS = {
       endTime: { type: 'string', example: '11:20' },
       totalSeats: { type: 'integer', example: 120 },
       remainingSeats: { type: 'integer', example: 42 },
+      links: { $ref: '#/components/schemas/MegaboxShowtimeLinks' },
     },
   },
   MegaboxTheaterSearchResponse: {
@@ -260,6 +294,7 @@ export const OPENAPI_MEGABOX_COMPONENT_SCHEMAS = {
         type: 'object',
         properties: {
           playSchdlNo: { type: 'string', example: '2603101372011' },
+          links: { $ref: '#/components/schemas/MegaboxShowtimeLinks' },
           seatMap: { $ref: '#/components/schemas/MegaboxSeatMap' },
         },
       },
