@@ -4,7 +4,12 @@
 
 import type { Hono } from 'hono';
 import { withEdgeCache } from '../../utils/cache.js';
-import { handleCgvFindTheaters, handleCgvGetTimetable, handleCgvSearchMovies } from '../cgvHandlers.js';
+import {
+  handleCgvFindTheaters,
+  handleCgvGetTimetable,
+  handleCgvSearchMovies,
+  handleCgvSearchMoviesByTheater,
+} from '../cgvHandlers.js';
 import type { AppBindings } from '../response.js';
 
 export function registerCgvRoutes(app: Hono<{ Bindings: AppBindings }>): void {
@@ -29,6 +34,18 @@ export function registerCgvRoutes(app: Hono<{ Bindings: AppBindings }>): void {
         keyPrefix: 'cgv-movies-v1',
       },
       () => handleCgvSearchMovies(c),
+    ),
+  );
+
+  app.get('/api/cgv/movies/by-theater', async (c) =>
+    withEdgeCache(
+      c.req.url,
+      {
+        ttlSeconds: 60 * 10,
+        staleWhileRevalidateSeconds: 60,
+        keyPrefix: 'cgv-movies-by-theater-v1',
+      },
+      () => handleCgvSearchMoviesByTheater(c),
     ),
   );
 
