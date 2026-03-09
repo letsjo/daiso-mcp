@@ -63,15 +63,21 @@ describe('OpenAPI 페이지', () => {
       expect.arrayContaining([
         expect.objectContaining({ name: 'fromTime', required: false }),
         expect.objectContaining({ name: 'toTime', required: false }),
+        expect.objectContaining({ name: 'minRemainingSeats', required: false }),
+        expect.objectContaining({ name: 'sort', required: false }),
       ]),
     );
     expect(spec.paths['/api/cgv/timetable'].get.parameters).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ name: 'fromTime', required: false }),
         expect.objectContaining({ name: 'toTime', required: false }),
+        expect.objectContaining({ name: 'minRemainingSeats', required: false }),
+        expect.objectContaining({ name: 'sort', required: false }),
       ]),
     );
-    expect(spec.components.schemas.UnifiedSearchResponse.properties.meta.properties.services).toBeDefined();
+    expect(
+      spec.components.schemas.UnifiedSearchResponse.properties.meta.properties.services,
+    ).toBeDefined();
     expect(spec.components.schemas.UnifiedSearchBucketMeta.properties.nextCursor).toBeDefined();
   });
 

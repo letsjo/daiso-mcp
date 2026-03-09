@@ -60,6 +60,8 @@ describe('generatePromptText', () => {
     expect(text).toContain('lng');
     expect(text).toContain('fromTime');
     expect(text).toContain('toTime');
+    expect(text).toContain('minRemainingSeats');
+    expect(text).toContain('remainingSeats-desc');
     expect(text).toContain('services');
     expect(text).toContain('types');
     expect(text).toContain('cursor');

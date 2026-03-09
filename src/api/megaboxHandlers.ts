@@ -2,16 +2,18 @@
  * 메가박스 GET API 핸들러
  */
 
-import {
-  fetchMegaboxBookingList,
-  toYyyymmdd,
-} from '../services/megabox/client.js';
+import { fetchMegaboxBookingList, toYyyymmdd } from '../services/megabox/client.js';
 import {
   DEFAULT_MEGABOX_LATITUDE,
   DEFAULT_MEGABOX_LONGITUDE,
   findNearbyMegaboxTheaters,
 } from '../services/megabox/theaterLocator.js';
 import { matchesTimeWindow, normalizeTimeWindow } from '../utils/timeWindow.js';
+import {
+  filterAndSortShowtimes,
+  normalizeMinRemainingSeats,
+  normalizeShowtimeSort,
+} from '../utils/showtimeQuery.js';
 import { type ApiContext, errorResponse, successResponse } from './response.js';
 
 /**
@@ -44,7 +46,7 @@ export async function handleMegaboxFindNearbyTheaters(c: ApiContext) {
         areaCode,
         theaters,
       },
-      { total: theaters.length, pageSize: limit }
+      { total: theaters.length, pageSize: limit },
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
@@ -104,14 +106,27 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
   const areaCode = c.req.query('areaCode') || '11';
   const fromTime = c.req.query('fromTime') || undefined;
   const toTime = c.req.query('toTime') || undefined;
+  const minRemainingSeatsQuery = c.req.query('minRemainingSeats');
+  const sort = c.req.query('sort') || undefined;
   const limit = parseInt(c.req.query('limit') || '50');
   const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
   let timeWindow;
+  let minRemainingSeats;
+  let normalizedSort;
 
   try {
     timeWindow = normalizeTimeWindow({ fromTime, toTime });
   } catch (error) {
     return errorResponse(c, 'INVALID_TIME_WINDOW', (error as Error).message, 400);
+  }
+
+  try {
+    minRemainingSeats = normalizeMinRemainingSeats(
+      minRemainingSeatsQuery ? Number(minRemainingSeatsQuery) : undefined,
+    );
+    normalizedSort = normalizeShowtimeSort(sort);
+  } catch (error) {
+    return errorResponse(c, 'INVALID_SHOWTIME_FILTER', (error as Error).message, 400);
   }
 
   try {
@@ -123,17 +138,15 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
       timeout: timeoutMs,
     });
 
-    const seats = showtimes
+    const filteredShowtimes = showtimes
       .filter((item) => (theaterId ? item.theaterId === theaterId : true))
       .filter((item) => (movieId ? item.movieId === movieId : true))
-      .filter((item) => matchesTimeWindow(item.startTime, timeWindow))
-      .sort((a, b) => {
-        if (a.startTime === b.startTime) {
-          return a.theaterName.localeCompare(b.theaterName);
-        }
-        return a.startTime.localeCompare(b.startTime);
-      })
-      .slice(0, limit);
+      .filter((item) => matchesTimeWindow(item.startTime, timeWindow));
+    const seats = filterAndSortShowtimes(filteredShowtimes, {
+      minRemainingSeats,
+      sort: normalizedSort,
+      limit,
+    });
 
     return successResponse(
       c,
@@ -145,6 +158,8 @@ export async function handleMegaboxGetRemainingSeats(c: ApiContext) {
           areaCode,
           fromTime: timeWindow.fromTime || null,
           toTime: timeWindow.toTime || null,
+          minRemainingSeats: minRemainingSeats ?? null,
+          sort: normalizedSort,
         },
         seats,
       },

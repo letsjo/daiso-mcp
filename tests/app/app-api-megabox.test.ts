@@ -16,7 +16,9 @@ describe('GET /api/megabox/theaters', () => {
         new Response(JSON.stringify({ areaBrchList: [{ brchNo: '1372', brchNm: '강남' }] })),
       )
       .mockResolvedValueOnce(
-        new Response('<dt>도로명주소</dt><dd>서울 강남구 강남대로</dd><a href="?lng=127.0&lat=37.5">지도</a>'),
+        new Response(
+          '<dt>도로명주소</dt><dd>서울 강남구 강남대로</dd><a href="?lng=127.0&lat=37.5">지도</a>',
+        ),
       );
 
     const res = await app.request('/api/megabox/theaters?lat=37.5&lng=127.0');
@@ -92,7 +94,7 @@ describe('GET /api/megabox/seats', () => {
     expect(data.data.seats).toHaveLength(1);
   });
 
-  it('시간대 필터가 있으면 해당 회차만 반환한다', async () => {
+  it('시간대, 최소 잔여 좌석, 정렬 기준으로 회차를 좁힌다', async () => {
     mockFetch.mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -124,14 +126,18 @@ describe('GET /api/megabox/seats', () => {
       ),
     );
 
-    const res = await app.request('/api/megabox/seats?playDate=20260304&fromTime=1800&toTime=1900');
+    const res = await app.request(
+      '/api/megabox/seats?playDate=20260304&fromTime=1700&toTime=1900&minRemainingSeats=10&sort=remainingSeats-desc',
+    );
     expect(res.status).toBe(200);
 
     const data = await res.json();
-    expect(data.data.filters.fromTime).toBe('1800');
+    expect(data.data.filters.fromTime).toBe('1700');
     expect(data.data.filters.toTime).toBe('1900');
+    expect(data.data.filters.minRemainingSeats).toBe(10);
+    expect(data.data.filters.sort).toBe('remainingSeats-desc');
     expect(data.data.seats).toHaveLength(1);
-    expect(data.data.seats[0].scheduleId).toBe('S2');
+    expect(data.data.seats[0].scheduleId).toBe('S1');
   });
 
   it('잘못된 시간대는 400을 반환한다', async () => {
@@ -141,5 +147,14 @@ describe('GET /api/megabox/seats', () => {
     const data = await res.json();
     expect(data.success).toBe(false);
     expect(data.error.code).toBe('INVALID_TIME_WINDOW');
+  });
+
+  it('잘못된 좌석 필터는 400을 반환한다', async () => {
+    const res = await app.request('/api/megabox/seats?playDate=20260304&sort=distance-asc');
+    expect(res.status).toBe(400);
+
+    const data = await res.json();
+    expect(data.success).toBe(false);
+    expect(data.error.code).toBe('INVALID_SHOWTIME_FILTER');
   });
 });

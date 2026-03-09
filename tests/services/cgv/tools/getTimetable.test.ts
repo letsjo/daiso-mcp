@@ -63,7 +63,11 @@ describe('createGetTimetableTool', () => {
     );
 
     const tool = createGetTimetableTool();
-    const result = await tool.handler({ playDate: '20260304', theaterCode: '0056', movieCode: 'M1' });
+    const result = await tool.handler({
+      playDate: '20260304',
+      theaterCode: '0056',
+      movieCode: 'M1',
+    });
 
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.count).toBe(2);
@@ -187,7 +191,7 @@ describe('createGetTimetableTool', () => {
     expect(parsed.filters.movieCode).toBeNull();
   });
 
-  it('시간대 필터로 회차를 좁힐 수 있다', async () => {
+  it('시간대, 최소 잔여 좌석, 정렬 기준으로 회차를 좁힐 수 있다', async () => {
     mockFetch.mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -229,12 +233,16 @@ describe('createGetTimetableTool', () => {
       theaterCode: '0056',
       fromTime: '1800',
       toTime: '1900',
+      minRemainingSeats: 30,
+      sort: 'remainingSeats-desc',
     });
 
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.count).toBe(1);
     expect(parsed.filters.fromTime).toBe('1800');
     expect(parsed.filters.toTime).toBe('1900');
+    expect(parsed.filters.minRemainingSeats).toBe(30);
+    expect(parsed.filters.sort).toBe('remainingSeats-desc');
     expect(parsed.timetable[0].scheduleId).toBe('2026030400562');
   });
 });

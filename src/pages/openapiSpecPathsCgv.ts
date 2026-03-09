@@ -134,6 +134,24 @@ export const OPENAPI_PATHS_CGV = {
           schema: { type: 'string', example: '2100' },
         },
         {
+          name: 'minRemainingSeats',
+          in: 'query',
+          required: false,
+          description: '최소 남은 좌석 수',
+          schema: { type: 'integer', minimum: 0, example: 10 },
+        },
+        {
+          name: 'sort',
+          in: 'query',
+          required: false,
+          description: '정렬 기준',
+          schema: {
+            type: 'string',
+            enum: ['startTime-asc', 'remainingSeats-desc', 'remainingSeats-asc'],
+            default: 'startTime-asc',
+          },
+        },
+        {
           name: 'limit',
           in: 'query',
           required: false,
@@ -143,7 +161,7 @@ export const OPENAPI_PATHS_CGV = {
       ],
       responses: {
         '400': {
-          description: '잘못된 시간대 조건',
+          description: '잘못된 상영 회차 필터',
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/ErrorResponse' },
