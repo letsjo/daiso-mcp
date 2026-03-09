@@ -54,6 +54,7 @@
 
 - [x] `[P1]` 차기 구현 서비스 우선순위 결정하기: `CU`, `GS25`, `Emart24`
 - [x] `[P1]` 서비스별 지원 기능 매트릭스 문서 추가하기
+- [x] `[P2]` 메가박스/CGV 좌석 조회에 `fromTime`, `toTime`, `minRemainingSeats`, `sort` 필터 추가하기
 - [x] `[P2]` 여러 서비스를 한 번에 조회하는 통합 검색 도구 또는 통합 REST 엔드포인트 설계 검토하기
 - [x] `[P2]` 영화 서비스에서 좌석맵/상영관 상세 같은 추가 정보 제공 가능성 조사하기
 - [x] `[P1]` 통합 검색 설계를 기준으로 v1 응답 스키마와 서비스 opt-in 인터페이스 초안 만들기
@@ -69,6 +70,8 @@
 - [x] `[P2]` `daiso products` continuation pilot 구현하기
 - [x] `[P2]` `oliveyoung products/stores` continuation pilot 구현하기
 - [ ] `[P2]` store/theater 타입 한정 공통 정렬 옵션(`distance-asc`) 도입 가능성 검토하기
+- [ ] `[P2]` 메가박스 read-only 좌석맵 API 도입 가능성 재검토하기
+- [ ] `[P2]` CGV 좌석맵/상영관 상세 API의 인증 조건과 우회 전략을 재검증하기
 - [ ] `[P2]` `Emart24` 또는 `GS25` 착수 전에 공통 소매 검색/매장 타입 재사용 범위를 정리하기
 
 ### 문서 / DX

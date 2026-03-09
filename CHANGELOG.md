@@ -19,6 +19,7 @@
 - 통합 검색 continuation cursor validator와 REST/MCP 연결 추가
 - 통합 검색 `daiso products` continuation pilot과 `nextCursor` 반환 추가
 - 통합 검색 `oliveyoung products/stores` continuation pilot과 `nextCursor` 반환 추가
+- 영화관 좌석 조회용 `minRemainingSeats`, `sort` 공통 필터와 유틸 추가
 
 ### Changed
 
@@ -33,6 +34,7 @@
 - 통합 검색 continuation pilot 문서를 validator 연결 상태 기준으로 갱신
 - 통합 검색 prompt/OpenAPI 문서를 cursor-only 요청과 `nextCursor` 기준으로 갱신
 - 통합 검색 adapter 구현을 retail/cinema 모듈로 분리해 450줄 제한을 재확보
+- 메가박스 `seats`, CGV `timetable` API와 MCP 도구에 시간대/잔여 좌석/정렬 필터를 확장
 
 ### Removed
 
