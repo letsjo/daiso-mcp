@@ -489,13 +489,28 @@ GET /api/megabox/movies?playDate={YYYYMMDD}&theaterId={지점ID}&movieId={영화
 GET /api/megabox/seats?playDate={YYYYMMDD}&theaterId={지점ID}&movieId={영화ID}
 ```
 
-| 파라미터    | 필수 | 설명                               |
-| :---------- | :--: | :--------------------------------- |
-| `playDate`  |      | 조회 날짜 (YYYYMMDD, 기본값: 오늘) |
-| `theaterId` |      | 지점 ID                            |
-| `movieId`   |      | 영화 ID                            |
-| `areaCode`  |      | 지역 코드 (기본값: 11, 서울)       |
-| `limit`     |      | 최대 결과 수 (기본값: 50)          |
+| 파라미터            | 필수 | 설명                                                                     |
+| :------------------ | :--: | :----------------------------------------------------------------------- |
+| `playDate`          |      | 조회 날짜 (YYYYMMDD, 기본값: 오늘)                                       |
+| `theaterId`         |      | 지점 ID                                                                  |
+| `movieId`           |      | 영화 ID                                                                  |
+| `areaCode`          |      | 지역 코드 (기본값: 11, 서울)                                             |
+| `fromTime`          |      | 조회 시작 시각 하한 (HHMM)                                               |
+| `toTime`            |      | 조회 시작 시각 상한 (HHMM)                                               |
+| `minRemainingSeats` |      | 최소 남은 좌석 수                                                        |
+| `sort`              |      | 정렬 기준 (`startTime-asc`, `remainingSeats-desc`, `remainingSeats-asc`) |
+| `limit`             |      | 최대 결과 수 (기본값: 50)                                                |
+
+### 메가박스 좌석맵 조회
+
+```
+GET /api/megabox/seat-map?playSchdlNo={회차ID}
+```
+
+| 파라미터      | 필수 | 설명                                   |
+| :------------ | :--: | :------------------------------------- |
+| `playSchdlNo` |  O   | 메가박스 회차 ID (예: `2603101372011`) |
+| `timeoutMs`   |      | 요청 제한 시간(ms, 기본값: 15000)      |
 
 ### CGV 극장 목록 조회
 
@@ -528,13 +543,17 @@ GET /api/cgv/movies?playDate={YYYYMMDD}&theaterCode={극장코드}
 GET /api/cgv/timetable?playDate={YYYYMMDD}&theaterCode={극장코드}&movieCode={영화코드}
 ```
 
-| 파라미터      | 필수 | 설명                               |
-| :------------ | :--: | :--------------------------------- |
-| `playDate`    |      | 조회 날짜 (YYYYMMDD, 기본값: 오늘) |
-| `theaterCode` |      | CGV 극장 코드 (예: 0056)           |
-| `movieCode`   |      | CGV 영화 코드                      |
-| `limit`       |      | 최대 결과 수 (기본값: 50)          |
-| `timeoutMs`   |      | 요청 제한 시간(ms, 기본값: 15000)  |
+| 파라미터            | 필수 | 설명                                                                     |
+| :------------------ | :--: | :----------------------------------------------------------------------- |
+| `playDate`          |      | 조회 날짜 (YYYYMMDD, 기본값: 오늘)                                       |
+| `theaterCode`       |      | CGV 극장 코드 (예: 0056)                                                 |
+| `movieCode`         |      | CGV 영화 코드                                                            |
+| `fromTime`          |      | 조회 시작 시각 하한 (HHMM)                                               |
+| `toTime`            |      | 조회 시작 시각 상한 (HHMM)                                               |
+| `minRemainingSeats` |      | 최소 남은 좌석 수                                                        |
+| `sort`              |      | 정렬 기준 (`startTime-asc`, `remainingSeats-desc`, `remainingSeats-asc`) |
+| `limit`             |      | 최대 결과 수 (기본값: 50)                                                |
+| `timeoutMs`         |      | 요청 제한 시간(ms, 기본값: 15000)                                        |
 
 ### 응답 형식
 
