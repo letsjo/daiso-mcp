@@ -62,7 +62,9 @@ describe('GET /api/megabox/movies', () => {
     expect(data.data.movies).toHaveLength(1);
     expect(data.data.showtimes).toHaveLength(1);
     expect(data.data.theaters[0].links.officialTheaterUrl).toContain('brchNo=1372');
-    expect(data.data.showtimes[0].links.officialBookingUrl).toContain('naverPlaySchdlNo=S1');
+    expect(data.data.showtimes[0].links.officialBookingUrl).toBe(
+      'https://www.megabox.co.kr/booking?playSchdlNo=S1',
+    );
   });
 });
 
@@ -202,6 +204,9 @@ describe('GET /api/megabox/seat-map', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.playSchdlNo).toBe('2603101372011');
+    expect(data.data.links.officialBookingUrl).toBe(
+      'https://www.megabox.co.kr/booking?playSchdlNo=2603101372011',
+    );
     expect(data.data.links.officialSeatMapUrl).toContain('playSchdlNo=2603101372011');
     expect(data.data.links.apiSeatMapUrl).toContain('/api/megabox/seat-map?playSchdlNo=2603101372011');
     expect(data.data.seatMap.summary.totalSeats).toBe(1);

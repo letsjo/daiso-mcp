@@ -1331,7 +1331,8 @@ components:
           example: "https://www.megabox.co.kr/theater?brchNo=1372"
         officialBookingUrl:
           type: string
-          example: "https://www.megabox.co.kr/on/oh/ohb/SimpleBooking/simpleBookingPage.do?rpstMovieNo=25104501&brchNo1=1372&sellChnlCd=ONLINE&playDe=20260310&naverPlaySchdlNo=2603101372011"
+          description: 메가박스 공개 예매 진입 URL입니다. 회차 ID 기준으로 좌석 선택 단계로 이동합니다.
+          example: "https://www.megabox.co.kr/booking?playSchdlNo=2603101372011"
         officialSeatMapUrl:
           type: string
           example: "https://www.megabox.co.kr/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do?playSchdlNo=2603101372011"

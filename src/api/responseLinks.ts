@@ -66,12 +66,8 @@ export function withMegaboxShowtimeLinks(showtime: MegaboxShowtime, requestUrl: 
         showtime.theaterId,
       )}`,
       officialBookingUrl:
-        'https://www.megabox.co.kr/on/oh/ohb/SimpleBooking/simpleBookingPage.do' +
-        `?rpstMovieNo=${encodeURIComponent(showtime.movieId)}` +
-        `&brchNo1=${encodeURIComponent(showtime.theaterId)}` +
-        `&sellChnlCd=ONLINE` +
-        `&playDe=${encodeURIComponent(showtime.playDate)}` +
-        `&naverPlaySchdlNo=${encodeURIComponent(showtime.scheduleId)}`,
+        'https://www.megabox.co.kr/booking' +
+        `?playSchdlNo=${encodeURIComponent(showtime.scheduleId)}`,
       officialSeatMapUrl:
         'https://www.megabox.co.kr/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do' +
         `?playSchdlNo=${encodeURIComponent(showtime.scheduleId)}`,
@@ -90,12 +86,8 @@ export function buildMegaboxSeatMapLinks(seatMap: MegaboxSeatMap, requestUrl: st
       seatMap.theater.theaterId,
     )}`,
     officialBookingUrl:
-      'https://www.megabox.co.kr/on/oh/ohb/SimpleBooking/simpleBookingPage.do' +
-      `?rpstMovieNo=${encodeURIComponent(seatMap.movie.movieId)}` +
-      `&brchNo1=${encodeURIComponent(seatMap.theater.theaterId)}` +
-      `&sellChnlCd=ONLINE` +
-      `&playDe=${encodeURIComponent(seatMap.playDate)}` +
-      `&naverPlaySchdlNo=${encodeURIComponent(seatMap.scheduleId)}`,
+      'https://www.megabox.co.kr/booking' +
+      `?playSchdlNo=${encodeURIComponent(seatMap.scheduleId)}`,
     officialSeatMapUrl:
       'https://www.megabox.co.kr/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do' +
       `?playSchdlNo=${encodeURIComponent(seatMap.scheduleId)}`,
