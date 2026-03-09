@@ -6,6 +6,8 @@ import {
   fetchCgvMovies,
   fetchCgvTheaters,
   fetchCgvTimetable,
+  normalizeCgvMovieSort,
+  THEATER_NOT_FOUND_ERROR_NAME,
   toYyyymmdd,
 } from '../services/cgv/client.js';
 import { filterAndSortTimetable } from '../services/cgv/timetable.js';
@@ -57,12 +59,23 @@ export async function handleCgvFindTheaters(c: ApiContext) {
 export async function handleCgvSearchMovies(c: ApiContext) {
   const playDate = c.req.query('playDate') || toYyyymmdd();
   const theaterCode = c.req.query('theaterCode') || undefined;
+  const theaterQuery = c.req.query('theaterQuery') || undefined;
+  const sort = c.req.query('sort') || undefined;
   const timeoutMs = parseInt(c.req.query('timeoutMs') || '15000');
+  let normalizedSort;
+
+  try {
+    normalizedSort = normalizeCgvMovieSort(sort);
+  } catch (error) {
+    return errorResponse(c, 'INVALID_CGV_MOVIE_SORT', (error as Error).message, 400);
+  }
 
   try {
     const movies = await fetchCgvMovies({
       playDate,
       theaterCode,
+      theaterQuery,
+      sort: normalizedSort,
       timeout: timeoutMs,
       zyteApiKey: c.env?.ZYTE_API_KEY,
     });
@@ -73,12 +86,18 @@ export async function handleCgvSearchMovies(c: ApiContext) {
         playDate,
         filters: {
           theaterCode: theaterCode || null,
+          theaterQuery: theaterQuery || null,
+          sort: normalizedSort,
         },
         movies,
       },
-      { total: movies.length },
+      { total: movies.length, sortApplied: normalizedSort },
     );
   } catch (error) {
+    if (error instanceof Error && error.name === THEATER_NOT_FOUND_ERROR_NAME) {
+      return errorResponse(c, 'CGV_THEATER_NOT_FOUND', error.message, 404);
+    }
+
     const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
     return errorResponse(c, 'CGV_MOVIE_SEARCH_FAILED', message, 500);
   }
