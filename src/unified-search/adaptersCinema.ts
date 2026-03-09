@@ -4,6 +4,7 @@
 
 import { fetchCgvMovies, fetchCgvTheaters, toYyyymmdd as toCgvDate } from '../services/cgv/client.js';
 import { fetchMegaboxBookingList, fetchMegaboxTheaterInfo, toYyyymmdd as toMegaboxDate } from '../services/megabox/client.js';
+import { getMegaboxTheaterDetailRequestLimit } from '../services/megabox/theaterLocator.js';
 import {
   calculateDistanceKm,
   createBucketMeta,
@@ -54,11 +55,18 @@ export function createMegaboxUnifiedSearchAdapter(): UnifiedSearchAdapter {
       }
 
       if (query.types.includes('theater')) {
+        const preferredTheaters = theaters.filter((theater) =>
+          matchesQuery(theater.theaterName, query.query),
+        );
+        const detailCandidates = (preferredTheaters.length > 0 ? preferredTheaters : theaters).slice(
+          0,
+          getMegaboxTheaterDetailRequestLimit(query.limitPerService),
+        );
         const infoResults = await Promise.allSettled(
-          theaters.map((theater) => fetchMegaboxTheaterInfo(theater.theaterId, query.timeoutMs)),
+          detailCandidates.map((theater) => fetchMegaboxTheaterInfo(theater.theaterId, query.timeoutMs)),
         );
 
-        const matchedTheaters = theaters
+        const matchedTheaters = detailCandidates
           .map<UnifiedSearchTheaterResult | null>((theater, index) => {
             const info = infoResults[index];
             const address = info.status === 'fulfilled' ? info.value.address : '';
