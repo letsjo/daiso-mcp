@@ -6,12 +6,15 @@ import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
 import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import { fetchMegaboxBookingList, toYyyymmdd } from '../client.js';
+import { matchesTimeWindow, normalizeTimeWindow } from '../../../utils/timeWindow.js';
 
 interface GetRemainingSeatsArgs {
   playDate?: string;
   theaterId?: string;
   movieId?: string;
   areaCode?: string;
+  fromTime?: string;
+  toTime?: string;
   limit?: number;
   timeoutMs?: number;
 }
@@ -22,9 +25,12 @@ async function getRemainingSeats(args: GetRemainingSeatsArgs): Promise<McpToolRe
     theaterId,
     movieId,
     areaCode = '11',
+    fromTime,
+    toTime,
     limit = 50,
     timeoutMs = 15000,
   } = args;
+  const timeWindow = normalizeTimeWindow({ fromTime, toTime });
 
   const { showtimes } = await fetchMegaboxBookingList({
     playDate,
@@ -37,6 +43,7 @@ async function getRemainingSeats(args: GetRemainingSeatsArgs): Promise<McpToolRe
   const filteredShowtimes = showtimes
     .filter((item) => (theaterId ? item.theaterId === theaterId : true))
     .filter((item) => (movieId ? item.movieId === movieId : true))
+    .filter((item) => matchesTimeWindow(item.startTime, timeWindow))
     .sort((a, b) => {
       if (a.startTime === b.startTime) {
         return a.theaterName.localeCompare(b.theaterName);
@@ -51,6 +58,8 @@ async function getRemainingSeats(args: GetRemainingSeatsArgs): Promise<McpToolRe
       theaterId: theaterId || null,
       movieId: movieId || null,
       areaCode,
+      fromTime: timeWindow.fromTime || null,
+      toTime: timeWindow.toTime || null,
       limit,
     },
     count: filteredShowtimes.length,
@@ -70,6 +79,8 @@ export function createGetRemainingSeatsTool(): ToolRegistration {
       theaterId: z.string().optional().describe('메가박스 지점 번호 (예: 1372)'),
       movieId: z.string().optional().describe('메가박스 영화 번호 (예: 25104500)'),
       areaCode: z.string().optional().default('11').describe('지역 코드 (기본값: 11, 서울)'),
+      fromTime: z.string().optional().describe('조회 시작 시각 하한 (HHMM, 예: 1800)'),
+      toTime: z.string().optional().describe('조회 시작 시각 상한 (HHMM, 예: 2100)'),
       limit: z.number().optional().default(50).describe('반환할 최대 회차 수 (기본값: 50)'),
       timeoutMs: z.number().optional().default(15000).describe('요청 제한 시간(ms, 기본값: 15000)'),
     },

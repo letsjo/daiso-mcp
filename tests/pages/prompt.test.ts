@@ -58,6 +58,8 @@ describe('generatePromptText', () => {
     expect(text).toContain('dong');
     expect(text).toContain('lat');
     expect(text).toContain('lng');
+    expect(text).toContain('fromTime');
+    expect(text).toContain('toTime');
     expect(text).toContain('services');
     expect(text).toContain('types');
     expect(text).toContain('cursor');

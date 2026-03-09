@@ -3,16 +3,18 @@
  */
 
 import type { CgvTimetable } from './types.js';
+import { matchesTimeWindow, type TimeWindow } from '../../utils/timeWindow.js';
 
 export function filterAndSortTimetable(
   timetable: CgvTimetable[],
-  options: { theaterCode?: string; movieCode?: string; limit: number },
+  options: { theaterCode?: string; movieCode?: string; limit: number } & TimeWindow,
 ): CgvTimetable[] {
-  const { theaterCode, movieCode, limit } = options;
+  const { theaterCode, movieCode, fromTime, toTime, limit } = options;
 
   return timetable
     .filter((item) => (theaterCode ? item.theaterCode === theaterCode : true))
     .filter((item) => (movieCode ? item.movieCode === movieCode : true))
+    .filter((item) => matchesTimeWindow(item.startTime, { fromTime, toTime }))
     .sort((a, b) => {
       if (a.startTime === b.startTime) {
         return a.theaterName.localeCompare(b.theaterName);

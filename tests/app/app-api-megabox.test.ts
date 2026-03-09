@@ -91,4 +91,55 @@ describe('GET /api/megabox/seats', () => {
     expect(data.success).toBe(true);
     expect(data.data.seats).toHaveLength(1);
   });
+
+  it('시간대 필터가 있으면 해당 회차만 반환한다', async () => {
+    mockFetch.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          movieFormList: [
+            {
+              playSchdlNo: 'S1',
+              movieNo: 'M1',
+              movieNm: '영화A',
+              brchNo: '1372',
+              brchNm: '강남',
+              playStartTime: '1730',
+              playEndTime: '1920',
+              restSeatCnt: 12,
+              totSeatCnt: 100,
+            },
+            {
+              playSchdlNo: 'S2',
+              movieNo: 'M1',
+              movieNm: '영화A',
+              brchNo: '1372',
+              brchNm: '강남',
+              playStartTime: '1830',
+              playEndTime: '2020',
+              restSeatCnt: 8,
+              totSeatCnt: 100,
+            },
+          ],
+        }),
+      ),
+    );
+
+    const res = await app.request('/api/megabox/seats?playDate=20260304&fromTime=1800&toTime=1900');
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.data.filters.fromTime).toBe('1800');
+    expect(data.data.filters.toTime).toBe('1900');
+    expect(data.data.seats).toHaveLength(1);
+    expect(data.data.seats[0].scheduleId).toBe('S2');
+  });
+
+  it('잘못된 시간대는 400을 반환한다', async () => {
+    const res = await app.request('/api/megabox/seats?playDate=20260304&fromTime=2500');
+    expect(res.status).toBe(400);
+
+    const data = await res.json();
+    expect(data.success).toBe(false);
+    expect(data.error.code).toBe('INVALID_TIME_WINDOW');
+  });
 });

@@ -265,11 +265,13 @@ export function createOliveyoungMegaboxPromptSection(baseUrl: string): string {
 - theaterId: 지점 ID
 - movieId: 영화 ID
 - areaCode: 지역 코드 (기본값: 11)
+- fromTime: 조회 시작 시각 하한 (HHMM)
+- toTime: 조회 시작 시각 상한 (HHMM)
 - limit: 최대 결과 수 (기본값: 50)
 
 **예시**:
 - ${baseUrl}/api/megabox/seats?playDate=20260304&theaterId=1372
-- ${baseUrl}/api/megabox/seats?playDate=20260304&movieId=25104500&limit=20`;
+- ${baseUrl}/api/megabox/seats?playDate=20260304&movieId=25104500&fromTime=1800&toTime=2100&limit=20`;
 }
 
 /**
@@ -318,11 +320,13 @@ export function createCgvAndCommonPromptSection(baseUrl: string): string {
 - playDate: 조회 날짜 (YYYYMMDD, 기본값: 오늘)
 - theaterCode: 극장 코드 (예: 0056)
 - movieCode: 영화 코드
+- fromTime: 조회 시작 시각 하한 (HHMM)
+- toTime: 조회 시작 시각 상한 (HHMM)
 - limit: 최대 결과 수 (기본값: 50)
 
 **예시**:
 - ${baseUrl}/api/cgv/timetable?playDate=20260304&theaterCode=0056
-- ${baseUrl}/api/cgv/timetable?playDate=20260304&movieCode=200001
+- ${baseUrl}/api/cgv/timetable?playDate=20260304&movieCode=200001&fromTime=1800&toTime=2100
 
 ---
 
