@@ -203,6 +203,40 @@ describe('createMegaboxUnifiedSearchAdapter', () => {
       },
     });
   });
+
+  it('극장명과 주소가 모두 매치되지 않으면 결과에서 제외한다', async () => {
+    const adapter = createMegaboxUnifiedSearchAdapter();
+
+    mockFetch
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            areaBrchList: [{ brchNo: '1372', brchNm: '홍대' }],
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response('<dt>도로명주소</dt><dd>서울 마포구</dd><a href="?lng=127.0&lat=37.5">지도</a>'),
+      );
+
+    const result = await adapter.search({
+      query: '강남',
+      service: 'megabox',
+      types: ['theater'],
+      limitPerService: 5,
+      latitude: 37.5,
+      longitude: 127.0,
+    });
+
+    expect(result.theaters).toEqual([]);
+    expect(result.meta).toEqual({
+      theaters: {
+        returnedCount: 0,
+        truncated: false,
+        sortApplied: 'distance-asc',
+      },
+    });
+  });
 });
 
 describe('createCgvUnifiedSearchAdapter', () => {
