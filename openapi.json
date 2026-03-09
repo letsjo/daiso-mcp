@@ -1366,6 +1366,32 @@
   },
   "components": {
     "schemas": {
+      "DaisoProductLinks": {
+        "type": "object",
+        "properties": {
+          "apiDetailUrl": {
+            "type": "string",
+            "example": "https://daiso-mcp.hyunoh-jo.workers.dev/api/daiso/products/12345"
+          },
+          "apiInventoryUrl": {
+            "type": "string",
+            "example": "https://daiso-mcp.hyunoh-jo.workers.dev/api/daiso/inventory?productId=12345"
+          },
+          "officialMallFinderUrl": {
+            "type": "string",
+            "example": "https://www.daisomall.co.kr/ms/msg/SCR_MSG_0015"
+          }
+        }
+      },
+      "OliveyoungProductLinks": {
+        "type": "object",
+        "properties": {
+          "officialProductUrl": {
+            "type": "string",
+            "example": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000200614"
+          }
+        }
+      },
       "Product": {
         "type": "object",
         "description": "제품 정보",
@@ -1404,6 +1430,9 @@
             "type": "boolean",
             "description": "매장 픽업 가능 여부",
             "example": true
+          },
+          "links": {
+            "$ref": "#/components/schemas/DaisoProductLinks"
           }
         }
       },
@@ -1443,6 +1472,9 @@
           "isNew": {
             "type": "boolean",
             "description": "신상품 여부"
+          },
+          "links": {
+            "$ref": "#/components/schemas/DaisoProductLinks"
           }
         }
       },
@@ -1762,6 +1794,9 @@
           "o2oRemainQuantity": {
             "type": "integer",
             "example": 0
+          },
+          "links": {
+            "$ref": "#/components/schemas/OliveyoungProductLinks"
           }
         }
       },
@@ -1875,6 +1910,36 @@
           }
         }
       },
+      "MegaboxTheaterLinks": {
+        "type": "object",
+        "properties": {
+          "officialTheaterUrl": {
+            "type": "string",
+            "example": "https://www.megabox.co.kr/theater?brchNo=1372"
+          }
+        }
+      },
+      "MegaboxShowtimeLinks": {
+        "type": "object",
+        "properties": {
+          "officialTheaterUrl": {
+            "type": "string",
+            "example": "https://www.megabox.co.kr/theater?brchNo=1372"
+          },
+          "officialBookingUrl": {
+            "type": "string",
+            "example": "https://www.megabox.co.kr/on/oh/ohb/SimpleBooking/simpleBookingPage.do?rpstMovieNo=25104501&brchNo1=1372&sellChnlCd=ONLINE&playDe=20260310&naverPlaySchdlNo=2603101372011"
+          },
+          "officialSeatMapUrl": {
+            "type": "string",
+            "example": "https://www.megabox.co.kr/on/oh/ohz/PcntSeatChoi/selectPcntSeatChoi.do?playSchdlNo=2603101372011"
+          },
+          "apiSeatMapUrl": {
+            "type": "string",
+            "example": "https://daiso-mcp.hyunoh-jo.workers.dev/api/megabox/seat-map?playSchdlNo=2603101372011"
+          }
+        }
+      },
       "MegaboxTheater": {
         "type": "object",
         "properties": {
@@ -1904,6 +1969,9 @@
             "type": "number",
             "format": "float",
             "example": 0.5
+          },
+          "links": {
+            "$ref": "#/components/schemas/MegaboxTheaterLinks"
           }
         }
       },
@@ -1949,6 +2017,9 @@
           "remainingSeats": {
             "type": "integer",
             "example": 42
+          },
+          "links": {
+            "$ref": "#/components/schemas/MegaboxShowtimeLinks"
           }
         }
       },
@@ -2396,6 +2467,9 @@
                 "type": "string",
                 "example": "2603101372011"
               },
+              "links": {
+                "$ref": "#/components/schemas/MegaboxShowtimeLinks"
+              },
               "seatMap": {
                 "$ref": "#/components/schemas/MegaboxSeatMap"
               }
@@ -2409,6 +2483,19 @@
                 "example": 116
               }
             }
+          }
+        }
+      },
+      "CgvTimetableLinks": {
+        "type": "object",
+        "properties": {
+          "officialBookingUrl": {
+            "type": "string",
+            "example": "https://www.cgv.co.kr/cnm/movieBook"
+          },
+          "apiTimetableUrl": {
+            "type": "string",
+            "example": "https://daiso-mcp.hyunoh-jo.workers.dev/api/cgv/timetable?playDate=20260310&theaterCode=0366&movieCode=30000927"
           }
         }
       },
@@ -2500,6 +2587,9 @@
           "remainingSeats": {
             "type": "integer",
             "example": 42
+          },
+          "links": {
+            "$ref": "#/components/schemas/CgvTimetableLinks"
           }
         }
       },
