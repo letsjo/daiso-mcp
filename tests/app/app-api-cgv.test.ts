@@ -203,6 +203,8 @@ describe('GET /api/cgv/timetable', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.timetable).toHaveLength(1);
+    expect(data.data.timetable[0].links.officialBookingUrl).toBe('https://www.cgv.co.kr/cnm/movieBook');
+    expect(data.data.timetable[0].links.apiTimetableUrl).toContain('theaterCode=0056');
   });
 
   it('시간대, 최소 잔여 좌석, 정렬 기준으로 회차를 좁힌다', async () => {

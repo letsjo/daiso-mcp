@@ -61,6 +61,8 @@ describe('GET /api/megabox/movies', () => {
     expect(data.success).toBe(true);
     expect(data.data.movies).toHaveLength(1);
     expect(data.data.showtimes).toHaveLength(1);
+    expect(data.data.theaters[0].links.officialTheaterUrl).toContain('brchNo=1372');
+    expect(data.data.showtimes[0].links.officialBookingUrl).toContain('naverPlaySchdlNo=S1');
   });
 });
 
@@ -92,6 +94,7 @@ describe('GET /api/megabox/seats', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.seats).toHaveLength(1);
+    expect(data.data.seats[0].links.apiSeatMapUrl).toContain('/api/megabox/seat-map?playSchdlNo=S1');
   });
 
   it('시간대, 최소 잔여 좌석, 정렬 기준으로 회차를 좁힌다', async () => {
@@ -199,6 +202,8 @@ describe('GET /api/megabox/seat-map', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.playSchdlNo).toBe('2603101372011');
+    expect(data.data.links.officialSeatMapUrl).toContain('playSchdlNo=2603101372011');
+    expect(data.data.links.apiSeatMapUrl).toContain('/api/megabox/seat-map?playSchdlNo=2603101372011');
     expect(data.data.seatMap.summary.totalSeats).toBe(1);
   });
 

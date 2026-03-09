@@ -26,6 +26,8 @@ describe('GET /api/daiso/products', () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
+    expect(data.data.products[0].links.apiDetailUrl).toContain('/api/daiso/products/1');
+    expect(data.data.products[0].links.apiInventoryUrl).toContain('/api/daiso/inventory?productId=1');
   });
 
   it('검색어 없이 요청하면 에러를 반환한다', async () => {
@@ -61,6 +63,8 @@ describe('GET /api/daiso/products/:id', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.id).toBe('12345');
+    expect(data.data.links.apiDetailUrl).toContain('/api/daiso/products/12345');
+    expect(data.data.links.officialMallFinderUrl).toBe('https://www.daisomall.co.kr/ms/msg/SCR_MSG_0015');
   });
 });
 
