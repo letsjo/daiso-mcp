@@ -163,7 +163,13 @@ describe('handleUnifiedSearch', () => {
         query: string;
         results: {
           daiso: {
-            products: Array<{ id: string }>;
+            products: Array<{
+              id: string;
+              links?: {
+                officialProductUrl?: string;
+                officialPurchaseUrl?: string;
+              };
+            }>;
           };
         };
       };
@@ -183,6 +189,12 @@ describe('handleUnifiedSearch', () => {
     expect(payload.success).toBe(true);
     expect(payload.data.query).toBe('정리함');
     expect(payload.data.results.daiso.products[0].id).toBe('P6');
+    expect(payload.data.results.daiso.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P6&recmYn=N',
+      officialPurchaseUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P6&recmYn=N',
+    });
     expect(payload.meta.requestedServices).toEqual(['daiso']);
     expect(payload.meta.requestedTypes).toEqual(['product']);
     expect(payload.meta.services.daiso.products.nextCursor).toBe(
@@ -236,7 +248,12 @@ describe('handleUnifiedSearch', () => {
         query: string;
         results: {
           oliveyoung: {
-            products: Array<{ id: string }>;
+            products: Array<{
+              id: string;
+              links?: {
+                officialProductUrl?: string;
+              };
+            }>;
           };
         };
       };
@@ -256,6 +273,10 @@ describe('handleUnifiedSearch', () => {
     expect(payload.success).toBe(true);
     expect(payload.data.query).toBe('선크림');
     expect(payload.data.results.oliveyoung.products[0].id).toBe('G6');
+    expect(payload.data.results.oliveyoung.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=G6',
+    });
     expect(payload.meta.requestedServices).toEqual(['oliveyoung']);
     expect(payload.meta.requestedTypes).toEqual(['product']);
     expect(payload.meta.services.oliveyoung.products.nextCursor).toBe(

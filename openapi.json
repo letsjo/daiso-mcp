@@ -1369,6 +1369,14 @@
       "DaisoProductLinks": {
         "type": "object",
         "properties": {
+          "officialProductUrl": {
+            "type": "string",
+            "example": "https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N"
+          },
+          "officialPurchaseUrl": {
+            "type": "string",
+            "example": "https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N"
+          },
           "apiDetailUrl": {
             "type": "string",
             "example": "https://daiso-mcp.hyunoh-jo.workers.dev/api/daiso/products/12345"
@@ -2736,6 +2744,19 @@
           }
         }
       },
+      "UnifiedSearchProductLinks": {
+        "type": "object",
+        "properties": {
+          "officialProductUrl": {
+            "type": "string",
+            "example": "https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N"
+          },
+          "officialPurchaseUrl": {
+            "type": "string",
+            "example": "https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N"
+          }
+        }
+      },
       "UnifiedSearchProduct": {
         "type": "object",
         "properties": {
@@ -2774,6 +2795,9 @@
           "stockStatus": {
             "type": "string",
             "example": "in_stock"
+          },
+          "links": {
+            "$ref": "#/components/schemas/UnifiedSearchProductLinks"
           }
         }
       },

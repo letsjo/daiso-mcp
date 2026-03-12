@@ -2,6 +2,11 @@
  * API 응답 링크 생성 유틸
  */
 
+import {
+  DAISOMALL_WEB,
+  getDaisoProductDetailUrl,
+  getDaisoProductPurchaseUrl,
+} from '../services/daiso/api.js';
 import type { Product } from '../services/daiso/types.js';
 import type { OliveyoungProduct } from '../services/oliveyoung/types.js';
 import type { MegaboxSeatMap, MegaboxShowtime, MegaboxTheater } from '../services/megabox/types.js';
@@ -27,9 +32,14 @@ export function withDaisoProductLinks(product: Product, requestUrl: string) {
   return {
     ...product,
     links: {
+      ...product.links,
+      officialProductUrl:
+        product.links?.officialProductUrl ?? getDaisoProductDetailUrl(product.id),
+      officialPurchaseUrl:
+        product.links?.officialPurchaseUrl ?? getDaisoProductPurchaseUrl(product.id),
       apiDetailUrl: `${origin}/api/daiso/products/${encodeURIComponent(product.id)}`,
       apiInventoryUrl: `${origin}/api/daiso/inventory?productId=${encodeURIComponent(product.id)}`,
-      officialMallFinderUrl: 'https://www.daisomall.co.kr/ms/msg/SCR_MSG_0015',
+      officialMallFinderUrl: DAISOMALL_WEB.STORE_FINDER,
     },
   };
 }

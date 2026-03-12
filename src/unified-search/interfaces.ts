@@ -16,6 +16,11 @@ export interface UnifiedSearchBaseItem {
   service: UnifiedSearchServiceId;
 }
 
+export interface UnifiedSearchProductLinks {
+  officialProductUrl?: string;
+  officialPurchaseUrl?: string;
+}
+
 export interface UnifiedSearchProductResult extends UnifiedSearchBaseItem {
   type: 'product';
   price?: number;
@@ -23,6 +28,7 @@ export interface UnifiedSearchProductResult extends UnifiedSearchBaseItem {
   category?: string;
   imageUrl?: string;
   stockStatus?: 'in_stock' | 'out_of_stock' | 'unknown';
+  links?: UnifiedSearchProductLinks;
 }
 
 export interface UnifiedSearchStoreResult extends UnifiedSearchBaseItem {

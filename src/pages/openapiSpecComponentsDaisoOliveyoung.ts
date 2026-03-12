@@ -6,6 +6,14 @@ export const OPENAPI_DAISO_OLIVEYOUNG_COMPONENT_SCHEMAS = {
   DaisoProductLinks: {
     type: 'object',
     properties: {
+      officialProductUrl: {
+        type: 'string',
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+      },
+      officialPurchaseUrl: {
+        type: 'string',
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+      },
       apiDetailUrl: {
         type: 'string',
         example: 'https://daiso-mcp.hyunoh-jo.workers.dev/api/daiso/products/12345',

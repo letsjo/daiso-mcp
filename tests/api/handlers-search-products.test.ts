@@ -24,7 +24,22 @@ describe('handleSearchProducts', () => {
     expect(ctx.json).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
-        data: expect.objectContaining({ products: expect.any(Array) }),
+        data: expect.objectContaining({
+          products: expect.arrayContaining([
+            expect.objectContaining({
+              links: expect.objectContaining({
+                officialProductUrl:
+                  'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1&recmYn=N',
+                officialPurchaseUrl:
+                  'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1&recmYn=N',
+                apiDetailUrl: expect.stringContaining('/api/daiso/products/1'),
+                apiInventoryUrl: expect.stringContaining(
+                  '/api/daiso/inventory?productId=1',
+                ),
+              }),
+            }),
+          ]),
+        }),
       }),
     );
   });

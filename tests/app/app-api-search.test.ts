@@ -30,6 +30,12 @@ describe('GET /api/search', () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.data.results.daiso.products).toHaveLength(1);
+    expect(data.data.results.daiso.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P1&recmYn=N',
+      officialPurchaseUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P1&recmYn=N',
+    });
     expect(data.meta.services.daiso.products).toEqual({
       returnedCount: 1,
       truncated: true,
@@ -74,6 +80,12 @@ describe('GET /api/search', () => {
     expect(data.success).toBe(true);
     expect(data.data.query).toBe('정리함');
     expect(data.data.results.daiso.products[0].id).toBe('P6');
+    expect(data.data.results.daiso.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P6&recmYn=N',
+      officialPurchaseUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P6&recmYn=N',
+    });
     expect(data.meta.services.daiso.products.nextCursor).toBe(
       encodeUnifiedSearchCursor({
         v: 1,

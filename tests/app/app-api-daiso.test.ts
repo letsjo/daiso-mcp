@@ -28,6 +28,12 @@ describe('GET /api/daiso/products', () => {
     expect(data.success).toBe(true);
     expect(data.data.products[0].links.apiDetailUrl).toContain('/api/daiso/products/1');
     expect(data.data.products[0].links.apiInventoryUrl).toContain('/api/daiso/inventory?productId=1');
+    expect(data.data.products[0].links.officialProductUrl).toBe(
+      'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1&recmYn=N',
+    );
+    expect(data.data.products[0].links.officialPurchaseUrl).toBe(
+      'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1&recmYn=N',
+    );
   });
 
   it('검색어 없이 요청하면 에러를 반환한다', async () => {
@@ -64,6 +70,12 @@ describe('GET /api/daiso/products/:id', () => {
     expect(data.success).toBe(true);
     expect(data.data.id).toBe('12345');
     expect(data.data.links.apiDetailUrl).toContain('/api/daiso/products/12345');
+    expect(data.data.links.officialProductUrl).toBe(
+      'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+    );
+    expect(data.data.links.officialPurchaseUrl).toBe(
+      'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+    );
     expect(data.data.links.officialMallFinderUrl).toBe('https://www.daisomall.co.kr/ms/msg/SCR_MSG_0015');
   });
 });

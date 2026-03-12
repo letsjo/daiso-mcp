@@ -67,6 +67,10 @@ describe('createOliveyoungUnifiedSearchAdapter', () => {
         id: 'G1',
         title: '선크림',
         stockStatus: 'in_stock',
+        links: {
+          officialProductUrl:
+            'https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=G1',
+        },
       }),
     ]);
     expect(result.stores).toEqual([

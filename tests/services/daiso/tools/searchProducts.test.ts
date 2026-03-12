@@ -61,6 +61,12 @@ describe('fetchProducts', () => {
       soldOut: false,
       isNew: true,
       pickupAvailable: true,
+      links: {
+        officialProductUrl:
+          'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+        officialPurchaseUrl:
+          'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+      },
     });
   });
 
@@ -193,6 +199,12 @@ describe('createSearchProductsTool', () => {
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.query).toBe('테스트');
     expect(parsed.products).toHaveLength(1);
+    expect(parsed.products[0].links.officialProductUrl).toBe(
+      'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1&recmYn=N',
+    );
+    expect(parsed.products[0].links.officialPurchaseUrl).toBe(
+      'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1&recmYn=N',
+    );
   });
 
   it('빈 검색어는 에러를 던진다', async () => {

@@ -2,6 +2,7 @@
  * 통합 검색 소매 adapter 구현
  */
 
+import { buildDaisoOfficialProductUrls } from '../services/daiso/api.js';
 import { fetchStores } from '../services/daiso/tools/findStores.js';
 import { fetchProducts } from '../services/daiso/tools/searchProducts.js';
 import { fetchOliveyoungProducts, fetchOliveyoungStores } from '../services/oliveyoung/client.js';
@@ -19,6 +20,12 @@ import type {
   UnifiedSearchAdapterResult,
   UnifiedSearchAdapterQuery,
 } from './interfaces.js';
+
+function getOliveyoungOfficialProductUrl(goodsNumber: string): string {
+  return `https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=${encodeURIComponent(
+    goodsNumber,
+  )}`;
+}
 
 function getDaisoProductsContinuation(
   query: UnifiedSearchAdapterQuery,
@@ -102,6 +109,7 @@ export function createDaisoUnifiedSearchAdapter(): UnifiedSearchAdapter {
           category: product.category,
           imageUrl: product.imageUrl,
           stockStatus: product.soldOut ? 'out_of_stock' : 'unknown',
+          links: buildDaisoOfficialProductUrls(product.id),
         }));
         result.meta = {
           ...result.meta,
@@ -183,6 +191,9 @@ export function createOliveyoungUnifiedSearchAdapter(zyteApiKey?: string): Unifi
           price: product.priceToPay,
           originalPrice: product.originalPrice,
           stockStatus: product.o2oStockFlag ? 'in_stock' : 'out_of_stock',
+          links: {
+            officialProductUrl: getOliveyoungOfficialProductUrl(product.goodsNumber),
+          },
         }));
         result.meta = {
           ...result.meta,

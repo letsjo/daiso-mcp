@@ -4,6 +4,15 @@
  * 모든 API URL을 한 곳에서 관리하여 유지보수성을 높입니다.
  */
 
+import type { DaisoOfficialProductUrls } from './types.js';
+
+function createDaisoProductDetailUrl(productId: string): string {
+  const url = new URL(DAISOMALL_WEB.PRODUCT_DETAIL);
+  url.searchParams.set('pdNo', productId);
+  url.searchParams.set('recmYn', 'N');
+  return url.toString();
+}
+
 /**
  * 다이소몰 API (daisomall.co.kr)
  * 상품 검색, 재고 조회 등
@@ -20,6 +29,18 @@ export const DAISOMALL_API = {
 
   /** 이미지 CDN 베이스 URL */
   IMAGE_BASE_URL: 'https://img.daisomall.co.kr',
+} as const;
+
+/**
+ * 다이소몰 공식 웹 페이지
+ * 상품 상세, 매장 상품 찾기 페이지 등
+ */
+export const DAISOMALL_WEB = {
+  /** 상품 상세 페이지 */
+  PRODUCT_DETAIL: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001',
+
+  /** 매장 상품 찾기 페이지 */
+  STORE_FINDER: 'https://www.daisomall.co.kr/ms/msg/SCR_MSG_0015',
 } as const;
 
 /**
@@ -45,6 +66,30 @@ export const DAISO_WEB_API = {
 export function getImageUrl(path?: string): string | undefined {
   if (!path) return undefined;
   return `${DAISOMALL_API.IMAGE_BASE_URL}${path}`;
+}
+
+/**
+ * 다이소 공식 상품 URL 생성 헬퍼
+ * @param productId 상품 ID
+ * @returns 상품 상세/구매 페이지 URL 정보
+ */
+export function buildDaisoOfficialProductUrls(
+  productId: string,
+): DaisoOfficialProductUrls {
+  const officialProductUrl = createDaisoProductDetailUrl(productId);
+
+  return {
+    officialProductUrl,
+    officialPurchaseUrl: officialProductUrl,
+  };
+}
+
+export function getDaisoProductDetailUrl(productId: string): string {
+  return createDaisoProductDetailUrl(productId);
+}
+
+export function getDaisoProductPurchaseUrl(productId: string): string {
+  return createDaisoProductDetailUrl(productId);
 }
 
 /**

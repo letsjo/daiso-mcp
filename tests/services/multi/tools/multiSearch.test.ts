@@ -52,6 +52,12 @@ describe('createMultiSearchTool', () => {
     const parsed = JSON.parse(result.content[0].text);
     expect(parsed.success).toBe(true);
     expect(parsed.data.results.daiso.products).toHaveLength(1);
+    expect(parsed.data.results.daiso.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P1&recmYn=N',
+      officialPurchaseUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P1&recmYn=N',
+    });
     expect(parsed.meta.limitPerService).toBe(2);
     expect(parsed.meta.timeoutMs).toBe(2000);
     expect(parsed.meta.services.daiso.products).toEqual({
@@ -94,6 +100,12 @@ describe('createMultiSearchTool', () => {
     expect(parsed.success).toBe(true);
     expect(parsed.data.query).toBe('정리함');
     expect(parsed.data.results.daiso.products).toHaveLength(1);
+    expect(parsed.data.results.daiso.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P6&recmYn=N',
+      officialPurchaseUrl:
+        'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P6&recmYn=N',
+    });
     expect(parsed.meta.services.daiso.products.nextCursor).toBe(
       encodeUnifiedSearchCursor({
         v: 1,
@@ -143,6 +155,10 @@ describe('createMultiSearchTool', () => {
     expect(parsed.success).toBe(true);
     expect(parsed.data.query).toBe('선크림');
     expect(parsed.data.results.oliveyoung.products).toHaveLength(1);
+    expect(parsed.data.results.oliveyoung.products[0].links).toEqual({
+      officialProductUrl:
+        'https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=G6',
+    });
     expect(parsed.meta.services.oliveyoung.products.nextCursor).toBe(
       encodeUnifiedSearchCursor({
         v: 1,
