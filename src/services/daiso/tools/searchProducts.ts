@@ -8,7 +8,7 @@ import * as z from 'zod';
 import type { McpToolResponse, ToolRegistration } from '../../../core/types.js';
 import { createJsonTextResponse, createTool } from '../../../core/toolBuilder.js';
 import type { Product, ProductSearchResponse } from '../types.js';
-import { DAISOMALL_API, getImageUrl } from '../api.js';
+import { buildDaisoOfficialProductUrls, DAISOMALL_API, getImageUrl } from '../api.js';
 import { fetchDaisoJson } from '../client.js';
 
 /** 도구 입력 인터페이스 */
@@ -24,7 +24,7 @@ interface SearchProductsArgs {
 export async function fetchProducts(
   query: string,
   page: number = 1,
-  pageSize: number = 30
+  pageSize: number = 30,
 ): Promise<{ products: Product[]; totalCount: number }> {
   const url = new URL(DAISOMALL_API.SEARCH_PRODUCTS);
   url.searchParams.set('searchTerm', query);
@@ -50,6 +50,7 @@ export async function fetchProducts(
     soldOut: doc.SOLD_OUT_YN === 'Y',
     isNew: doc.NEW_PD_YN === 'Y',
     pickupAvailable: doc.PKUP_OR_PSBL_YN === 'Y',
+    links: buildDaisoOfficialProductUrls(doc.PD_NO),
   }));
 
   return { products, totalCount };

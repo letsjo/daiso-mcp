@@ -42,6 +42,12 @@ describe('daiso representative payload contracts', () => {
           soldOut: false,
           isNew: true,
           pickupAvailable: true,
+          links: {
+            officialProductUrl:
+              'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N',
+            officialPurchaseUrl:
+              'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N',
+          },
         },
         {
           id: '1002',
@@ -52,6 +58,12 @@ describe('daiso representative payload contracts', () => {
           soldOut: true,
           isNew: false,
           pickupAvailable: false,
+          links: {
+            officialProductUrl:
+              'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1002&recmYn=N',
+            officialPurchaseUrl:
+              'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1002&recmYn=N',
+          },
         },
       ],
     });

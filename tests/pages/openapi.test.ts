@@ -24,6 +24,18 @@ describe('OpenAPI 페이지', () => {
       };
       components: {
         schemas: {
+          DaisoProductLinks: {
+            properties: {
+              officialProductUrl: unknown;
+              officialPurchaseUrl: unknown;
+            };
+          };
+          UnifiedSearchProductLinks: {
+            properties: {
+              officialProductUrl: unknown;
+              officialPurchaseUrl: unknown;
+            };
+          };
           Product: {
             properties: {
               links: unknown;
@@ -100,7 +112,35 @@ describe('OpenAPI 페이지', () => {
     expect(
       spec.components.schemas.UnifiedSearchResponse.properties.meta.properties.services,
     ).toBeDefined();
+    expect(
+      spec.components.schemas.DaisoProductLinks.properties.officialProductUrl,
+    ).toEqual(
+      expect.objectContaining({
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+      }),
+    );
+    expect(
+      spec.components.schemas.DaisoProductLinks.properties.officialPurchaseUrl,
+    ).toEqual(
+      expect.objectContaining({
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=12345&recmYn=N',
+      }),
+    );
     expect(spec.components.schemas.Product.properties.links).toBeDefined();
+    expect(
+      spec.components.schemas.UnifiedSearchProductLinks.properties.officialProductUrl,
+    ).toEqual(
+      expect.objectContaining({
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N',
+      }),
+    );
+    expect(
+      spec.components.schemas.UnifiedSearchProductLinks.properties.officialPurchaseUrl,
+    ).toEqual(
+      expect.objectContaining({
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N',
+      }),
+    );
     expect(spec.components.schemas.MegaboxShowtime.properties.links).toBeDefined();
     expect(spec.components.schemas.CgvTimetable.properties.links).toBeDefined();
     expect(spec.components.schemas.UnifiedSearchBucketMeta.properties.nextCursor).toBeDefined();

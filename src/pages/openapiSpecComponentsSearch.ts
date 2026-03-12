@@ -3,6 +3,19 @@
  */
 
 export const OPENAPI_SEARCH_COMPONENT_SCHEMAS = {
+  UnifiedSearchProductLinks: {
+    type: 'object',
+    properties: {
+      officialProductUrl: {
+        type: 'string',
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N',
+      },
+      officialPurchaseUrl: {
+        type: 'string',
+        example: 'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=1001&recmYn=N',
+      },
+    },
+  },
   UnifiedSearchProduct: {
     type: 'object',
     properties: {
@@ -15,6 +28,7 @@ export const OPENAPI_SEARCH_COMPONENT_SCHEMAS = {
       category: { type: 'string', example: '수납' },
       imageUrl: { type: 'string', example: 'https://example.com/image.jpg' },
       stockStatus: { type: 'string', example: 'in_stock' },
+      links: { $ref: '#/components/schemas/UnifiedSearchProductLinks' },
     },
   },
   UnifiedSearchStore: {

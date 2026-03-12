@@ -2,6 +2,17 @@
  * 다이소 서비스 전용 타입 정의
  */
 
+export interface DaisoOfficialProductUrls {
+  officialProductUrl: string;
+  officialPurchaseUrl: string;
+}
+
+export interface DaisoProductLinks extends DaisoOfficialProductUrls {
+  apiDetailUrl?: string;
+  apiInventoryUrl?: string;
+  officialMallFinderUrl?: string;
+}
+
 // 매장 옵션 정보
 export interface StoreOptions {
   parking: boolean;
@@ -66,6 +77,7 @@ export interface Product {
   isNew?: boolean;
   pickupAvailable?: boolean;
   onlineStock?: number;
+  links?: DaisoProductLinks;
 }
 
 // 상품 검색 응답

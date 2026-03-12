@@ -48,6 +48,12 @@ describe('createDaisoUnifiedSearchAdapter', () => {
         service: 'daiso',
         type: 'product',
         stockStatus: 'unknown',
+        links: {
+          officialProductUrl:
+            'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P1&recmYn=N',
+          officialPurchaseUrl:
+            'https://www.daisomall.co.kr/pd/pdr/SCR_PDR_0001?pdNo=P1&recmYn=N',
+        },
       }),
     ]);
     expect(result.stores).toEqual([

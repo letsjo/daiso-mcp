@@ -2,7 +2,14 @@
  * 다이소 API 헬퍼 함수 테스트
  */
 import { describe, it, expect } from 'vitest';
-import { getImageUrl, formatTime, DAISOMALL_API, DAISO_WEB_API } from '../../../src/services/daiso/api.js';
+import {
+  buildDaisoOfficialProductUrls,
+  DAISOMALL_API,
+  DAISOMALL_WEB,
+  DAISO_WEB_API,
+  formatTime,
+  getImageUrl,
+} from '../../../src/services/daiso/api.js';
 
 describe('getImageUrl', () => {
   it('유효한 경로가 주어지면 전체 URL을 반환한다', () => {
@@ -53,6 +60,15 @@ describe('formatTime', () => {
   });
 });
 
+describe('다이소 상품 URL 헬퍼', () => {
+  it('공식 상품 상세 URL과 구매 URL을 함께 생성한다', () => {
+    expect(buildDaisoOfficialProductUrls('12345')).toEqual({
+      officialProductUrl: `${DAISOMALL_WEB.PRODUCT_DETAIL}?pdNo=12345&recmYn=N`,
+      officialPurchaseUrl: `${DAISOMALL_WEB.PRODUCT_DETAIL}?pdNo=12345&recmYn=N`,
+    });
+  });
+});
+
 describe('API 상수', () => {
   describe('DAISOMALL_API', () => {
     it('필수 엔드포인트가 정의되어 있다', () => {
@@ -65,6 +81,18 @@ describe('API 상수', () => {
     it('올바른 도메인을 사용한다', () => {
       expect(DAISOMALL_API.SEARCH_PRODUCTS).toContain('daisomall.co.kr');
       expect(DAISOMALL_API.IMAGE_BASE_URL).toContain('img.daisomall.co.kr');
+    });
+  });
+
+  describe('DAISOMALL_WEB', () => {
+    it('공식 웹 페이지 엔드포인트가 정의되어 있다', () => {
+      expect(DAISOMALL_WEB.PRODUCT_DETAIL).toBeDefined();
+      expect(DAISOMALL_WEB.STORE_FINDER).toBeDefined();
+    });
+
+    it('올바른 다이소몰 도메인을 사용한다', () => {
+      expect(DAISOMALL_WEB.PRODUCT_DETAIL).toContain('daisomall.co.kr');
+      expect(DAISOMALL_WEB.STORE_FINDER).toContain('daisomall.co.kr');
     });
   });
 
